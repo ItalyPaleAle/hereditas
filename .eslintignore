@@ -1,0 +1,5 @@
+# Vendored dependencies
+app/vendor
+
+# Test data
+testfolder

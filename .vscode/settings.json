@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/node_modules": true,
+        "coverage": true,
+        "coverage.lcov": true
+    },
+    "files.trimTrailingWhitespace": true,
+    "editor.tabSize": 4,
+    "files.insertFinalNewline": true,
+    "eslint.options": {
+        "configFile": ".eslintrc.yml"
+    }
+}

@@ -1,0 +1,16 @@
+<h1>Hereditas</h1>
+
+{#if $profile}
+    <UserProfile />
+{:else}
+    <RequestAuthentication />
+{/if}
+
+<script type="text/javascript">
+export default {
+    components: {
+        UserProfile: '../components/UserProfile.html',
+        RequestAuthentication: '../components/RequestAuthentication.html'
+    }
+}
+</script>

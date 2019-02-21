@@ -1,0 +1,30 @@
+<p>Hello, <b>{$profile.name}!</b></p>
+{#if $hereditasProfile.role == 'owner'}
+    <p>You're the owner of this Hereditas instance. By logging in, you have just reset the timer for the waiting period before other users can get access. As you're the owner, you can browse the full content of this Hereditas.</p>
+    <PassphraseBox />
+{:else}
+    {#if $hereditasProfile.token}
+        <p>You have now access to the content of this Hereditas.</p>
+        <PassphraseBox />
+    {:else}
+        <p>Thanks for requesting access. This Hereditas will be unlocked at {unlockedDate.toLocaleString()}; please check later.<br/>
+        Important: if an owner signs in with their account, this Hereditas will be locked again.</p>
+    {/if}
+{/if}
+
+<script type="text/javascript">
+import credentials from '../lib/Credentials'
+
+export default {
+    components: {
+        PassphraseBox: './PassphraseBox.html'
+    },
+
+    computed: {
+        unlockedDate: ({$hereditasProfile}) => {
+            // Get the date at which this Hereditas instance is unlocked
+            return new Date(($hereditasProfile.requestTime + $hereditasProfile.waitTime) * 1000)
+        }
+    }
+}
+</script>

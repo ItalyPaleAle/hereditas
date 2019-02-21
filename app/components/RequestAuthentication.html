@@ -1,0 +1,15 @@
+<p>Your authentication failed or the session has expired.</p>
+<a href={authUrl} class="btn btn-primary">Authenticate</a>
+
+<script type="text/javascript">
+import credentials from '../lib/Credentials'
+
+export default {
+    computed: {
+        authUrl: ({$profile}) => {
+            // If we're not authenticated, request a URL
+            return $profile ? undefined : credentials.authorizationUrl()
+        }
+    }
+}
+</script>
