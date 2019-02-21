@@ -12,6 +12,9 @@ export function IsJWT(string) {
     return string && !!string.match(/^([A-Za-z0-9\-_~+/]+[=]{0,2})\.([A-Za-z0-9\-_~+/]+[=]{0,2})(?:\.([A-Za-z0-9\-_~+/]+[=]{0,2}))?$/)
 }
 
+/**
+ * During the authentication process we need to use nonce's to protect against certain kinds of attacks.
+ */
 class Nonce {
     constructor() {
         this._nonceKeyName = 'hereditas-nonce'
@@ -50,6 +53,9 @@ class Nonce {
     }
 }
 
+/**
+ * Manages authentication attemps and keeps a counter. This is important to avoid endless loops between the app and the auth provider.
+ */
 export class AuthenticationAttempts {
     constructor() {
         this._attemptsKeyName = 'hereditas-attempts'
@@ -70,6 +76,9 @@ export class AuthenticationAttempts {
     }
 }
 
+/**
+ * Managed the authentication flow, and validates the JWT token.
+ */
 export class Credentials {
     constructor() {
         this._sessionKeyName = 'hereditas-jwt'
@@ -214,5 +223,6 @@ export class Credentials {
     }
 }
 
+// The default export is an instance (singleton) of Credentials
 const credentials = new Credentials()
 export default credentials

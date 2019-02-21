@@ -40,6 +40,7 @@ function concatBuffers(buffer1, buffer2) {
  * @param {string} passphrase
  * @param {UInt8Array} [salt] Random bytes; will be generated if not set
  * @returns {Promise<[CryptoKey,UInt8Array]>}
+ * @async
  */
 export function DeriveKey(passphrase, salt) {
     salt = salt || crypto.getRandomValues(new Uint8Array(64))
@@ -64,10 +65,11 @@ export function DeriveKey(passphrase, salt) {
  * @param {ArrayBuffer} data - Data to decrypt
  * @param {ArrayBuffer} tag - AES-GCM tag
  * @returns {Promise<string>} Decrypted text as string
+ * @async
+ * @throws Throws an error if the decryption fails, likely meaning that the key was wrong.
  */
 export function Decrypt(key, iv, data, tag) {
     const ciphertext = concatBuffers(data, tag)
     return crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext)
-        .then(v => buf2str(new Uint8Array(v)))
-        .catch((error) => console.log('decryption error', error))
+        .then((data) => buf2str(new Uint8Array(data)))
 }

@@ -1,27 +1,31 @@
 import {DeriveKey, Decrypt} from './CryptoUtils'
 import {DecodeArrayBuffer} from './Base64Utils'
-import {WaitPromise} from './Utils'
 
+/**
+ * Manages the Hereditas box
+ */
 export class Box {
     constructor() {
-        this._encryptedData = null
+        this._key = null
         this._contents = null
         this._indexFetchingPromise = null
+        this._encryptedIndex = null
     }
 
     /**
-     * Returns true if passphrase has been entered and the index decrypted
+     * Returns true if the box is unlocked
      *
      * @returns {boolean}
      */
-    hasIndex() {
-        return !!this._contents
+    isUnlocked() {
+        return this._key && this._contents
     }
 
     /**
-     * Reset decrypted index, will need to get a passphrase
+     * Lock the box again, removing the key and the decrypted index from memory
      */
-    resetIndex() {
+    lock() {
+        this._key = null
         this._contents = null
     }
 
@@ -29,7 +33,7 @@ export class Box {
      * Returns decrypted index
      * @returns {Object}
      */
-    getIndex() {
+    getContents() {
         return this._contents
     }
 
@@ -41,7 +45,7 @@ export class Box {
      */
     fetchIndex() {
         // If we have the index already, do nothing
-        if (this._encryptedData) {
+        if (this._encryptedIndex) {
             return Promise.resolve()
         }
 
@@ -57,7 +61,7 @@ export class Box {
             // Store the results in the object
             .then((buffer) => {
                 // Read the data from the response
-                this._encryptedData = {
+                this._encryptedIndex = {
                     // The first 12 bytes are the IV
                     iv: buffer.slice(0, 12),
                     data: buffer.slice(12)
@@ -66,7 +70,6 @@ export class Box {
                 // Request is done
                 this._indexFetchingPromise = null
             })
-            .then(() => WaitPromise(1000))
 
         // Return the promise
         return this._indexFetchingPromise
@@ -78,23 +81,43 @@ export class Box {
      * @param {string} passphrase - Passphrase typed by the user
      * @param {string} appToken - Encryption token for the app
      * @async
+     * @throws Throws an exception if the decryption fails, which usually means that the key/passphrase is wrong
      */
     unlock(passphrase, appToken) {
         if (!passphrase || !appToken) {
-            throw Error('Empty passphrase or app token')
+            return Promise.reject('Empty passphrase or app token')
         }
 
         // If we haven't fetched the index yet, return
-        if (!this._encryptedData) {
+        if (!this._encryptedIndex) {
             return Promise.resolve(false)
         }
+
+        // Convert from Base64 to ArrayBuffer
+        const keySalt = DecodeArrayBuffer(process.env.KEY_SALT)
+        const indexTag = DecodeArrayBuffer(process.env.INDEX_TAG)
 
         // Try decrypting the index: this will verify the passphrase too
         return Promise.resolve()
             // First: derive the encryption key
-            .then(() => DeriveKey(passphrase + appToken, DecodeArrayBuffer(process.env.KEY_SALT)))
+            .then(() => DeriveKey(passphrase + appToken, keySalt))
+            .then(([key]) => {
+                this._key = key
+            })
+
             // Decrypt the index
-            .then(([key]) => Decrypt(key, this._encryptedData.iv, this._encryptedData.data, DecodeArrayBuffer(process.env.INDEX_TAG)))
-            .then((contents) => console.log(contents))
+            .then(() => Decrypt(this._key, this._encryptedIndex.iv, this._encryptedIndex.data, indexTag))
+
+            // Exceptions likely mean that the key/passphrase are wrong
+            .catch((err) => {
+                // Log the error
+                console.error('Error while unlocking the box:', err)
+
+                // Ensure the box remains locked
+                this.lock()
+
+                // Bubble up
+                throw Error('Failed to unlock to box')
+            })
     }
 }
