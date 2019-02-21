@@ -5,6 +5,10 @@ import {AuthenticationAttempts} from './lib/Credentials'
 import {Store} from 'svelte/store.js'
 import {createHashHistory} from '../vendor/svelte-routing'
 
+// Import routes
+import routes from './routes'
+
+// Style
 import './main.scss'
 
 const attempts = new AuthenticationAttempts()
@@ -98,7 +102,10 @@ const app = (async function() {
     // Crete a Svelte app by loading the main view
     return new App({
         target: document.body,
-        store
+        store,
+        data: {
+            routes
+        }
     })
 })()
 

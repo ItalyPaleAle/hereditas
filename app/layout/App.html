@@ -1,7 +1,15 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <MainView />
+            <h1>Hereditas</h1>
+
+            {#each routes as r}
+                {#if r.exact}
+                    <Route exact path="{r.path}" component={r.component} />
+                {:else}
+                    <Route path="{r.path}" component={r.component} />
+                {/if}
+            {/each}
         </div>
     </div>
 </div>
@@ -11,7 +19,7 @@ import Route from '../../vendor/svelte-routing/Route.html'
 
 export default {
     components: {
-        MainView: '../views/MainView.html'
+        Route
     }
 }
 </script>
