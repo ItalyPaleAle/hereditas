@@ -1,0 +1,79 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+        <th scope="col">Name</th>
+        </tr>
+    </thead>
+    <tbody>
+    {#each list.folders as folder}
+        <tr>
+            <td><a href="/list/{folder}" use:link>{folder}</a></td>
+        </tr>
+    {/each}
+    {#each list.files as file}
+
+        <tr>
+            <td>{file}</td>
+        </tr>
+    {/each}
+    </tbody>
+</table>
+
+
+
+<script type="text/javascript">
+import {getHistory} from '../../vendor/svelte-routing'
+import link from '../../vendor/svelte-routing/link'
+
+export default {
+    computed: {
+        list: ({match, $box}) => {
+            // Check if we have a prefix (folder)
+            const prefix = (match && match.params && match.params.prefix) || ''
+
+            // Get the list
+            const folders = []
+            const files = []
+            const contents = $box.getContents()
+            for (let i in contents) {
+                // Skip items that don't match the prefix
+                const el = contents[i]
+                if (prefix && el.path.substring(0, prefix.length) !== prefix) {
+                    continue
+                }
+
+                // Check if it's a file or folder
+                const parts = el.path.substring(prefix.length)
+                    .split('/') // Split paths
+                    .filter((el) => !!el) // Remove empty values
+                if (parts.length > 1) {
+                    // This is a folder. Check if it's in the list already
+                    const folder = parts[0]
+                    if (folders.indexOf(folder) < 0) {
+                        folders.push(parts[0])
+                    }
+                }
+                else {
+                    files.push(parts[0])
+                }
+            }
+            return {files, folders}
+        }
+    },
+
+    oncreate() {
+        // Ensure that we have unlocked the box
+        const {box} = this.store.get()
+        if (!box.isUnlocked()) {
+            // Do this in the next tick
+            setTimeout(() => {
+                getHistory().replace('/')
+            }, 0)
+        }
+	},
+
+    actions: {
+        link
+    }
+}
+</script>

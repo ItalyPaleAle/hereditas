@@ -22,6 +22,7 @@
 {/await}
 
 <script type="text/javascript">
+import {getHistory} from '../../vendor/svelte-routing'
 
 export default {
     data() {
@@ -41,8 +42,10 @@ export default {
 
             box.unlock(passphrase, hereditasProfile.token)
                 .then((_) => {
-                    // Redirect here
                     this.set({unlockError: false})
+
+                    // Redirect to the list
+                    getHistory().replace('/list')
                 })
                 .catch((err) => {
                     console.error('err caught', err)

@@ -5,10 +5,23 @@
 {/if}
 
 <script type="text/javascript">
+import {getHistory} from '../../vendor/svelte-routing'
+
 export default {
     components: {
         UserProfile: '../components/UserProfile.html',
         RequestAuthentication: '../components/RequestAuthentication.html'
-    }
+    },
+
+    oncreate() {
+        // If box has already been unlocked, just go straight to the list
+        const {box} = this.store.get()
+        if (box.isUnlocked()) {
+            // Do this in the next tick
+            setTimeout(() => {
+                getHistory().replace('/list')
+            }, 0)
+        }
+	}
 }
 </script>

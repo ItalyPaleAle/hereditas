@@ -31,10 +31,12 @@ export class Box {
 
     /**
      * Returns decrypted index
-     * @returns {Object}
+     * @returns {Array}
      */
     getContents() {
-        return this._contents
+        return this.isUnlocked() ?
+            this._contents :
+            []
     }
 
     /**
@@ -107,6 +109,10 @@ export class Box {
 
             // Decrypt the index
             .then(() => Decrypt(this._key, this._encryptedIndex.iv, this._encryptedIndex.data, indexTag))
+            .then((str) => {
+                // Store the contents
+                this._contents = JSON.parse(str)
+            })
 
             // Exceptions likely mean that the key/passphrase are wrong
             .catch((err) => {
