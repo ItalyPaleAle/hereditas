@@ -5,8 +5,10 @@
         <pre>{content.text}</pre>
     {:elseif content.display == 'html'}
         {@html content.text}
+    {:elseif content.display == 'image'}
+        <img src="{content.blob}" alt="{content.name}" class="img-fluid" />
     {:else}
-        Download: <a href="{content.attachUrl}" download="{content.name}">{content.name}</a>
+        Download: <a href="{content.blob}" download="{content.name}">{content.name}</a>
     {/if}
 {:catch error}
     Error: {error}
@@ -44,10 +46,10 @@ export default {
             // Fetch the data
             return $box.fetchContent(element)
                 .then((element) => {
-                    // Build the URL for attachments, and get the file name
-                    if (element.display == 'attach') {
+                    // Build the URL for attachments and images, and get the file name
+                    if (element.display != 'text' && element.display != 'html') {
                         // Convert data to a Blob
-                        element.attachUrl = URL.createObjectURL(new Blob([element.data], {type: "octet/stream"}))
+                        element.blob = URL.createObjectURL(new Blob([element.data], {type: "octet/stream"}))
                         delete element.data
 
                         // Get file name

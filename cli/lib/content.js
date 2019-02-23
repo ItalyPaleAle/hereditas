@@ -11,6 +11,9 @@ const marked = util.promisify(require('marked'))
 // Promisified fs.readFile, fs.readdir, fs.stat and fs.unlink
 const readFilePromise = util.promisify(fs.readFile)
 
+// List of file extensions of images
+const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+
 /**
  * Processes content
  */
@@ -56,12 +59,24 @@ class Content {
             await this._processMarkdown()
         }
         else {
-            // Just get a stream to the file on disk
-            this._inStream = fs.createReadStream(path.join(this._config.contentDir, this._el.path))
-
-            // Set display as attachment
-            this._el.display = 'attach'
+            await this._processBinary()
         }
+    }
+
+    /**
+     * Processes images and other binary files
+     */
+    async _processBinary() {
+        // Just get a stream to the file on disk
+        this._inStream = fs.createReadStream(path.join(this._config.contentDir, this._el.path))
+
+        // Set the display as "image" for images, and "attach" for anything else
+        const extension = this._el.path.split('.')
+            .pop()
+            .toLowerCase()
+        this._el.display = (imageExtensions.indexOf(extension) < 0) ?
+            'attach' :
+            'image'
     }
 
     /**
