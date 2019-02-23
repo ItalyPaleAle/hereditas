@@ -5,6 +5,11 @@ function (user, context, callback) {
         return callback(null, user, context);
     }
 
+    // Skip if there's no webhook
+    if (!configuration || !configuration.WEBHOOK_URL) {
+        return callback(null, user, context);
+    }
+
     // Get metadata
     user.app_metadata = user.app_metadata || {};
 
