@@ -2,7 +2,7 @@
     Loading...
 {:then content}
     {#if content.display == 'text'}
-        {content.text}
+        <pre>{content.text}</pre>
     {:elseif content.display == 'html'}
         {@html content.text}
     {/if}

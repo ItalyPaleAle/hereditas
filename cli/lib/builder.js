@@ -4,17 +4,14 @@ const fs = require('fs')
 const crypto = require('crypto')
 const {Readable} = require('stream')
 const util = require('util')
+const Content = require('./content')
 const path = require('path')
-
-// Marked.js
-const marked = util.promisify(require('marked'))
 
 // Webpack
 const webpack = util.promisify(require('webpack'))
 const webpackConfig = require('../../app/webpack.config')
 
 // Promisified fs.readFile, fs.readdir, fs.stat and fs.unlink
-const readFilePromise = util.promisify(fs.readFile)
 const readdirPromise = util.promisify(fs.readdir)
 const statPromise = util.promisify(fs.stat)
 const unlinkPromise = util.promisify(fs.unlink)
@@ -35,7 +32,7 @@ const pbkdf2Iterations = 100000
  * @property {string} dist - Random filename used in the dist folder
  * @property {string} tag - Authentication tag for AES-GCM
  * @property {string} processed - If the file has been pre-processed, this explains how (e.g. "markdown"); it's undefined otherwise
- * @property {"text"|"image"|"attachment"} display - Configures how the file should be displayed
+ * @property {"text"|"image"|"attach"} display - Configures how the file should be displayed
  */
 
 /**
@@ -69,7 +66,7 @@ class Builder {
         await this._cleanDirectory(this._config.distDir)
 
         // Step 2: get the list of files
-        let content = await this._scanContent(this._config.contentDir)
+        let content = await this._scanContent()
 
         // Step 3: generate a salt for deriving the encryption key
         // This needs to be of 64 bytes, which is the length of a SHA-512 hash
@@ -79,10 +76,10 @@ class Builder {
         const key = await this._deriveKey(this._passphrase + this._appToken, this.keySalt)
 
         // Step 5: encrypt all files
-        content = await this._encryptContent(key, this._config.contentDir, this._config.distDir, content)
+        content = await this._encryptContent(key, content)
 
         // Step 6: write an (encrypted) index file
-        this.indexTag = await this._createIndex(key, this._config.distDir, content)
+        this.indexTag = await this._createIndex(key, content)
 
         // Step 7: build the app with webpack
         const appParams = {
@@ -153,12 +150,11 @@ class Builder {
      * Creates an index file and encrypts it on disk.
      *
      * @param {Buffer} key - Encryption key
-     * @param {string} distDir - Folder where to put encrypted files
      * @param {HereditasContentFile[]} content - List of content
      * @returns {Buffer} Authentication tag
      * @async
      */
-    async _createIndex(key, distDir, content) {
+    async _createIndex(key, content) {
         // Creat the index file, and convert it to a Readable Stream
         const indexData = JSON.stringify(content)
         const inStream = new Readable()
@@ -167,59 +163,20 @@ class Builder {
         inStream.push(null) // End
 
         // Output stream
-        const outStream = fs.createWriteStream(path.join(distDir, '_index'))
+        const outStream = fs.createWriteStream(path.join(this._config.distDir, '_index'))
 
         // Encrypt the index and write it, returning the tag
         return this._encryptStream(key, inStream, outStream)
     }
 
     /**
-     * Pre-processes a file if necessary (e.g. converting Markdown to HTML). Returns the updated content and the Readable Stream to the file.
-     *
-     * @param {HereditasContentFile} el - Content to process
-     * @param {string} contentDir - Root folder of the content
-     * @returns {Array} Array where the first element is the updated content, and the second element is a Readable Stream to the file
-     * @async
-     */
-    async _processContent(el, contentDir) {
-        // Result: Readable Stream to the file
-        let inStream
-
-        // Preprocess markdown files
-        // Check if the file is a markdown one (extensions: md or markdown)
-        if (this._config.processMarkdown && el.path.match(/\.(md|markdown)$/i)) {
-            const markdown = await readFilePromise(path.join(contentDir, el.path), 'utf8')
-            const html = await marked(markdown)
-
-            // Push the data into a stream
-            inStream = new Readable()
-            inStream._read = () => {} // _read is required, but it's a no-op
-            inStream.push(html, 'utf8')
-            inStream.push(null) // End
-
-            // Mark the file as pre-processed
-            el.processed = 'markdown'
-            el.display = 'html'
-            // TODO: Handle different encodings
-        }
-        else {
-            // Just get a stream to the file on disk
-            inStream = fs.createReadStream(path.join(contentDir, el.path))
-        }
-
-        return [el, inStream]
-    }
-
-    /**
      * Encrypts all the content
      * @param {Buffer} key - Encryption key
-     * @param {string} contentDir - Root folder of the content
-     * @param {string} distDir - Folder where to put encrypted files
      * @param {HereditasContentFile[]} content - List of content
      * @returns {HereditasContentFile[]} - List of content with the dist and tag properties set
      * @async
      */
-    async _encryptContent(key, contentDir, distDir, content) {
+    async _encryptContent(key, content) {
         // Clone the content object
         const result = JSON.parse(JSON.stringify(content))
 
@@ -229,14 +186,15 @@ class Builder {
             const dist = (await randomBytesPromise(12)).toString('hex')
 
             // Create the Readable stream to the input, and Writable stream to the output
-            const outStream = fs.createWriteStream(path.join(distDir, dist))
+            const outStream = fs.createWriteStream(path.join(this._config.distDir, dist))
 
-            // Process the file if necessary
-            const [el, inStream] = await this._processContent(result[i], contentDir)
-            result[i] = el
+            // Pre-process the file
+            const content = new Content(result[i], this._config)
+            await content.process()
+            result[i] = content.el
 
             // Encrypt the stream and get the tag
-            const tagBuf = await this._encryptStream(key, inStream, outStream)
+            const tagBuf = await this._encryptStream(key, content.inStream, outStream)
             const tag = tagBuf.toString('base64')
 
             // Add the dist and tag properties to the result object
@@ -283,11 +241,10 @@ class Builder {
 
     /**
      * Recursively scans the content directory, listing files
-     * @param {string} contentDir - Root folder to scan
      * @returns {HereditasContentFile[]} List of files
      * @async
      */
-    async _scanContent(contentDir) {
+    async _scanContent() {
         // Will contain the final list
         const result = []
 
@@ -296,12 +253,12 @@ class Builder {
             folder = folder || ''
 
             // Scan the list of files and folders, recursively
-            const list = await readdirPromise(path.join(contentDir, folder))
+            const list = await readdirPromise(path.join(this._config.contentDir, folder))
             for (const e in list) {
                 const el = folder + list[e]
 
                 // Check if it's a directory
-                const stat = await statPromise(path.join(contentDir, el))
+                const stat = await statPromise(path.join(this._config.contentDir, el))
                 if (!stat) {
                     continue
                 }
