@@ -5,7 +5,7 @@
  * @param {String} str
  * @returns {Uint8Array}
  */
-function str2buf(str) {
+export function str2buf(str) {
     return new TextEncoder('utf-8').encode(str)
 }
 
@@ -14,7 +14,7 @@ function str2buf(str) {
  * @param {Uint8Array} buffer
  * @returns {String}
  */
-function buf2str(buffer) {
+export function buf2str(buffer) {
     return new TextDecoder('utf-8').decode(buffer)
 }
 
@@ -71,5 +71,4 @@ export function DeriveKey(passphrase, salt) {
 export function Decrypt(key, iv, data, tag) {
     const ciphertext = concatBuffers(data, tag)
     return crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext)
-        .then((data) => buf2str(new Uint8Array(data)))
 }

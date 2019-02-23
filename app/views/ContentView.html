@@ -1,0 +1,64 @@
+{#await contentPromise}
+    Loading...
+{:then content}
+    {#if content.display == 'text'}
+        {content.text}
+    {:elseif content.display == 'html'}
+        {@html content.text}
+    {/if}
+{:catch error}
+    Error: {error}
+{/await}
+
+
+<script type="text/javascript">
+import {getHistory} from '../../vendor/svelte-routing'
+
+export default {
+    computed: {
+        contentPromise: ({match, $box}) => {
+            // Get the name of the element
+            // The element variable should be an id, a hex string of 24 chars
+            const elementId = (match && match.params && match.params.element) || ''
+            if (!elementId || !elementId.match(/^[0-9a-f]{24}$/)) {
+                return Promise.reject('Invalid content')
+            }
+
+            // Get info on the content
+            const contents = $box.getContents()
+
+            // Get the tag from the index
+            let element
+            for (const i in contents) {
+                if (contents[i].dist == elementId) {
+                    element = contents[i]
+                    break
+                }
+            }
+            if (!element) {
+                return Promise.reject('Content not found')
+            }
+
+            // Fetch the data
+            return $box.fetchContent(element)
+                .catch((error) => {
+                    // Log the error
+                    console.error(error)
+
+                    return error
+                })
+        }
+    },
+
+    oncreate() {
+        // Ensure that we have unlocked the box
+        const {box} = this.store.get()
+        if (!box.isUnlocked()) {
+            // Do this in the next tick
+            setTimeout(() => {
+                getHistory().replace('/')
+            }, 0)
+        }
+	}
+}
+</script>

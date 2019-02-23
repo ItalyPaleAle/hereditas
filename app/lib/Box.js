@@ -1,4 +1,4 @@
-import {DeriveKey, Decrypt} from './CryptoUtils'
+import {DeriveKey, Decrypt, buf2str} from './CryptoUtils'
 import {DecodeArrayBuffer} from './Base64Utils'
 
 /**
@@ -40,7 +40,52 @@ export class Box {
     }
 
     /**
-     * Fetches the index from the web server
+     * Fetches a content from the box, then decrypts it before returning.
+     *
+     * @param {Object} info - Info for the content to retrieve. Must contain the `dist` and `tag` properties.
+     * @returns {Promise<Object>} Promise that resolves with info object containing the decrypted content, as a binary ArrayBuffer in the `info.data` property, or an utf-8 encoded string in the `info.text` property (if `info.display` is "text" or "html").
+     * @async
+     */
+    fetchContent(info) {
+        // If the box is locked, return
+        if (!this.isUnlocked()) {
+            return Promise.reject('Box is locked')
+        }
+
+        // Ensure we have what we need
+        if (!info || !info.dist || !info.tag) {
+            return Promise.reject('Content not found')
+        }
+
+        // Return the promise
+        return fetch(info.dist)
+            // Grab the encrypted contents as ArrayBuffer
+            .then((response) => response.arrayBuffer())
+            // Decrypt the data
+            .then((buffer) => {
+                // The first 12 bytes are the IV
+                const iv = buffer.slice(0, 12)
+                const data = buffer.slice(12)
+
+                // Get the tag
+                const tag = DecodeArrayBuffer(info.tag)
+
+                return Decrypt(this._key, iv, data, tag)
+                    .then((data) => {
+                        // If it's text, decode it
+                        if (info.display == 'text' || info.display == 'html') {
+                            info.text = buf2str(new Uint8Array(data))
+                        }
+                        else {
+                            info.data = data
+                        }
+                        return info
+                    })
+            })
+    }
+
+    /**
+     * Fetches the index from the box.
      *
      * @returns {Promise<void>} Promise that resolves (with no value) when the index has been fetched
      * @async
@@ -109,7 +154,10 @@ export class Box {
 
             // Decrypt the index
             .then(() => Decrypt(this._key, this._encryptedIndex.iv, this._encryptedIndex.data, indexTag))
-            .then((str) => {
+            .then((data) => {
+                // Convert the buffer to string
+                const str = buf2str(new Uint8Array(data))
+
                 // Store the contents
                 this._contents = JSON.parse(str)
             })

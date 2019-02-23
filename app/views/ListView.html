@@ -11,9 +11,8 @@
         </tr>
     {/each}
     {#each list.files as file}
-
         <tr>
-            <td>{file}</td>
+            <td><a href="/content/{file.dist}" use:link>{file.name}</a></td>
         </tr>
     {/each}
     </tbody>
@@ -54,7 +53,10 @@ export default {
                     }
                 }
                 else {
-                    files.push(parts[0])
+                    files.push({
+                        name: parts[0],
+                        dist: el.dist
+                    })
                 }
             }
             return {files, folders}

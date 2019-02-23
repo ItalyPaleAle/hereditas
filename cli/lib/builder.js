@@ -35,7 +35,7 @@ const pbkdf2Iterations = 100000
  * @property {string} dist - Random filename used in the dist folder
  * @property {string} tag - Authentication tag for AES-GCM
  * @property {string} processed - If the file has been pre-processed, this explains how (e.g. "markdown"); it's undefined otherwise
- * @property {"inline"|"image"|"attachment"} display - Configures how the file should be displayed
+ * @property {"text"|"image"|"attachment"} display - Configures how the file should be displayed
  */
 
 /**
@@ -50,7 +50,7 @@ class Builder {
         // Store config in the object
         this._config = config
 
-        this._passphrase = 'user passphrase goes here'
+        this._passphrase = 'hello'
         this._appToken = 'hello world'
 
         // Output
@@ -199,7 +199,8 @@ class Builder {
 
             // Mark the file as pre-processed
             el.processed = 'markdown'
-            el.display = 'inline'
+            el.display = 'html'
+            // TODO: Handle different encodings
         }
         else {
             // Just get a stream to the file on disk
@@ -236,7 +237,7 @@ class Builder {
 
             // Encrypt the stream and get the tag
             const tagBuf = await this._encryptStream(key, inStream, outStream)
-            const tag = tagBuf.toString('hex')
+            const tag = tagBuf.toString('base64')
 
             // Add the dist and tag properties to the result object
             result[i].dist = dist
