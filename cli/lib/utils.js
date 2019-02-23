@@ -52,6 +52,11 @@ async function ReadConfig(filename) {
         config.kdf = 'pbkdf2'
     }
 
+    // Iterations for pbkdf2
+    if (!config.pbkdf2Iterations) {
+        config.pbkdf2Iterations = 100000
+    }
+
     return config
 }
 

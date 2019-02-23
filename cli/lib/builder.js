@@ -20,9 +20,6 @@ const unlinkPromise = util.promisify(fs.unlink)
 const pbkdf2Promise = util.promisify(crypto.pbkdf2)
 const randomBytesPromise = util.promisify(crypto.randomBytes)
 
-// Iterations for PBKDF2
-const pbkdf2Iterations = 100000
-
 /**
  * Object containing properties for a file in the content directory
  *
@@ -90,7 +87,7 @@ class Builder {
             indexTag: this.indexTag,
             keySalt: this.keySalt,
             kdf: this._config.kdf,
-            pbkdf2Iterations
+            pbkdf2Iterations: this._config.pbkdf2Iterations
         }
         const webpackStats = await webpack(webpackConfig(appParams))
 
@@ -136,7 +133,7 @@ class Builder {
     _deriveKey(passphrase, salt) {
         if (this._config.kdf == 'pbkdf2') {
             // Using SHA-512, the result is a 512 bit key, so truncate it to 256 bit (32 bytes)
-            return pbkdf2Promise(passphrase, salt, pbkdf2Iterations, 32, 'sha512')
+            return pbkdf2Promise(passphrase, salt, this._config.pbkdf2Iterations, 32, 'sha512')
         }
         else if (this._config.kdf == 'argon2') {
             throw Error('Key derivation with argon2 has not been implemented yet')
