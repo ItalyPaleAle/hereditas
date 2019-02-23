@@ -5,6 +5,8 @@
         <pre>{content.text}</pre>
     {:elseif content.display == 'html'}
         {@html content.text}
+    {:else}
+        Download: <a href="{content.attachUrl}" download="{content.name}">{content.name}</a>
     {/if}
 {:catch error}
     Error: {error}
@@ -41,6 +43,20 @@ export default {
 
             // Fetch the data
             return $box.fetchContent(element)
+                .then((element) => {
+                    // Build the URL for attachments, and get the file name
+                    if (element.display == 'attach') {
+                        // Convert data to a Blob
+                        element.attachUrl = URL.createObjectURL(new Blob([element.data], {type: "octet/stream"}))
+                        delete element.data
+
+                        // Get file name
+                        const parts = element.path.split('/')
+                        element.name = parts[parts.length - 1]
+                    }
+
+                    return element
+                })
                 .catch((error) => {
                     // Log the error
                     console.error(error)
