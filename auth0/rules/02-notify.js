@@ -10,11 +10,11 @@ function (user, context, callback) {
         return callback(null, user, context);
     }
 
-    // Get metadata
-    user.app_metadata = user.app_metadata || {};
+    // List of owners
+    const owners = /*%OWNERS%*/;
 
     // Trigger the webhook
-    const role = (user.app_metadata.hereditasRole === 'owner') ? 'owner' : 'user';
+    const role = (owners.some((email) => email === user.email)) ? 'owner' : 'user';
     const body = {
         value1: user.email,
         value2: role

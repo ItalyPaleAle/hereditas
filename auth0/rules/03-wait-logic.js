@@ -5,6 +5,9 @@ function (user, context, callback) {
         return callback(null, user, context);
     }
 
+    // List of owners
+    const owners = /*%OWNERS%*/;
+
     // Get the Auth0 management client
     const ManagementClient = require('auth0@2.13.0').ManagementClient;
     const management = new ManagementClient({
@@ -14,12 +17,12 @@ function (user, context, callback) {
     });
 
     // Get metadata
-    user.app_metadata = user.app_metadata || {};
     const requestTime = context.clientMetadata.requestTime ? parseInt(context.clientMetadata.requestTime, 10) : 0;
     const waitTime = parseInt(context.clientMetadata.waitTime, 10);
 
     // Check if the user is an owner
-    if (user.app_metadata.hereditasRole === 'owner') {
+    const isOwner = owners.some((email) => email === user.email);
+    if (isOwner) {
         // Enrich the JWT with the app token
         if (context.idToken) {
             context.idToken['https://hereditas.app'] = {

@@ -114,9 +114,21 @@ class Auth0Management {
         ])
         const names = [
             'Hereditas 01 - Whitelist email addresses',
-            'Hereditas 02 - Wait logic',
-            'Hereditas 03 - Notify'
+            'Hereditas 02 - Notify',
+            'Hereditas 03 - Wait logic'
         ]
+
+        // Replacer function in scripts
+        const users = this._config.get('users')
+        const replacer = (script) => {
+            const vars = {
+                '/*%ALL_USERS%*/': JSON.stringify(users.map((el) => el.email)),
+                '/*%OWNERS%*/': JSON.stringify(users.filter((el) => el.role == 'owner').map((el) => el.email))
+            }
+            return script.replace(/\/\*%([A-Za-z0-9_]+)%\*\//, (token) => {
+                return vars[token]
+            })
+        }
 
         // Create all rules, in order
         const promises = []
@@ -126,7 +138,7 @@ class Auth0Management {
                 stage: 'login_success',
                 order: i + 1,
                 name: names[i],
-                script: scripts[i]
+                script: replacer(scripts[i])
             }))
         }
         const results = await Promise.all(promises)
