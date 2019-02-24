@@ -35,7 +35,8 @@ const ConfigVersion = 20190222
  * @property {string} pbkdf2.iterations - Number of iterations
  * @property {string} webhookUrl - URL of the webhook to trigger when a new user logs into Hereditas.
  * @property {Array<HereditasUser>} users - List of users
- * @property {number} waitTime - The amount of time, in seconds, to wait before Auth0 can return to users the app token.
+ * @property {string} appToken - Application token; when combined with the user passphrase, this allows deriving the encryption key
+ * @property {number} waitTime - The amount of time, in seconds, to wait before Auth0 can return to users the app token
  * @property {Array<string>} urls - list of URLs where your app will be deployed to, e.g. `https://hereditas.example.com`, or `https://myname.blob.core.windows.net/hereditas`, etc; this is used for OAuth redirects.
  */
 
@@ -179,6 +180,9 @@ class Config {
         }
         if (!this._userConfig.contentDir) {
             throw Error('Config file is missing required key contentDir')
+        }
+        if (!this._userConfig.appToken) {
+            throw Error('Config file is missing required key appToken')
         }
         if (!this._userConfig.auth0 || typeof this._userConfig.auth0 != 'object' || !Object.keys(this._userConfig.auth0).length) {
             throw Error('Config file is missing required key auth0')

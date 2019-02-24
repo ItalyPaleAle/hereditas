@@ -45,7 +45,6 @@ class Builder {
         this._config = config
 
         this._passphrase = 'hello'
-        this._appToken = 'hello world'
 
         // Output
         this.keySalt = null
@@ -70,7 +69,7 @@ class Builder {
         this.keySalt = await randomBytesPromise(64)
 
         // Step 4: derive the key
-        const key = await this._deriveKey(this._passphrase + this._appToken, this.keySalt)
+        const key = await this._deriveKey(this._passphrase + this._config.get('appToken'), this.keySalt)
 
         // Step 5: encrypt all files
         content = await this._encryptContent(key, content)

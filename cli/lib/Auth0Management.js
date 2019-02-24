@@ -161,7 +161,7 @@ class Auth0Management {
      */
     async updateRulesConfigs() {
         const rulesConfigs = {
-            APP_TOKEN: 'hello world',
+            APP_TOKEN: this._config.get('appToken'),
             AUTH0_CLIENT_ID: this._config.get('auth0.managementClientId'),
             AUTH0_CLIENT_SECRET: this._config.get('auth0.managementClientSecret'),
             WEBHOOK_URL: this._config.get('webhookUrl')

@@ -6,6 +6,20 @@ const process = require('process')
 const path = require('path')
 const Config = require('../lib/Config')
 
+// Source: https://stackoverflow.com/a/27872144/192024
+// TODO: USE A CRYPTOGRAPHICALLY STRONGER ALGORITHM
+function randomString(len, an) {
+    an = an && an.toLowerCase()
+    let str = ''
+    const min = (an == 'a') ? 10 : 0
+    const max = (an == 'n') ? 10 : 62
+    for (let i = 0; i++ < len;) {
+        let r = Math.random() * (max - min) + min << 0
+        str += String.fromCharCode(r += r > 9 ? r < 36 ? 55 : 61 : 48)
+    }
+    return str
+}
+
 class InitCommand extends Command {
     async run() {
         const {flags} = this.parse(InitCommand)
@@ -25,6 +39,9 @@ class InitCommand extends Command {
         fs.mkdirSync(contentDir)
         fs.mkdirSync(distDir)
 
+        // Generate an appToken
+        const appToken = randomString(15, 'A')
+
         // Create configuration
         const config = new Config('hereditas.json')
         config.create({
@@ -36,7 +53,8 @@ class InitCommand extends Command {
                 managementClientSecret: flags.auth0ClientSecret
             },
             urls: flags.url,
-            waitTime: 86400
+            waitTime: 86400,
+            appToken
         })
         await config.save()
 

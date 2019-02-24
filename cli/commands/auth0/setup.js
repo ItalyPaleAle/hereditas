@@ -32,6 +32,8 @@ class Auth0SetupCommand extends Command {
 
         // Save config changes
         await config.save()
+
+        this.log('Auth0 configuration updated successfully')
     }
 }
 
