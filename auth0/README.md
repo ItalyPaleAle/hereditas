@@ -14,7 +14,7 @@ Ensure that the application is configured with:
 
 - **Application type**: Should be "Single Page Application"
 - **Allowed callback URLs**: List of URLs (one per line) where your app is available
-- **JWT Expiration**: Recommended to set it to a value that make sense for you, for example 3600 seconds (1 hour)
+- **JWT Expiration**: Recommended to set it to a value that make sense for you, for example 1800 seconds (30 mins)
 
 Under **Advanced Settings**, then **OAuth**:
 
@@ -38,18 +38,6 @@ In the next dialog, grant access to the "Auth0 Management API", then select the 
 
 Once the app is created, take note of the **Client ID** and **Client Secret**.
 
-## User configuration
-
-Only the Owner user accounts need to be configured. Owners are users who can always access the data, and when they authenticate the timer is reset. You should have at least one user configured as Owner.
-
-To set one user as Owner, edit its profile and set the following `app_metadata` object:
-
-````json
-{
-    "hereditasRole": "owner"
-}
-````
-
 ## Rules
 
 The `rules` folder contains the rules that need to be configured in Auth0. Make sure you respect the order, as this is very important!
@@ -57,6 +45,21 @@ The `rules` folder contains the rules that need to be configured in Auth0. Make 
 - **Hereditas 01 - Whitelist email addresses (`01-whitelist.js`)**: This rule configures which users are allowed to authenticate, by looking at their email address.
 - **Hereditas 02 - Notify (`02-notify.js`)**: This rule sends a notification of all successful logins via a Webhook.
 - **Hereditas 03 - Wait logic (`03-wait-logic.js`)**: This rule implements the "wait logic". If a non-owner signs in, starts the timer, and after the wait adds the app token to the claim. If an owner signs in, the timer is reset (and the app token is added to the claim regardless).
+
+The scripts above contain a certain templates that need to be replaced with the list of email addresses of all users or just owners.
+
+- **`/*%OWNERS%*/`** This template needs to be replaced with the array of all email addresses of users who are owners.
+- **`/*%ALL_USERS%*/`** This template needs to be replaced with the array of all email addresses of all users.
+
+For example:
+
+````js
+const whitelist = /*%ALL_USERS%*/;
+const owners = /*%OWNERS%*/;
+// Become
+const whitelist = ['me@example.com', 'spouse@example.com'];
+const owners = ['me@example.com'];
+````
 
 In the rules page, add the following settings:
 
