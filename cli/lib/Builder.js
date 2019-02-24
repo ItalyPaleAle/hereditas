@@ -38,7 +38,7 @@ const randomBytesPromise = util.promisify(crypto.randomBytes)
 class Builder {
     /**
      * Initializes the object
-     * @param {HereditasConfig} config - Config object
+     * @param {Config} config - Config object
      */
     constructor(config) {
         // Store config in the object
@@ -60,7 +60,7 @@ class Builder {
      */
     async build() {
         // Step 1: clean dist directory
-        await this._cleanDirectory(this._config.distDir)
+        await this._cleanDirectory(this._config.get('distDir'))
 
         // Step 2: get the list of files
         let content = await this._scanContent()
@@ -80,14 +80,14 @@ class Builder {
 
         // Step 7: build the app with webpack
         const appParams = {
-            distDir: this._config.distDir,
-            authIssuer: 'https://' + this._config.auth0.domain,
-            authClientId: this._config.auth0.hereditasClientId,
+            distDir: this._config.get('distDir'),
+            authIssuer: 'https://' + this._config.get('auth0.domain'),
+            authClientId: this._config.get('auth0.hereditasClientId'),
             idTokenNamespace: 'https://hereditas.app',
             indexTag: this.indexTag,
             keySalt: this.keySalt,
-            kdf: this._config.kdf,
-            pbkdf2Iterations: this._config.pbkdf2Iterations
+            kdf: this._config.get('kdf'),
+            pbkdf2Iterations: this._config.get('pbkdf2.iterations')
         }
         const webpackStats = await webpack(webpackConfig(appParams))
 
@@ -131,11 +131,12 @@ class Builder {
      * @async
      */
     _deriveKey(passphrase, salt) {
-        if (this._config.kdf == 'pbkdf2') {
+        const kdf = this._config.get('kdf')
+        if (kdf == 'pbkdf2') {
             // Using SHA-512, the result is a 512 bit key, so truncate it to 256 bit (32 bytes)
-            return pbkdf2Promise(passphrase, salt, this._config.pbkdf2Iterations, 32, 'sha512')
+            return pbkdf2Promise(passphrase, salt, this._config.get('pbkdf2.iterations'), 32, 'sha512')
         }
-        else if (this._config.kdf == 'argon2') {
+        else if (kdf == 'argon2') {
             throw Error('Key derivation with argon2 has not been implemented yet')
         }
         else {
@@ -160,7 +161,7 @@ class Builder {
         inStream.push(null) // End
 
         // Output stream
-        const outStream = fs.createWriteStream(path.join(this._config.distDir, '_index'))
+        const outStream = fs.createWriteStream(path.join(this._config.get('distDir'), '_index'))
 
         // Encrypt the index and write it, returning the tag
         return this._encryptStream(key, inStream, outStream)
@@ -183,7 +184,7 @@ class Builder {
             const dist = (await randomBytesPromise(12)).toString('hex')
 
             // Create the Readable stream to the input, and Writable stream to the output
-            const outStream = fs.createWriteStream(path.join(this._config.distDir, dist))
+            const outStream = fs.createWriteStream(path.join(this._config.get('distDir'), dist))
 
             // Pre-process the file
             const content = new Content(result[i], this._config)
@@ -250,12 +251,12 @@ class Builder {
             folder = folder || ''
 
             // Scan the list of files and folders, recursively
-            const list = await readdirPromise(path.join(this._config.contentDir, folder))
+            const list = await readdirPromise(path.join(this._config.get('contentDir'), folder))
             for (const e in list) {
                 const el = folder + list[e]
 
                 // Check if it's a directory
-                const stat = await statPromise(path.join(this._config.contentDir, el))
+                const stat = await statPromise(path.join(this._config.get('contentDir'), el))
                 if (!stat) {
                     continue
                 }

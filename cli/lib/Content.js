@@ -22,7 +22,7 @@ class Content {
      * Constructor
      *
      * @param {HereditasContentFile} el - Content to process
-     * @param {HereditasConfig} config - Config object
+     * @param {Config} config - Config object
      */
     constructor(el, config) {
         this._config = config
@@ -68,7 +68,7 @@ class Content {
      */
     async _processBinary() {
         // Just get a stream to the file on disk
-        this._inStream = fs.createReadStream(path.join(this._config.contentDir, this._el.path))
+        this._inStream = fs.createReadStream(path.join(this._config.get('contentDir'), this._el.path))
 
         // Set the display as "image" for images, and "attach" for anything else
         const extension = this._el.path.split('.')
@@ -84,7 +84,7 @@ class Content {
      */
     async _processText() {
         // Get a stream to the file and display it as text
-        this._inStream = fs.createReadStream(path.join(this._config.contentDir, this._el.path))
+        this._inStream = fs.createReadStream(path.join(this._config.get('contentDir'), this._el.path))
         this._el.display = 'text'
     }
 
@@ -93,8 +93,8 @@ class Content {
      */
     async _processMarkdown() {
         // Check if we process Markdown into HTML
-        if (this._config.processMarkdown) {
-            const markdown = await readFilePromise(path.join(this._config.contentDir, this._el.path), 'utf8')
+        if (this._config.get('processMarkdown')) {
+            const markdown = await readFilePromise(path.join(this._config.get('contentDir'), this._el.path), 'utf8')
             const html = await marked(markdown)
 
             // Push the data into a stream

@@ -1,15 +1,15 @@
 'use strict'
 
 const {Command} = require('@oclif/command')
-const {ReadConfig} = require('../lib/utils')
+const Config = require('../lib/Config')
 const Builder = require('../lib/Builder')
 
 class BuildCommand extends Command {
     async run() {
         // Read the config file
-        let config
+        const config = new Config('hereditas.json')
         try {
-            config = await ReadConfig()
+            await config.load()
         }
         catch (e) {
             this.error(`The current directory ${process.cwd()} doesn't contain a valid Hereditas project`)
@@ -20,13 +20,13 @@ class BuildCommand extends Command {
         const startTime = Date.now()
 
         // Build the project
-        const build = new Builder(config)
-        await build.build()
+        const builder = new Builder(config)
+        await builder.build()
 
         // Done!
         const duration = (Date.now() - startTime) / 1000
 
-        if (!build.hasErrors) {
+        if (!builder.hasErrors) {
             this.log(`Finished building project in ${config.distDir} (took ${duration} seconds)`)
         }
         else {

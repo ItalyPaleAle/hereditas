@@ -16,10 +16,12 @@ const ConfigVersion = 20190222
  * @property {string} contentDir - Folder containing the source content
  * @property {string} distDir - Folder where to place the compiled project
  * @property {boolean} processMarkdown - If true, enable processing of Markdown files into HTML
- * @property {"pbkdf2"|"argon2"} kdf - Key derivation function to use: pbkdf2 (default) or argon2
  * @property {object} auth0 - Auth0 configuration
  * @property {string} auth0.domain - Auth0 domain/tenant (e.g. "myhereditas.auth0.com")
  * @property {string} auth0.hereditasClientId - Auth0 app client ID for Hereditas
+ * @property {"pbkdf2"|"argon2"} kdf - Key derivation function to use: pbkdf2 (default) or argon2
+ * @property {object} pbkdf2 - Configuration for pbkdf2
+ * @property {string} pbkdf2.iterations - Number of iterations
  * @property {string} webhookUrl - URL of the webhook to trigger when a new user logs into Hereditas.
  */
 
