@@ -4,7 +4,7 @@ const {Command} = require('@oclif/command')
 const Config = require('../../lib/Config')
 const Auth0Management = require('../../lib/Auth0Management')
 
-class SetupCommand extends Command {
+class Auth0SetupCommand extends Command {
     async run() {
         // Read the config file
         const config = new Config('hereditas.json')
@@ -36,7 +36,7 @@ class SetupCommand extends Command {
 }
 
 // Command description
-SetupCommand.description = `Create the application and rules in Auth0
+Auth0SetupCommand.description = `Create the application and rules in Auth0
 `
 
-module.exports = SetupCommand
+module.exports = Auth0SetupCommand

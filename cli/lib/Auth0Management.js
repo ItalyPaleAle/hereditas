@@ -135,11 +135,22 @@ class Auth0Management {
         return results.map((el) => el.id)
     }
 
+    /**
+     * List all rules configurations (only the keys, not values)
+     *
+     * @returns {Array} Array with all the rules configurations
+     * @async
+     */
     listRulesConfigs() {
         return this._management.rulesConfigs.getAll()
     }
 
-    updateRulesConfigs() {
+    /**
+     * Updates all rules configurations. This creates new configurations, and overwrites existing ones.
+     *
+     * @async
+     */
+    async updateRulesConfigs() {
         const rulesConfigs = {
             AUTH0_CLIENT_ID: this._config.get('auth0.managementClientId'),
             AUTH0_CLIENT_SECRET: this._config.get('auth0.managementClientSecret'),
@@ -153,7 +164,7 @@ class Auth0Management {
             promises.push(this._management.rulesConfigs.set({key}, {value}))
         }
 
-        return Promise.all(promises)
+        await Promise.all(promises)
     }
 }
 
