@@ -34,7 +34,9 @@ class InitCommand extends Command {
                 domain: flags.auth0Domain,
                 managementClientId: flags.auth0ClientId,
                 managementClientSecret: flags.auth0ClientSecret
-            }
+            },
+            urls: flags.url,
+            waitTime: 86400
         })
         await config.save()
 
@@ -72,6 +74,12 @@ InitCommand.flags = {
         char: 's',
         description: 'Auth0 client secret for the management app',
         required: true
+    }),
+    url: flags.string({
+        char: 'u',
+        description: 'URL where the app is deployed to, used for OAuth callbacks (multiple values supported)',
+        required: true,
+        multiple: true
     })
 }
 

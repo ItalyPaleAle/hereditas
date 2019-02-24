@@ -41,17 +41,15 @@ class Auth0Management {
             is_first_party: true,
             oidc_conformant: true,
             cross_origin_auth: false,
-            description: 'This application is managed by the Hereditas CLI. For information, see https://github.com/italypaleale/hereditas',
+            description: 'This application is managed by the Hereditas CLI. For information, see https://hereditas.app',
             logo_uri: '',
             sso: false,
-            callbacks: [
-                'http://localhost:5000'
-            ],
+            callbacks: this._config.get('urls'),
             allowed_logout_urls: [],
             allowed_clients: [],
             client_metadata: {
                 requestTime: '0',
-                waitTime: '86400',
+                waitTime: this._config.get('waitTime') + '', // Cast as string
                 hereditas: '1'
             },
             allowed_origins: [],

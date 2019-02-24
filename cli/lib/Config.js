@@ -9,6 +9,14 @@ const SMHelper = require('smhelper')
 const ConfigVersion = 20190222
 
 /**
+ * Authorized users
+ *
+ * @typedef {object} HereditasUser
+ * @property {string} email - Email address
+ * @property {"user"|"owner"} role - Role: "user" or "owner"
+ */
+
+/**
  * Configuration dictionary for Hereditas
  *
  * @typedef {object} HereditasConfig
@@ -19,10 +27,16 @@ const ConfigVersion = 20190222
  * @property {object} auth0 - Auth0 configuration
  * @property {string} auth0.domain - Auth0 domain/tenant (e.g. "myhereditas.auth0.com")
  * @property {string} auth0.hereditasClientId - Auth0 app client ID for Hereditas
+ * @property {string} auth0.managementClientId - Client ID for the Auth0 Management app
+ * @property {string} auth0.managementClientSecret - Client Secret for the Auth0 Management app
+ * @property {Array<string>} rules - ID of the Auth0 rules created by the Hereditas CLI
  * @property {"pbkdf2"|"argon2"} kdf - Key derivation function to use: pbkdf2 (default) or argon2
  * @property {object} pbkdf2 - Configuration for pbkdf2
  * @property {string} pbkdf2.iterations - Number of iterations
  * @property {string} webhookUrl - URL of the webhook to trigger when a new user logs into Hereditas.
+ * @property {Array<HereditasUser>} users - List of users
+ * @property {number} waitTime - The amount of time, in seconds, to wait before Auth0 can return to users the app token.
+ * @property {Array<string>} urls - list of URLs where your app will be deployed to, e.g. `https://hereditas.example.com`, or `https://myname.blob.core.windows.net/hereditas`, etc; this is used for OAuth redirects.
  */
 
 /**
@@ -171,6 +185,9 @@ class Config {
         }
         if (!this._userConfig.auth0.domain) {
             throw Error('Config file is missing required key auth0.domain')
+        }
+        if (!this._userConfig.urls || !Array.isArray(this._userConfig.urls) || !this._userConfig.urls.length) {
+            throw Error('Config file is missing required key urls')
         }
 
         return true
