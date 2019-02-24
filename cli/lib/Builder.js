@@ -4,14 +4,14 @@ const fs = require('fs')
 const crypto = require('crypto')
 const {Readable} = require('stream')
 const util = require('util')
-const Content = require('./content')
+const Content = require('./Content')
 const path = require('path')
 
 // Webpack
 const webpack = util.promisify(require('webpack'))
 const webpackConfig = require('../../app/webpack.config')
 
-// Promisified fs.readFile, fs.readdir, fs.stat and fs.unlink
+// Promisified fs.readdir, fs.stat and fs.unlink
 const readdirPromise = util.promisify(fs.readdir)
 const statPromise = util.promisify(fs.stat)
 const unlinkPromise = util.promisify(fs.unlink)
@@ -82,7 +82,7 @@ class Builder {
         const appParams = {
             distDir: this._config.distDir,
             authIssuer: 'https://' + this._config.auth0.domain,
-            authClientId: this._config.auth0.clientId,
+            authClientId: this._config.auth0.hereditasClientId,
             idTokenNamespace: 'https://hereditas.app',
             indexTag: this.indexTag,
             keySalt: this.keySalt,

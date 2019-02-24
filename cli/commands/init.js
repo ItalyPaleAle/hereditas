@@ -4,6 +4,7 @@ const {Command, flags} = require('@oclif/command')
 const fs = require('fs')
 const process = require('process')
 const path = require('path')
+const Config = require('../lib/Config')
 
 class InitCommand extends Command {
     async run() {
@@ -24,20 +25,18 @@ class InitCommand extends Command {
         fs.mkdirSync(contentDir)
         fs.mkdirSync(distDir)
 
-        // Configuration object
-        const configObject = {
-            version: 20190215,
+        // Create configuration
+        const config = new Config('hereditas.json')
+        config.create({
             distDir: distDir,
             contentDir: contentDir,
-            processMarkdown: true,
             auth0: {
                 domain: flags.auth0Domain,
-                clientId: flags.auth0ClientId
+                managementClientId: flags.auth0ClientId,
+                managementClientSecret: flags.auth0ClientSecret
             }
-        }
-
-        // Create a config file
-        fs.writeFileSync('hereditas.json', JSON.stringify(configObject, null, 2))
+        })
+        await config.save()
 
         this.log('Project initialized')
     }
@@ -66,7 +65,12 @@ InitCommand.flags = {
     }),
     auth0ClientId: flags.string({
         char: 'c',
-        description: 'Auth0 application client id',
+        description: 'Auth0 client ID for the management app',
+        required: true
+    }),
+    auth0ClientSecret: flags.string({
+        char: 's',
+        description: 'Auth0 client secret for the management app',
         required: true
     })
 }

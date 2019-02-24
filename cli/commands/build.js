@@ -2,7 +2,7 @@
 
 const {Command} = require('@oclif/command')
 const {ReadConfig} = require('../lib/utils')
-const Builder = require('../lib/builder')
+const Builder = require('../lib/Builder')
 
 class BuildCommand extends Command {
     async run() {

@@ -10,6 +10,9 @@
 Hereditas, which means *inheritance* in Latin, is a static website generator that builds "digital legacy boxes", where you can store information (passwords, cryptographic secrets for files and cryptocurrencies, sensitive documents) for your relatives to access in case you die or disappear.
 
 <!-- toc -->
+* [Hereditas](#hereditas)
+* [Warning: alpha quality software](#warning-alpha-quality-software)
+* [Why Hereditas?](#why-hereditas)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -124,8 +127,20 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`hereditas build`](#hereditas-build)
 * [`hereditas help [COMMAND]`](#hereditas-help-command)
 * [`hereditas init`](#hereditas-init)
+
+## `hereditas build`
+
+Builds an Hereditas project
+
+```
+USAGE
+  $ hereditas build
+```
+
+_See code: [cli/commands/build.js](https://github.com/ItalyPaleAle/hereditas/blob/v0.1.0/cli/commands/build.js)_
 
 ## `hereditas help [COMMAND]`
 
@@ -142,23 +157,23 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
 
 ## `hereditas init`
 
-Describe the command here
+Initializes a new Hereditas project
 
 ```
 USAGE
   $ hereditas init
 
 OPTIONS
-  -n, --name=name  name to print
-
-DESCRIPTION
-  ...
-  Extra documentation goes here
+  -c, --auth0ClientId=auth0ClientId          (required) Auth0 client ID for the management app
+  -d, --auth0Domain=auth0Domain              (required) Auth0 domain/tenant (e.g. "myhereditas.auth0.com")
+  -i, --content=content                      [default: content] Path of the directory with content
+  -o, --dist=dist                            [default: dist] Path of the dist directory (where output is saved)
+  -s, --auth0ClientSecret=auth0ClientSecret  (required) Auth0 client secret for the management app
 ```
 
-_See code: [src/commands/init.js](https://github.com/ItalyPaleAle/hereditas/blob/v0.1.0/src/commands/init.js)_
+_See code: [cli/commands/init.js](https://github.com/ItalyPaleAle/hereditas/blob/v0.1.0/cli/commands/init.js)_
 <!-- commandsstop -->
