@@ -41,7 +41,7 @@ class Auth0Management {
             is_first_party: true,
             oidc_conformant: true,
             cross_origin_auth: false,
-            description: 'This application is managed by the Hereditas CLI',
+            description: 'This application is managed by the Hereditas CLI. For information, see https://github.com/italypaleale/hereditas',
             logo_uri: '',
             sso: false,
             callbacks: [
@@ -51,7 +51,6 @@ class Auth0Management {
             allowed_clients: [],
             client_metadata: {
                 requestTime: '0',
-                token: 'hello world',
                 waitTime: '86400',
                 hereditas: '1'
             },
@@ -164,6 +163,7 @@ class Auth0Management {
      */
     async updateRulesConfigs() {
         const rulesConfigs = {
+            APP_TOKEN: 'hello world',
             AUTH0_CLIENT_ID: this._config.get('auth0.managementClientId'),
             AUTH0_CLIENT_SECRET: this._config.get('auth0.managementClientSecret'),
             WEBHOOK_URL: this._config.get('webhookUrl')

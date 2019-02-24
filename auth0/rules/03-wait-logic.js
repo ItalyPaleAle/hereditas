@@ -27,7 +27,7 @@ function (user, context, callback) {
         if (context.idToken) {
             context.idToken['https://hereditas.app'] = {
                 role: 'owner',
-                token: context.clientMetadata.token,
+                token: configuration.APP_TOKEN,
                 requestTime: 0,
                 waitTime: waitTime
             };
@@ -62,7 +62,7 @@ function (user, context, callback) {
             if (context.idToken) {
                 // If the wait time has passed, add the token
                 const token = ((requestTime + waitTime) < now) ?
-                    context.clientMetadata.token :
+                    configuration.APP_TOKEN :
                     null;
                 // Enrich the JWT
                 context.idToken['https://hereditas.app'] = {
