@@ -27,7 +27,7 @@ class BuildCommand extends Command {
         const duration = (Date.now() - startTime) / 1000
 
         if (!builder.hasErrors) {
-            this.log(`Finished building project in ${config.distDir} (took ${duration} seconds)`)
+            this.log(`Finished building project in ${config.get('distDir')} (took ${duration} seconds)`)
         }
         else {
             this.error(`Build failed (took ${duration} seconds)`)

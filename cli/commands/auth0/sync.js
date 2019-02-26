@@ -20,11 +20,11 @@ class Auth0SetupCommand extends Command {
         const auth0Management = new Auth0Management(config)
 
         // First step: sync the app on Auth0
-        const clientId = await auth0Management.createClient()
+        const clientId = await auth0Management.syncClient(config.get('auth0.hereditasClientId'))
         config.set('auth0.hereditasClientId', clientId)
 
         // Second step: create the rules
-        const ruleIds = await auth0Management.createRules()
+        const ruleIds = await auth0Management.syncRules(config.get('auth0.rules'))
         config.set('auth0.rules', ruleIds)
 
         // Third step: create rule settings

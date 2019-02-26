@@ -42,7 +42,7 @@ UserRmCommand.description = `Adds an authorized user to the app
 UserRmCommand.flags = {
     email: flags.string({
         char: 'e',
-        description: 'Email address of the user to whitelist',
+        description: 'Email address of the user to remove from whitelist',
         required: true
     })
 }

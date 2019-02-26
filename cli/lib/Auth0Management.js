@@ -30,43 +30,70 @@ class Auth0Management {
     }
 
     /**
+     * Ensures that we have a client (application) on Auth0 whose configuration matches the desired one. If a client ID is passed, the method checks if the client exists and updates it; otherwise, it will create a new client.
+     *
+     * @param {string} [clientId] - Auth0 client (application) ID
+     * @returns {string} Client ID of the application (either new or updated)
+     */
+    async syncClient(clientId) {
+        // Check if we already have a client and it exists
+        if (clientId) {
+            // Check if it exists; if it does, update the data
+            let data
+            try {
+                data = await this.getClient(clientId)
+            }
+            catch (err) {
+                // If the exception is because the client doesn't exist, all good; otherwise, re-throw it
+                if (err.toString().match(/Not Found/i)) {
+                    data = null
+                }
+                else {
+                    throw err
+                }
+            }
+
+            // If we have an existing client, update it
+            if (data) {
+                this.updateClient(clientId)
+            }
+            else {
+                clientId = undefined
+            }
+        }
+
+        // If client doesn't exist, create it
+        if (!clientId) {
+            clientId = await this.createClient()
+        }
+
+        return clientId
+    }
+
+    /**
+     * Updates a client (application) on Auth0 so the configuration matches the desired one.
+     *
+     * @param {string} clientId - Auth0 client (application) ID
+     * @returns {string} Client ID of the updated application
+     */
+    async updateClient(clientId) {
+        const params = {
+            client_id: clientId
+        }
+        const result = await this._management.clients.update(params, this._clientConfiguration())
+        if (result) {
+            return result.client_id
+        }
+    }
+
+    /**
      * Create the client (application) on Auth0.
      *
      * @returns {string} Client ID of the new application
      */
     async createClient() {
-        // Configuration for the client
-        const data = {
-            name: 'Hereditas',
-            is_first_party: true,
-            oidc_conformant: true,
-            cross_origin_auth: false,
-            description: 'This application is managed by the Hereditas CLI. For information, see https://hereditas.app',
-            logo_uri: '',
-            sso: false,
-            callbacks: this._config.get('urls'),
-            allowed_logout_urls: [],
-            allowed_clients: [],
-            client_metadata: {
-                requestTime: '0',
-                waitTime: this._config.get('waitTime') + '', // Cast as string
-                hereditas: '1'
-            },
-            allowed_origins: [],
-            jwt_configuration: {
-                alg: 'RS256',
-                lifetime_in_seconds: 1800,
-                secret_encoded: false
-            },
-            token_endpoint_auth_method: 'none',
-            app_type: 'spa',
-            grant_types: [
-                'implicit'
-            ]
-        }
-
         // Create the client
-        const result = await this._management.clients.create(data)
+        const result = await this._management.clients.create(this._clientConfiguration())
         if (result) {
             return result.client_id
         }
@@ -78,11 +105,44 @@ class Auth0Management {
      * @param {string} clientId - Client ID
      */
     async getClient(clientId) {
-        const data = await this._management.clients.get(clientId)
-        if (!data || !data[0]) {
+        const data = await this._management.clients.get({client_id: clientId})
+        if (!data || data.client_id != clientId) {
             return null
         }
-        return data[0]
+        return data
+    }
+
+    /**
+     * Ensures that the rules Hereditas needs are present in Auth0, and re-creates them so they're on the last version of the configuration and code.
+     *
+     * @param {Array<string>} [ruleIds] - List of rules already created by Hereditas (if any)
+     * @returns {Array<string>} New list of rules managed by Hereditas
+     */
+    async syncRules(ruleIds) {
+        // First, check if the rules still exist
+        if (ruleIds && ruleIds.length) {
+            const rules = await this.listRules()
+            if (rules && Array.isArray(rules) && rules.length) {
+                // Delete all rules from the array that still exist
+                const promises = []
+                for (let i = 0; i < rules.length; i++) {
+                    const el = rules[i]
+                    if (!el || !el.id) {
+                        continue
+                    }
+
+                    if (ruleIds.indexOf(el.id) != -1) {
+                        promises.push(this._management.rules.delete({id: el.id}))
+                    }
+                }
+
+                // Await all requests in parallel
+                await Promise.all(promises)
+            }
+        }
+
+        // Lastly, re-create all rules and return the new IDs
+        return this.createRules()
     }
 
     /**
@@ -175,6 +235,41 @@ class Auth0Management {
         }
 
         await Promise.all(promises)
+    }
+
+    /**
+     * Returns the configuration object for a client (application) on Auth0.
+     *
+     * @returns {Object} Configuration object for the client (application) on Auth0
+     */
+    _clientConfiguration() {
+        return {
+            name: 'Hereditas',
+            is_first_party: true,
+            oidc_conformant: true,
+            cross_origin_auth: false,
+            description: 'This application is managed by the Hereditas CLI. For information, see https://hereditas.app',
+            logo_uri: '',
+            sso: false,
+            callbacks: this._config.get('urls'),
+            allowed_logout_urls: [],
+            allowed_clients: [],
+            client_metadata: {
+                requestTime: '0',
+                waitTime: this._config.get('waitTime') + '', // Cast as string
+                hereditas: '1'
+            },
+            allowed_origins: [],
+            jwt_configuration: {
+                alg: 'RS256',
+                lifetime_in_seconds: 1800
+            },
+            token_endpoint_auth_method: 'none',
+            app_type: 'spa',
+            grant_types: [
+                'implicit'
+            ]
+        }
     }
 }
 
