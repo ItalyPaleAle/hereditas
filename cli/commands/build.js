@@ -3,6 +3,7 @@
 const {Command} = require('@oclif/command')
 const Config = require('../lib/Config')
 const Builder = require('../lib/Builder')
+const {cli} = require('cli-ux')
 
 class BuildCommand extends Command {
     async run() {
@@ -16,11 +17,18 @@ class BuildCommand extends Command {
             return this.exit(1)
         }
 
+        // Ask for the user passphrase
+        const passphrase = await cli.prompt('User passphrase', {type: 'mask'})
+        if (!passphrase || passphrase.length < 8) {
+            this.error('Passphrase needs to be at least 8 characters long')
+            return this.exit(1)
+        }
+
         // Timer
         const startTime = Date.now()
 
         // Build the project
-        const builder = new Builder(config)
+        const builder = new Builder(passphrase, config)
         await builder.build()
 
         // Done!

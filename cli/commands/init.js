@@ -2,6 +2,7 @@
 
 const {Command, flags} = require('@oclif/command')
 const fs = require('fs')
+const util = require('util')
 const process = require('process')
 const path = require('path')
 const Config = require('../lib/Config')
@@ -12,7 +13,7 @@ class InitCommand extends Command {
         const {flags} = this.parse(InitCommand)
 
         // Check if the folder is empty
-        const files = fs.readdirSync('.')
+        const files = await util.promisify(fs.readdir)('.')
         if (files.length) {
             this.error(`Directory ${process.cwd()} isn't empty; aborting`)
             return this.exit(1)
@@ -23,8 +24,9 @@ class InitCommand extends Command {
         const distDir = path.relative('', flags.dist)
 
         // Create the directories
-        fs.mkdirSync(contentDir)
-        fs.mkdirSync(distDir)
+        const mkdirPromise = util.promisify(fs.mkdir)
+        await mkdirPromise(contentDir)
+        await mkdirPromise(distDir)
 
         // Generate an appToken
         const appToken = await GenerateToken(21)

@@ -38,13 +38,14 @@ const randomBytesPromise = util.promisify(crypto.randomBytes)
 class Builder {
     /**
      * Initializes the object
+     * @param {string} passphrase - User passphrase
      * @param {Config} config - Config object
      */
-    constructor(config) {
+    constructor(passphrase, config) {
         // Store config in the object
         this._config = config
 
-        this._passphrase = 'hello'
+        this._passphrase = passphrase
 
         // Output
         this.keySalt = null
