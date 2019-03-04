@@ -56,7 +56,24 @@
     "bin": "hereditas",
     "plugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "topics": {
+      "auth0": {
+        "description": "interact with Auth0 to configure the Hereditas client"
+      },
+      "url": {
+        "description": "manage URLs where the Hereditas box will be deployed, which are used for OAuth callbacks"
+      },
+      "user": {
+        "description": "manage the list of owners and users of the Hereditas box"
+      },
+      "wait-time": {
+        "description": "manage the waitTime setting of the hereditas.json file"
+      },
+      "webhook": {
+        "description": "manage the webhook setting of the hereditas.json file"
+      }
+    }
   },
   "repository": "ItalyPaleAle/hereditas",
   "scripts": {

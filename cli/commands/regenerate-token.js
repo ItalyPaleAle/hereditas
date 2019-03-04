@@ -26,7 +26,11 @@ class RegenerateTokenCommand extends Command {
 }
 
 // Command description
-RegenerateTokenCommand.description = `Generates a new app token in the configuration
+RegenerateTokenCommand.description = `regenerate the application token
+
+Update the "application token", which is part of the encryption key, in the hereditas.json config file, by generating a new random one.
+
+After running this command, you will need to build a new box with \`hereditas build\` and then synchronize the changes on Auth0 with \`hereditas auth0:sync\`.
 `
 
 module.exports = RegenerateTokenCommand

@@ -38,7 +38,9 @@ class Auth0SetupCommand extends Command {
 }
 
 // Command description
-Auth0SetupCommand.description = `Create the application and rules in Auth0
+Auth0SetupCommand.description = `sync the application and rules in Auth0
+
+Synchronizes the status of the resources configured in Auth0: the client (application), the rules and the rule settings.
 `
 
 module.exports = Auth0SetupCommand

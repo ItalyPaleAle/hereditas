@@ -43,7 +43,16 @@ class UrlAddCommand extends Command {
 }
 
 // Command description
-UrlAddCommand.description = `Adds URLs where the app is deployed to, used for OAuth callbacks
+UrlAddCommand.description = `add URLs where the box is deployed to, used for OAuth callbacks
+
+Add one or more URLs to the list of addresses where the Hereditas box is deployed to. This information is stored on Auth0 to whitelist URLs where users are redirected after a successful authentication. Note that the protocol (\`http://\` or \`https://\`) needs to match too.
+
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\`.
+`
+
+// Usage example
+UrlAddCommand.usage = `url:add \\
+   --url "https://my.testhereditas.app"
 `
 
 // Command-line options

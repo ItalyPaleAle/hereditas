@@ -44,7 +44,9 @@ class BuildCommand extends Command {
 }
 
 // Command description
-BuildCommand.description = `Builds an Hereditas project
+BuildCommand.description = `build a Hereditas project
+
+Build a Hereditas project in the current working directory.
 `
 
 module.exports = BuildCommand

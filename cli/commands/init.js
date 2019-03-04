@@ -52,19 +52,30 @@ class InitCommand extends Command {
 }
 
 // Command description
-InitCommand.description = `Initializes a new Hereditas project
+InitCommand.description = `initialize a new Hereditas project in the current working directory.
+
+Initialize a new Hereditas project in the current working directory, creating the folders for the content and the generated data, as well as the "hereditas.json" configuration file.
+The current working directory needs to be empty, or the command will raise an error.
+`
+
+// Usage example
+InitCommand.usage = `init \\
+   --auth0domain "yourdomain.auth0.com" \\
+   --auth0ClientId "..." \\
+   --auth0ClientSecret "..." \\
+   --url "https://my.testhereditas.app"
 `
 
 // Command-line options
 InitCommand.flags = {
     content: flags.string({
         char: 'i',
-        description: 'Path of the directory with content',
+        description: 'path of the directory with the content',
         default: 'content'
     }),
     dist: flags.string({
         char: 'o',
-        description: 'Path of the dist directory (where output is saved)',
+        description: 'path of the dist directory (where output is saved)',
         default: 'dist'
     }),
     auth0Domain: flags.string({
