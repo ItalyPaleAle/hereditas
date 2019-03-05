@@ -2,7 +2,9 @@
 testfolder
 
 
+
 # Created by https://www.gitignore.io/api/node,macos,linux,windows,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=node,macos,linux,windows,visualstudiocode
 
 ### Linux ###
 *~
@@ -70,7 +72,7 @@ coverage
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
 # Bower dependency directory (https://bower.io/)
@@ -106,6 +108,7 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -120,7 +123,13 @@ typings/
 .vuepress/dist
 
 # Serverless directories
-.serverless
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
 
 ### VisualStudioCode ###
 .vscode/*
@@ -128,6 +137,10 @@ typings/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -153,6 +166,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
 
 # End of https://www.gitignore.io/api/node,macos,linux,windows,visualstudiocode
