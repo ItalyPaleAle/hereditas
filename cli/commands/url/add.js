@@ -47,7 +47,7 @@ UrlAddCommand.description = `add URLs where the box is deployed to, used for OAu
 
 Add one or more URLs to the list of addresses where the Hereditas box is deployed to. This information is stored on Auth0 to whitelist URLs where users are redirected after a successful authentication. Note that the protocol (\`http://\` or \`https://\`) needs to match too.
 
-After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\`.
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\` (it's not necessary to re-build or re-deploy the box).
 `
 
 // Usage example
@@ -59,7 +59,7 @@ UrlAddCommand.usage = `url:add \\
 UrlAddCommand.flags = {
     url: flags.string({
         char: 'u',
-        description: 'URL where the app is deployed to (multiple values supported)',
+        description: 'URL where the box is deployed to (multiple values supported)',
         required: true,
         multiple: true
     })

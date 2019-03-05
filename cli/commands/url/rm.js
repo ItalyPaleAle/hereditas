@@ -41,7 +41,16 @@ class UrlRmCommand extends Command {
 }
 
 // Command description
-UrlRmCommand.description = `Removes URL(s) from the configuration
+UrlRmCommand.description = `removes URL(s) from the configuration
+
+These URLs are used by Auth0 to whitelist the pages users are redirected to after authenticating.
+
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\` (it's not necessary to re-build or re-deploy the box).
+`
+
+// Usage example
+UrlRmCommand.usage = `url:rm \\
+   --url "https://my.testhereditas.app"
 `
 
 // Command-line options

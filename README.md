@@ -1,179 +1,59 @@
 # Hereditas
 
-
-
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/hereditas.svg)](https://npmjs.org/package/hereditas)
 [![Downloads/week](https://img.shields.io/npm/dw/hereditas.svg)](https://npmjs.org/package/hereditas)
 [![License](https://img.shields.io/npm/l/hereditas.svg)](https://github.com/ItalyPaleAle/hereditas/blob/master/package.json)
 
-Hereditas, which means *inheritance* in Latin, is a static website generator that builds "digital legacy boxes", where you can store information (passwords, cryptographic secrets for files and cryptocurrencies, sensitive documents) for your relatives to access in case you die or disappear.
+Hereditas, which means *inheritance* in Latin, is a static website generator that builds fully-trustless "digital legacy boxes", where you can store information for your relatives to access in case of your sudden disappearance. For example, you could use this to pass information such as passwords, cryptographic keys, cryptocurrency wallets, sensitive documents, etc.
 
-<!-- toc -->
-* [Hereditas](#hereditas)
-* [Warning: alpha quality software](#warning-alpha-quality-software)
-* [Why Hereditas?](#why-hereditas)
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+## Warning: alpha quality software
 
-# Warning: alpha quality software
-
-**Hereditas is currently alpha quality software; use at your own risk.** While we've developed Hereditas with security always as the top priority, this software leverages a lot of cryptographic primitives that are hard to use right. We won't release a stable (e.g. "1.0") version of Hereditas until we're confident that enough people and cryptography experts have audited and improved the code.
+**Hereditas is currently alpha quality software; use at your own risk.** While we've developed Hereditas with security always as the top priority, this software leverages a lot of cryptographic primitives under the hood. We won't release a stable (e.g. "1.0") version of Hereditas until we're confident that enough people and cryptography experts have audited and improved the code.
 
 **Your help is highly appreciated.** If you are an expert on security or cryptography, please help us reviewing the code and let us know what you think - including if everything looks fine, or if you found a bug.
 
-TODO: Email address for confidential communication.
+Responsible disclosure: if you believe you've found a security issue that could compromise current users of Hereditas, please send a confidential email to `security` [at] `hereditas` [dot] `app`.
 
-# Why Hereditas?
+## About Hereditas
 
-> Note: in this section we're writing about life, death and relationships in a very pragmatic way (in short, in the way a software developer would).
+Hereditas is a static website generator, that takes text you write (including Markdown), images and other files, then encrypts them in a safe way and outputs a static HTML5 app that you can serve from anywhere.
 
-What happens after you die or suddenly disappear? All countries, cultures and religions have laws or customs for dealing with your legacy, including your physical inheritance (your wealth) as well as your moral one. However, there's a new kind of legacy we're totally not prepared for: our digital one. As we rely more and more on technology and the Internet, we are also protecting our digital assets with passcodes, passwords or biometrics like fingerprints, which are challenging to pass along.
+### Design
 
-How will your partners, children, or other loved people, get access to your digital life when your die? How will they get to access your photos on the cloud, your assets invested in cryptocurrencies, or your online profiles?
+We've designed Hereditas with three principles in mind:
 
-Some persons decide to share their passwords with their significant others, like husbands or wives. Security experts would argue that this is a potentially insecure behavior, as the more people knowing your passwords (or having them stored somewhere), the more likely it is that they could get stolen. When people share passwords, then, they're harder to change, and it is more challenging to use Multi-Factor Authentication.
+* **Trustless**: With Hereditas, you don't need to trust any person or provider. No other person or company has standing access to your data. If a person wants access to your data, they first need to be authorized by you (by whitelisting their email address and giving them the "passphrase"). Additionally, after requesting access to your data, you are given a certain amount of time (e.g. one day or more) before they can unlock the box.
+* **Simple to browse:** We designed Hereditas so it's simple to use for your loved ones, when they need to access your digital legacy box, even if they are not tech wizards. A web browser is all they need.
+* **No expensive and/or time-consuming maintenance:** You don't want to rely on a solution that you'll have to keep paying and/or patching for the rest of your life (literally). Hereditas outputs a static HTML5 that you can host anywhere you'd like, often for free, or almost.
 
-There are ways to mitigate these risks (e.g. sharing a password manager), but they're not risk-free either. For example, your relationship might end, abrutedly and in a non-friendly way, and your (ex) partner who has access to your passwords could damage you, your reputation and your finances significantly. Even if you have full trust in your significant other and you believe that your relationship will never end, you need to realize that a single other person having access to your life is still not enough redudancy; and adding a third person or more would just amplify the security risks even further.
+### Requirements
 
-Hereditas is not the first solution that tries to solve the problem of your digital legacy with code. However, we believe Hereditas' innovation is in the fact that it doesn't require you to trust another person or provider, and that once you set it up, it will require virtually no investment of money or time to keep running.
+Hereditas is a static site generator. In order for its full functionality to work, you will need just three things:
 
-## How is Hereditas different?
+1. A place where to host static HTML5 apps (HTML, JavaScript, CSS files, plus your encrypted content) serving it over HTTP(S).
+    * Since all of your data is encrypted, Hereditas boxes are designed to be deployed on publicly-accessible endpoints, safely.
+    * This could be an object storage service like [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html) or [Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website); or, you can use any other solution you'd like, as long as it can serve pages over HTTP(S).
+    * While possible, we do not recommend deploying Hereditas on a cloud server or VPS (*what would happen if your credit card got canceled?*), nor inside a server in your home (*would your relatives know how to easily access it from within your LAN?*). Ultimately, however, it's up to you, and to the trust you put in the technical skills of your loved ones.
+2. A (free) [Auth0](https://auth0.com/) account. This is used by Hereditas to ensure that only authorized users can access your data, and only after a certain amount of time after the first request.
+3. An [IFTTT](https://ifttt.com/) account (free). This is optional, but highly recommended. This is used to notify you when users log into your Hereditas box, so you know when the unlock timer starts and gives you a chance to stop it.
 
-Hereditas is a static website generator, that takes text you write (including Markdown) and other files, encrypts them in a safe way and outputs a static HTML5 app that you can serve from anywhere.
+### Security model
 
-Hereditas is different from other solutions thanks to the following design qualities:
+1. Hereditas (the static site generator) encrypts all your sensitive data with AES-256-GCM, a symmetric cryptography algorithm that is industry-standard for encrypting data.
+2. The data is encrypted using a key derived from the *user passphrase* and the *application token*, two strings that are concatenated together.
+    * The *user passphrase* needs to be manually typed by the owner when encrypting the data, and by the users before the can unlock the box on the Hereditas app. The owner can choose any passphrase they want, as long as it's longer than 8 characters.
+    * The *application token* is unique to each Hereditas box and stored in the `hereditas.json` configuration file. By default, Hereditas generates it when the `hereditas init` command is executed (and can be re-generated with `hereditas regenerate-token`), by getting 21 random bytes with Node.js' [`crypto.randomBytes()`](https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback) then encoding it as base64. The application token is then stored inside Auth0 as a ["rule setting"](https://auth0.com/docs/rules/guides/configuration), and it's returned in the JWT token only when appropriate (see below).
+3. The cryptographic key is derived from the concatenated string with [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2), which is a key derivation function based on SHA-512 that is more resistant to brute-force attacks. It uses a number of iterations that can be set in the `hereditas.json` config file, with a default of 100,000. Additionally, it uses a salt that is re-generated on each new build of Hereditas (each time you run `hereditas build`) and then stored unencrypted inside the app's JavaScript files.
+4. When users open the generated app, they are redirected to Auth0 to authenticate themselves.
+    * Only users whose email address is explicitly whitelisted (using `hereditas user:add`) are allowed to log in. Users can authenticate with any social profile they want (e.g. Google or Facebook accounts), as long as the email address matches.
+    * Users can have two roles: *owner* and *user*.
+    * When an *owner* authenticates, Auth0 includes the *application token* in the JWT token every time. Thus, owners who also know the *user passphrase* can unlock their Hereditas boxes any time they want.
+    * When a normal (ie. non-owner) user authenticates the first time, Auth0 sets the time of the login in the Client Application setting, but does not return the *application token*.
+    * After a configurable amount of time, e.g. 24 hours, users can authenticate again, and Auth0 will include the *application token* in the JWT token. At this point, users can unlock the Hereditas box if they also know the *user passphrase*.
+    * If an *owner* authenticates, Auth0 resets any active timer, preventing users to unlock the Hereditas box when the owner is still around.
 
-* **Trustless**: With Hereditas, you don't need to trust any person or provider with having standing access to your data.
-* **Simple:** We designed Hereditas so it's simple to use for your loved ones, when they need to access your digital legacy box. A web browser is all they need.
-* **No expensive and/or time-consuming maintenance:** You don't want to rely on a solution that you'll have to pay for and/or patch for literally the rest of your life. Hereditas outputs a static HTML5 that you can host anywhere you'd like, often for free, or almost. For example, you could leverage an object storage service like AWS S3, Azure Blob Storage, or Google Cloud Storage; or, you can use any other solution you'd like, as long as it can serve pages over HTTP(S).
+The model above is what allows Hereditas to be fully trustless:
 
-## How does it work? (Quickstart)
-
-### First: collect all the content
-
-As the Owner of an Hereditas box, you start by assembling all the content you want to encrypt. This can include text/Markdown files, images, documents, etc.
-
-Things you might want to include:
-
-* The password to access your laptop and your phone/tablet/watch/etc.
-* The recovery key for your password manager, for example iCloud Keychain, 1Password, LastPass, KeePass, etc.
-* How to access your photos on an encryopted drive or cloud storage.
-* Useful encryption keys, inclduing keys for your cryptocurrency wallets.
-* Or, just a nice letter.
-
-This step is very personal, and Hereditas gives you total flexibility to decide what to include in your box.
-
-While it would technically work, we recommend that you don't store large amount of data, or data that chages frequently, inside an Hereditas box. In fact, every time you change any information, you'd have to re-encrypt and publish the entire box, which can be very time-consuming. For example, rather than including gigabytes of photos, store them in a safe place (encrypted drive, cloud storage, etc) and explain how to retrieve them. Or, instead of including every single password, just put the recovery key of your password manager.
-
-### Second: build and publish the static website
-
-After you've collected your data, generate the static website using the Hereditas CLI.
-
-TODO: Quickstart commands here
-
-Publish them anywhere you'd like. We recommend to leverage an external service, such as an object storage service (AWS S3, Azure Blob Storage, Google Cloud Storage) or another provider that can host and serve static websites. If you feel fancy, you could even pin them on IPFS.
-
-Our recommendation is to consider using services that are free (otherwise, what happens if your relatives cancel your credit card paying for the service after you die?) and that are off-premises. For example, if you were to store files on your server at home, your not-techie relatives might not be able to access (or even rebuild, if necessary) your network. Storing your data on more than one provider might not be a bad idea either, for redundancy.
-
-All files are encrypted using industry-standard AES-256, so your date is safe even if it's stored in a public place.
-
-Hereditas relies on some external services that are necessary for it to work. You'll need an Auth0 account, as well as an IFTTT one. Both are free to use, and neither of them is given access to your data.
-
-### Third: tell your loved ones how to access your Hereditas box
-
-After you've built and published your Hereditas box, prepare a document telling your loved ones how they can access it when they need it. This document should contain both and only the passphrase and the URL(s) of the static app.
-
-You can email this information to them, or print it somewhere, or both.
-
-The passphrase alone isn't enough to decrypt your Hereditas box, so
-
-## What happens after you disappear?
-
-In case of your death or disappearance, your loved ones can visit the URL of your Hereditas box and log in (through Auth0) using one of their social accounts you've whitelisted before (e.g. their Google or Facebook accounts).
-
-At that point, a timer is started. As the Owner of the Hereditas box, you'll receive a notification (via IFTTT - could be a text message, an email, phone call...). You have a certain amount of time (e.g. 24 hours) to log into the same app using your "Owner account".
-
-If the Owner doesn't log in, after the time interval is over your Hereditas box becomes "unlocked", and your loved ones will have full access to the data inside it.
-
-## How does Hereditas protect your data?
-
-We've designed Hereditas so that the data is fully encrypted and no person or provider (besides you) has standing access to it.
-
-* Your data is encrypted with a key consisting of two parts: a user passphrase that you give to your loved ones, and a "token" stored inside Auth0.
-* An encryption key is then derived by concatenating the passphrase (which is in your loved ones' hands) and the token (which is inside Auth0), and then use a key derivation function like PBKDF2 or Argon2 (configurable at compile time).
-* Your loved ones aren't able to decrypt your data just by using the passphrase you provide them. Likewise, Auth0 can't decrypt your data with the token alone, and they never see the user passphrase.
-* Auth0 is used to maintain a "timer". When someone who is not an Owner logs into the static app, a timer is started. The Owner receives a notification, which is triggered by a Webhook to IFTTT, and has a certain amount of time (e.g. 24 hours) to log in and stop the timer.
-* You should set the interval before your data is unlocked considering the longest time you could be without access to your phone (where you get the log in notifications) and the Internet (to log into your app).
-* After the interval is over without the Owner stopping the timer, Auth0 will start including the token in the claims when your users authenticate with your app. With the passphrase typed by the user inside the app (which is never transmitted anywhere), the Hereditas box can be unlocked.
-
-# Usage
-
-<!-- usage -->
-```sh-session
-$ npm install -g hereditas
-$ hereditas COMMAND
-running command...
-$ hereditas (-v|--version|version)
-hereditas/0.1.0 darwin-x64 node-v10.15.0
-$ hereditas --help [COMMAND]
-USAGE
-  $ hereditas COMMAND
-...
-```
-<!-- usagestop -->
-
-# Commands
-
-<!-- commands -->
-* [`hereditas build`](#hereditas-build)
-* [`hereditas help [COMMAND]`](#hereditas-help-command)
-* [`hereditas init`](#hereditas-init)
-
-## `hereditas build`
-
-Builds an Hereditas project
-
-```
-USAGE
-  $ hereditas build
-```
-
-_See code: [cli/commands/build.js](https://github.com/ItalyPaleAle/hereditas/blob/v0.1.0/cli/commands/build.js)_
-
-## `hereditas help [COMMAND]`
-
-display help for hereditas
-
-```
-USAGE
-  $ hereditas help [COMMAND]
-
-ARGUMENTS
-  COMMAND  command to show help for
-
-OPTIONS
-  --all  see all commands in CLI
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
-
-## `hereditas init`
-
-Initializes a new Hereditas project
-
-```
-USAGE
-  $ hereditas init
-
-OPTIONS
-  -c, --auth0ClientId=auth0ClientId          (required) Auth0 client ID for the management app
-  -d, --auth0Domain=auth0Domain              (required) Auth0 domain/tenant (e.g. "myhereditas.auth0.com")
-  -i, --content=content                      [default: content] Path of the directory with content
-  -o, --dist=dist                            [default: dist] Path of the dist directory (where output is saved)
-  -s, --auth0ClientSecret=auth0ClientSecret  (required) Auth0 client secret for the management app
-```
-
-_See code: [cli/commands/init.js](https://github.com/ItalyPaleAle/hereditas/blob/v0.1.0/cli/commands/init.js)_
-<!-- commandsstop -->
+1. Users, who are in possession of the *user passphrase*, cannot unlock Hereditas boxes without the *application token*.
+2. Auth0 stores only the *application token* and has no knowledge of the *user passphrase*. So, a malicious actor who could extract the *application token* from Auth0 would not be able to unlock the Hereditas box.
+3. Users need to wait a certain amount of time before they're allowed to unlock Hereditas boxes, and their owners can stop the timer by logging in themselves. This guarantees that ill-intentioned users won't be able to unlock Hereditas boxes.

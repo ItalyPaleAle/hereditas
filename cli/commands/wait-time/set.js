@@ -32,14 +32,25 @@ class WaitTimeSetCommand extends Command {
 }
 
 // Command description
-WaitTimeSetCommand.description = `Configures the wait time (delay normal users need to wait before they can unlock the Hereditas box)
+WaitTimeSetCommand.description = `configure the wait time
+
+This command sets the wait time (in seconds) for this Hereditas box.
+
+The wait time is the amount of time for normal users (that don't have the "owner" role) before they can unlock the Hereditas box. Auth0 will not provide users with the "application token" unless the wait time has passed since their first login, preventing them from having the information required to unlock the Hereditas box. If users with the "owner" role authenticate, the timer is automatically stopped.
+
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\` (it's not necessary to re-build or re-deploy the box).
+`
+
+// Usage example
+WaitTimeSetCommand.usage = `wait-time:set \\
+   --time 86400
 `
 
 // Command-line options
 WaitTimeSetCommand.flags = {
     time: flags.string({
         char: 't',
-        description: 'Wait time, in seconds',
+        description: 'wait time, in seconds',
         required: true,
     })
 }

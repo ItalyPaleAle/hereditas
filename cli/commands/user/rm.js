@@ -35,14 +35,23 @@ class UserRmCommand extends Command {
 }
 
 // Command description
-UserRmCommand.description = `Adds an authorized user to the app
+UserRmCommand.description = `remove an authorized user from this box
+
+Removes an email address from the list of those authorized to authenticate with Auth0 for this Hereditas box.
+
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\` (it's not necessary to re-build or re-deploy the box).
+`
+
+// Usage example
+UserRmCommand.usage = `user:rm \\
+   --email "someone@example.com"
 `
 
 // Command-line options
 UserRmCommand.flags = {
     email: flags.string({
         char: 'e',
-        description: 'Email address of the user to remove from whitelist',
+        description: 'email address of the user to remove from the whitelist',
         required: true
     })
 }

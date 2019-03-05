@@ -20,7 +20,11 @@ class WaitTimeGetCommand extends Command {
 }
 
 // Command description
-WaitTimeGetCommand.description = `Gets the current value for the wait time (delay normal users need to wait before they can unlock the Hereditas box)
+WaitTimeGetCommand.description = `get the current value for the wait time
+
+This command returns the current value for the wait time, in seconds.
+
+The wait time is the amount of time for normal users (that don't have the "owner" role) before they can unlock the Hereditas box. Auth0 will not provide users with the "application token" unless the wait time has passed since their first login, preventing them from having the information required to unlock the Hereditas box. If users with the "owner" role authenticate, the timer is automatically stopped.
 `
 
 module.exports = WaitTimeGetCommand

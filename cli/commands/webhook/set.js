@@ -25,14 +25,27 @@ class WebhookSetCommand extends Command {
 }
 
 // Command description
-WebhookSetCommand.description = `Sets the URL for the webhook to notify of new logins
+WebhookSetCommand.description = `set the webhook URL used to notify of new logins
+
+Hereditas configures Auth0 to send a notification when someone successfully authenticates into this Hereditas box. The notification can be used as a warning that the timer has started.
+
+Notifications are sent by invoking a webhook, which can then trigger any action you desire. See the Hereditas documentation for examples and ideas on how to use this feature.
+
+You can disable notifications by setting \`--url none\` when invoking this command.
+
+After running this command, you will need to synchronize the changes on Auth0 with \`hereditas auth0:sync\` (it's not necessary to re-build or re-deploy the box).
+`
+
+// Usage example
+WebhookSetCommand.usage = `webhook:set \\
+   --url "https://example.com/webhook/token/abc123XYZ"
 `
 
 // Command-line options
 WebhookSetCommand.flags = {
     url: flags.string({
         char: 'u',
-        description: 'Webhook url; set to "none" to remove',
+        description: 'webhook URL; set to "none" to remove',
         required: true,
     })
 }

@@ -25,7 +25,9 @@ class UrlListCommand extends Command {
 }
 
 // Command description
-UrlListCommand.description = `List URLs for the app
+UrlListCommand.description = `list URLs where the box is deployed to
+
+Shows the list of URLs where the Hereditas box is deployed to. This list is used by Auth0 to whitelist redirect URLs after users authenticate.
 `
 
 module.exports = UrlListCommand

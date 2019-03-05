@@ -46,15 +46,17 @@ class UserListCommand extends Command {
 }
 
 // Command description
-UserListCommand.description = `List users that are authorized to use the app
+UserListCommand.description = `list users that are authorized to authenticate with this box
+
+Prints the list of authorized users (email adddresses) and their role.
 `
 
 // Command-line options
 UserListCommand.flags = {
     role: flags.string({
         char: 'r',
-        options: ['user', 'owner', ''],
-        description: 'Filter by role: normal user or owner',
+        options: ['', 'user', 'owner'],
+        description: 'filter by role: user or owner (or none)',
         default: ''
     })
 }
