@@ -6,7 +6,7 @@ function (user, context, callback) {
     }
 
     // Skip if there's no webhook
-    if (!configuration || !configuration.WEBHOOK_URL) {
+    if (!configuration || !configuration.WEBHOOK_URL || configuration.WEBHOOK_URL === '0') {
         return callback(null, user, context);
     }
 
