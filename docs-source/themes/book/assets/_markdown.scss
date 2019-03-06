@@ -18,7 +18,7 @@ $block-border-radius: 0.15rem;
   b, optgroup, strong {
     font-weight: 700;
   }
-  
+
   a {
     text-decoration: none;
 
@@ -33,7 +33,7 @@ $block-border-radius: 0.15rem;
 
   p code {
     padding: 0 $padding-4;
-    background: $gray-100;
+    background: $gray-200;
     border-radius: $block-border-radius;
   }
 
@@ -54,7 +54,29 @@ $block-border-radius: 0.15rem;
     :last-child { margin-bottom: 0; }
   }
 
-  table tr td {
-    padding: $padding-8;
+  table tr {
+    font-size: $font-size-14;
+    td, th {
+      padding: $padding-8;
+    }
+  }
+
+  table {
+    tr {
+      td, th {
+        border-bottom: 1px solid $gray-200;
+        border-right: 1px solid $gray-200;
+
+        &:last-child {
+          border-right: none;
+        }
+      }
+
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+    }
   }
 }

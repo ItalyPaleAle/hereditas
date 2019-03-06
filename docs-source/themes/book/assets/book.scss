@@ -83,6 +83,17 @@ ul.pagination {
   }
 }
 
+code {
+  background-color: $gray-200;
+}
+
+// Reset code inside code blocks
+.highlight {
+  code {
+    background: none;
+  }
+}
+
 .container {
   min-width: $container-min-width;
   max-width: $container-max-width;

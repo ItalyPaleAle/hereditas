@@ -3,7 +3,7 @@ title: {{{commandName}}}
 type: docs
 ---
 
-# `hereditas {{{commandName}}}`
+# hereditas {{{commandName}}}
 
 {{{shortDescription}}}
 
