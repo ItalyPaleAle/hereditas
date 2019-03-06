@@ -42,7 +42,9 @@ const scanFolder = async (base, folder, result) => {
 
 const commandsPath = __dirname + '/../cli/commands/'
 const docTemplateFile = __dirname + '/content/cli/__template.md'
+const menuTemplateFile = __dirname + '/content/menu/__template.md'
 const docDestinationPath = __dirname + '/content/cli/'
+const menuDestinationPath = __dirname + '/content/menu/index.md'
 
 // Main entrypoint
 ;(async function generateCliDocs() {
@@ -127,11 +129,21 @@ const docDestinationPath = __dirname + '/content/cli/'
             flags
         }
         const rendered = Mustache.render(docTemplate, params)
-        await writeFilePromise(docDestinationPath + commandName.replace(':', '_') + '.md', rendered)
+        const outfileName = commandName.replace(':', '_') + '.md'
+        await writeFilePromise(docDestinationPath + outfileName, rendered)
 
-        // Return the name of the command, which will be used for the index
-        return commandName
+        // Return the name of the command and the file, which will be used for the index
+        return {
+            name: commandName,
+            path: outfileName
+        }
     })
     const index = await Promise.all(promises)
-    console.log(index)
+
+    // Use the index to build the menu
+    const menuTemplate = await readFilePromise(menuTemplateFile, 'utf8')
+    const menuRendered = Mustache.render(menuTemplate, {
+        index
+    })
+    await writeFilePromise(menuDestinationPath, menuRendered)
 })()

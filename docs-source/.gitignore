@@ -1,6 +1,8 @@
 # Generated files
 /content/cli/*.md
 !/content/cli/__template.md
+/content/menu/*.md
+!/content/menu/__template.md
 
 # Created by https://www.gitignore.io/api/hugo
 # Edit at https://www.gitignore.io/?templates=hugo
