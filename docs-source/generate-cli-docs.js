@@ -71,12 +71,60 @@ const docDestinationPath = __dirname + '/content/cli/'
             'hereditas ' + command.usage.trim() :
             'hereditas ' + commandName
 
+        // Flags
+        const flags = []
+        if (command.flags) {
+            // Iterate through the flags
+            for (const key in command.flags) {
+                if (!command.flags.hasOwnProperty(key) || !command.flags[key]) {
+                    continue
+                }
+                const flag = command.flags[key]
+
+                if (flag.type !== 'option') {
+                    // eslint-disable-next-line no-console
+                    console.warn('Skipping flag with type != "option"')
+                    continue
+                }
+
+                // Required
+                const required = flag.required ? '✓' : ''
+
+                // Flag name and character
+                let name = ['--' + key]
+                if (flag.char) {
+                    name.unshift('-' + flag.char)
+                }
+                name = '`' + name.join('`<br/>`') + '`'
+
+                // Type (including options)
+                const type = (flag.options) ?
+                    '`"' + flag.options.join('"`, `"') + '"`' :
+                    'string'
+
+                const defaultValue = (flag.default) ?
+                    '`"' + flag.default + '"`' :
+                    'none'
+
+                // Add the flag
+                flags.push({
+                    name,
+                    description: flag.description,
+                    required,
+                    defaultValue,
+                    type
+                })
+            }
+        }
+
         // Build the documentation file
         const params = {
             commandName,
             shortDescription,
             longDescription,
-            usage
+            usage,
+            hasFlags: !!flags.length,
+            flags
         }
         const rendered = Mustache.render(docTemplate, params)
         await writeFilePromise(docDestinationPath + commandName.replace(':', '_') + '.md', rendered)
