@@ -1,12 +1,13 @@
 baseURL: "https://hereditas.app/"
 languageCode: en-us
-title: Hereditas
+title: Hereditas Documentation
 
 # Ignore files
 ignoreFiles:
 - "\\.sh$"
 - "Makefile"
 - "Dockerfile"
+- "__template.md"
 
 # Enable all URLs to be relative, and make them end with ".html"
 relativeURLs: true
@@ -15,7 +16,7 @@ uglyurls: true
 
 # Book Theme is intended for documentation use, therefore it doesn't render taxonomy.
 # You can hide related warning with config below
-disableKinds: 
+disableKinds:
 - taxonomy
 - taxonomyTerm
 - section

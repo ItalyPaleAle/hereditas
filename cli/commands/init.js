@@ -55,6 +55,7 @@ class InitCommand extends Command {
 InitCommand.description = `initialize a new Hereditas project in the current working directory.
 
 Initialize a new Hereditas project in the current working directory, creating the folders for the content and the generated data, as well as the "hereditas.json" configuration file.
+
 The current working directory needs to be empty, or the command will raise an error.
 `
 

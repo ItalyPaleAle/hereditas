@@ -34,6 +34,7 @@
     "@oclif/dev-cli": "^1.21.2",
     "eslint": "^5.15.0",
     "globby": "^9.1.0",
+    "mustache": "^3.0.1",
     "serve": "^10.1.2"
   },
   "engines": {
