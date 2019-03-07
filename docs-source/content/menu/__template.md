@@ -5,6 +5,7 @@ headless: true
 {{=<% %>=}}
 
 * **Introduction**
+  * [What is Hereditas]({{< relref "/" >}})
   * [Security Model]({{< relref "/introduction/security-model.md" >}})
 * **Guides**
   * [Get started]({{< relref "/" >}})
@@ -16,4 +17,5 @@ headless: true
   * [<% name %>]({{< relref "/cli/<% path %>" >}})
 <%/ index %>
 * **Advanced topics**
-  * [Auth0 manual configuration]({{< relref "/" >}})
+  * [Auth0 manual configuration]({{< relref "/advanced/auth0-manual-configuration.md" >}})
+  * [Index file]({{< relref "/advanced/index-file.md" >}})

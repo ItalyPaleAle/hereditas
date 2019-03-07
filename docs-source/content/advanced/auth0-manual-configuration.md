@@ -1,4 +1,9 @@
-# Auth0
+---
+title: Auth0 manual configuration
+type: docs
+---
+
+# Auth0 manual configuration
 
 This folder contains configuration and rules for Auth0, which are crucial for the application to work successfully.
 
