@@ -165,9 +165,9 @@ class Auth0Management {
         // Read all scripts
         const readFilePromise = util.promisify(fs.readFile)
         const scripts = await Promise.all([
-            readFilePromise(path.resolve(__dirname, '../../auth0/rules/01-whitelist.js'), 'utf8'),
-            readFilePromise(path.resolve(__dirname, '../../auth0/rules/02-notify.js'), 'utf8'),
-            readFilePromise(path.resolve(__dirname, '../../auth0/rules/03-wait-logic.js'), 'utf8')
+            readFilePromise(path.resolve(__dirname, '../../auth0/01-whitelist.js'), 'utf8'),
+            readFilePromise(path.resolve(__dirname, '../../auth0/02-notify.js'), 'utf8'),
+            readFilePromise(path.resolve(__dirname, '../../auth0/03-wait-logic.js'), 'utf8')
         ])
         const names = [
             'Hereditas 01 - Whitelist email addresses',
