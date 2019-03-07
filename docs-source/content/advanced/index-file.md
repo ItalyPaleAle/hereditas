@@ -19,28 +19,28 @@ In celartext, the index file is a JSON document listing all files inside the Her
 
 ````json
 [
-   {
-      "path": "hello.md",
-      "dist": "043bd2a8986b5ed805737ab8",
-      "size": 248,
-      "display": "html",
-      "tag": "VczD/yHW3XtcH2nNyt9Q4w==",
-      "processed": "markdown"
-   },
-   {
-      "path": "photo.jpg",
-      "dist": "122c1a87b03db8793eb90d53",
-      "size": 10181034,
-      "display": "image",
-      "tag": "Zsh42WN+iy05M6CaXtlhPA=="
-   },
-   {
-      "path": "folder/passwords.pdf",
-      "dist": "715f14d0479b455ed481af9f",
-      "size": 60600,
-      "display": "attach",
-      "tag": "CjurYwY6KeeTrmJsKxdR1A=="
-   }
+    {
+       "path": "hello.md",
+       "dist": "043bd2a8986b5ed805737ab8",
+       "size": 248,
+       "display": "html",
+       "tag": "VczD/yHW3XtcH2nNyt9Q4w==",
+       "processed": "markdown"
+    },
+    {
+       "path": "photo.jpg",
+       "dist": "122c1a87b03db8793eb90d53",
+       "size": 10181034,
+       "display": "image",
+       "tag": "Zsh42WN+iy05M6CaXtlhPA=="
+    },
+    {
+       "path": "folder/passwords.pdf",
+       "dist": "715f14d0479b455ed481af9f",
+       "size": 60600,
+       "display": "attach",
+       "tag": "CjurYwY6KeeTrmJsKxdR1A=="
+    }
 ]
 ````
 

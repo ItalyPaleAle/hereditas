@@ -5,11 +5,21 @@ type: docs
 
 # Auth0 manual configuration
 
-This folder contains configuration and rules for Auth0, which are crucial for the application to work successfully.
+Hereditas uses Auth0 to authenticate users and to provide the *application token*, which is part of the string used to derive the encryption key.
 
-## Main application
+This document explains the configuration that the Hereditas CLI performs when you execute the [`hereditas auth0:sync`]({{< relref "/cli/auth0_sync.md" >}}) command.
 
-Create an application of type **Single Page Application**. You can name it any way you want, but `Hereditas` is probably a good name.
+> **Important:** this page is primarily primarily meant as reference. We recommend letting the Hereditas CLI manage the Auth0 configuration with the [`hereditas auth0:sync`]({{< relref "/cli/auth0_sync.md" >}}) command rather than changing settings manually.
+
+## Differences with the API application
+
+In the [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}}) guide we guided you through the creation of an **API Access** app ("Machine to Machine") and how to get the credentials, which are used by the Hereditas CLI to configure Hereditas on Auth0, including setting up the rules, and also by the Hereditas rules on Auth0 to set timers.
+
+This document focuses on the main "Hereditas" application on Auth0, which is what users will authenticate with.
+
+## Hereditas application
+
+On Auth0, create an application of type **Single Page Application**. You can name it any way you want, but `Hereditas` is probably a good name.
 
 Once the app is created, take note of the **Domain** and the **Client ID**. We will not need the Client Secret.
 
@@ -18,7 +28,7 @@ Once the app is created, take note of the **Domain** and the **Client ID**. We w
 Ensure that the application is configured with:
 
 - **Application type**: Should be "Single Page Application"
-- **Allowed callback URLs**: List of URLs (one per line) where your app is available
+- **Allowed callback URLs**: List of URLs (one per line) where your box is deployed to
 - **JWT Expiration**: Recommended to set it to a value that make sense for you, for example 1800 seconds (30 mins)
 
 Under **Advanced Settings**, then **OAuth**:
@@ -26,34 +36,26 @@ Under **Advanced Settings**, then **OAuth**:
 - **JsonWebToken Signature Algorithm**: Should be "RS256"
 - **OIDC Conformant**: Should be enabled.
 
-### Application `client_metadata`
+### Application Metadata
 
-The application needs to be configured with the following `client_metadata`:
+The application needs to be configured with the following "Application Metadata" (called `client_metadata` in the Auth0 APIs):
 
 - **`hereditas`**: this is required and must be set to `1`.
-- **`requestTime`**: set this value to `0`. When users that are not owners sign in, this value is updated with the current time.
-- **`waitTime`**: the amount of time, in seconds, to wait before Auth0 can return to users the app token. Set this value to whatever makes sense for you; `86400` (1 day) is often a good amount of time.
-
-## API access
-
-In order to grant API access to the Auth0 rules, create a new application of type **Machine to Machine App**. You can choose a name; a good value could be `Auth0 rules`.
-
-In the next dialog, grant access to the "Auth0 Management API", then select the `update:clients` scope.
-
-Once the app is created, take note of the **Client ID** and **Client Secret**.
+- **`requestTime`**: set this value to `0`. When users that are not owners sign in, rules update this value with the current time (as UNIX timestamp).
+- **`waitTime`**: the amount of time, in seconds, to wait before Auth0 can return to users (non-owners) the app token. Set this value to whatever makes sense for you; `86400` (1 day) is often a good amount of time.
 
 ## Rules
 
-The `rules` folder contains the rules that need to be configured in Auth0. Make sure you respect the order, as this is very important!
+The `auth0` folder in the repository contains the rules that need to be configured in Auth0. Note that the order below is very important!
 
-- **Hereditas 01 - Whitelist email addresses (`01-whitelist.js`)**: This rule configures which users are allowed to authenticate, by looking at their email address.
-- **Hereditas 02 - Notify (`02-notify.js`)**: This rule sends a notification of all successful logins via a Webhook.
-- **Hereditas 03 - Wait logic (`03-wait-logic.js`)**: This rule implements the "wait logic". If a non-owner signs in, starts the timer, and after the wait adds the app token to the claim. If an owner signs in, the timer is reset (and the app token is added to the claim regardless).
+- **Hereditas 01 - Whitelist email addresses (`01-whitelist.js`)**: This rule configures which users are allowed to authenticate, by whitelisting their email address.
+- **Hereditas 02 - Notify (`02-notify.js`)**: This rule sends a notification on all successful logins via a webhook.
+- **Hereditas 03 - Wait logic (`03-wait-logic.js`)**: This rule implements the "wait logic". If a non-owner users signs in, the rule starts the timer (by setting the current timestamp in the `waitTime` application metadata). After the wait is over, this same rule adds the app token to the claim. If an owner signs in, the timer is reset (and the app token is added to the claim regardless).
 
-The scripts above contain a certain templates that need to be replaced with the list of email addresses of all users or just owners.
+The scripts above contain some tokens that need to be replaced with the list of email addresses of all users or just owners.
 
-- **`/*%OWNERS%*/`** This template needs to be replaced with the array of all email addresses of users who are owners.
-- **`/*%ALL_USERS%*/`** This template needs to be replaced with the array of all email addresses of all users.
+- **`/*%OWNERS%*/`** This token needs to be replaced with the JSON-encoded array of all email addresses of users who are owners.
+- **`/*%ALL_USERS%*/`** This token needs to be replaced with the JSON-encoded array of all email addresses of all users.
 
 For example:
 
@@ -61,48 +63,13 @@ For example:
 const whitelist = /*%ALL_USERS%*/;
 const owners = /*%OWNERS%*/;
 // Become
-const whitelist = ['me@example.com', 'spouse@example.com'];
-const owners = ['me@example.com'];
+const whitelist = ["me@example.com", "someone@example.com"];
+const owners = ["me@example.com"];
 ````
 
-In the rules page, add the following settings:
+In the rules page, add the following settings. You will need some credentials from the "API Access" app, which is the "Machine to Machine" app created in the getting started guide.
 
-- **`APP_TOKEN`**: the app token, part of the encryption key, as generated by Hereditas. Combined with the user passphrase, lets Hereditas obtain the full key for decrypting data.
+- **`APP_TOKEN`**: the application token part of the encryption key.
 - **`AUTH0_CLIENT_ID`**: Set this to the Client ID of the API Access app.
 - **`AUTH0_CLIENT_SECRET`**: Set this to the Client Secret of the API Access app.
-- **`WEBHOOK_URL`**: URL of the Webhook invoked when a new authentication is successful (see below).
-
-## Notification Webhook
-
-As the Owner, you'll want to be notified when someone signs into Hereditas, to potentially block unauthorized attempts. We are using Webhooks for this, which are just POST requests to an external HTTPS endpoint (make sure you use HTTPS and not HTTP!).
-
-Hereditas sends a Webhook to the URL you provide, as a POST request with the following JSON body:
-
-````json
-{
-    "value1": "email address of user, e.g. user@example.com",
-    "value": "role, either owner or user"
-}
-````
-
-### Using IFTTT
-
-You can point the Webhook to whatever service you'd like to use. A good option is IFTTT: after enabling the Webhook service, you'll get a private key. The URL you need to use it:
-
-````text
-https://maker.ifttt.com/trigger/{event}/with/key/{key}
-````
-
-Replace `{event}` with an event name (e.g. `hereditas_auth`) and `{key}` with your IFTTT Webhook key (so messages are sent to yourself). For example:
-
-````text
-https://maker.ifttt.com/trigger/hereditas_auth/with/key/123abc456def
-````
-
-You can then configure your IFTTT applet to perform any action as a consequence of this. For example, you could send yourself an email, a message on Telegram, or a notification on Slack (or turn the lights red in your home, etc!).
-
-If you send yourself a message, you can write whatever body you prefer. As example:
-
-````text
-New Hereditas login on {{OccurredAt}}. User: {{Value1}} (role: {{Value2}})
-````
+- **`WEBHOOK_URL`**: URL of the webhook invoked when a new authentication is successful (see the [Login notifications]({{< relref "/guides/login-notifications.md" >}})).
