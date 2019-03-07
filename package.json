@@ -1,6 +1,6 @@
 {
   "name": "hereditas",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "author": "Alessandro Segala @ItalyPaleAle",
   "bin": {
     "hereditas": "./bin/run"
@@ -41,10 +41,13 @@
     "node": ">=10.0.0"
   },
   "files": [
+    "/app",
+    "/auth0",
     "/bin",
+    "/cli",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    "/cli"
+    "/vendor"
   ],
   "homepage": "https://github.com/ItalyPaleAle/hereditas",
   "keywords": [
@@ -79,8 +82,7 @@
   "repository": "ItalyPaleAle/hereditas",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "echo NO TESTS",
-    "version": "oclif-dev readme && git add README.md"
+    "prepack": "oclif-dev manifest",
+    "test": "echo NO TESTS"
   }
 }

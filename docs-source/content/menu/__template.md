@@ -12,11 +12,11 @@ headless: true
   * [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}})
   * [Login notifications]({{< relref "/guides/login-notifications.md" >}})
   * [Managing users]({{< relref "/" >}})
+  * [Configuration file]({{< relref "/advanced/configuration-file.md" >}})
 * **CLI Reference**
 <%# index %>
   * [<% name %>]({{< relref "/cli/<% path %>" >}})
 <%/ index %>
 * **Advanced topics**
-  * [Configuration file]({{< relref "/advanced/configuration-file.md" >}})
   * [Auth0 manual configuration]({{< relref "/advanced/auth0-manual-configuration.md" >}})
   * [Index file]({{< relref "/advanced/index-file.md" >}})
