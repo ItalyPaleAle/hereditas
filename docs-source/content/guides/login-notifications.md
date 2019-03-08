@@ -15,8 +15,9 @@ Hereditas sends a webhook to the URL you provide, as a POST request with the fol
 
 ````json
 {
-    "value1": "email address of user, e.g. user@example.com",
-    "value2": "role, either owner or user"
+    "value1": "Full notification, e.g. 'New Hereditas login on Fri, 08 Mar 2019 12:01:10 GMT. User: user@example.com (role: user)'",
+    "value2": "email address of user, e.g. user@example.com",
+    "value3": "role, either owner or user"
 }
 ````
 
@@ -40,8 +41,8 @@ https://maker.ifttt.com/trigger/hereditas_auth/with/key/123abc456def
 
 You can then configure your IFTTT applet to perform any action as a consequence of this. For example, you could send yourself an email, a message on Telegram, or a notification on Slack (or turn the lights red in your home, etc!).
 
-If you send yourself a message, you can write whatever body you prefer. As example:
+If you send yourself a message, you can use `{{value1}}` as a pre-made mesasge, or you can write whatever body you prefer. As example:
 
 ````text
-New Hereditas login on {{OccurredAt}}. User: {{Value1}} (role: {{Value2}})
+{{Value2}} (role: {{Value3}}) just logged into your Hereditas box at {{OccurredAt}}!
 ````

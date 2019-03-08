@@ -16,8 +16,9 @@ function (user, context, callback) {
     // Trigger the webhook
     const role = (owners.some((email) => email === user.email)) ? 'owner' : 'user';
     const body = {
-        value1: user.email,
-        value2: role
+        value1: `New Hereditas login on ${(new Date()).toUTCString()}. User: ${user.email} (role: ${role})`,
+        value2: user.email,
+        value3: role
     };
     const request = require('request');
     request({
