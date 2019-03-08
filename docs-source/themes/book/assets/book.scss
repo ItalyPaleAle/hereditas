@@ -121,6 +121,12 @@ code {
 .book-page {
   min-width: $body-min-width;
   padding: $padding-16;
+
+  // Make images responsive
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .book-header {
