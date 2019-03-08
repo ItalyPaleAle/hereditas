@@ -48,7 +48,7 @@ While it would technically be possible, we recommend that you don't store large 
 
 For example, rather than including gigabytes of photos, we recommend that you store them in a safe place (encrypted drive, cloud storage, etc) and use your Hereditas box to explain how to retrieve them. Similarly, instead of including every single password (which can - should? - change frequently), just put the recovery key of your password manager.
 
-## Next step: Configure Auth0
+## Next step: Auth0 setup
 
 After you've installed the Hereditas CLI and gathered all the content, you're ready to go to the next step and configure a new Auth0 account.
 

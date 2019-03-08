@@ -34,7 +34,11 @@ Ensure that the application is configured with:
 Under **Advanced Settings**, then **OAuth**:
 
 - **JsonWebToken Signature Algorithm**: Should be "RS256"
-- **OIDC Conformant**: Should be enabled.
+- **OIDC Conformant**: Should be enabled
+
+In the **Grant types** tab:
+
+- **Grants**: choose only "Implicit"
 
 ### Application Metadata
 
