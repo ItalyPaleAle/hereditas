@@ -1,18 +1,18 @@
 ---
 headless: true
 ---
-{{! (Mustache comment) set delimeters to ASP-style tags }}
+{{! Set Mustache delimeters to ASP-style tags (this is a Mustache comment) }}
 {{=<% %>=}}
 
 * **Introduction**
   * [What is Hereditas]({{< relref "/" >}})
   * [Security Model]({{< relref "/introduction/security-model.md" >}})
 * **Guides**
-  * [Get started]({{< relref "/" >}})
+  * [Get started]({{< relref "/guides/get-started.md" >}})
   * [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}})
   * [Login notifications]({{< relref "/guides/login-notifications.md" >}})
   * [Managing users]({{< relref "/guides/managing-users.md" >}})
-  * [Deploying the box]({{< relref "/guides/deploying-box.md" >}})
+  * [Deploy the box]({{< relref "/guides/deploy-box.md" >}})
   * [Configuration file]({{< relref "/guides/configuration-file.md" >}})
 * **CLI Reference**
 <%# index %>
