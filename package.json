@@ -53,7 +53,7 @@
   "keywords": [
     "oclif"
   ],
-  "license": "UNLICENSED",
+  "license": "GPL-3.0-only",
   "main": "cli/index.js",
   "oclif": {
     "commands": "./cli/commands",
