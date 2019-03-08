@@ -61,7 +61,7 @@ The current working directory needs to be empty, or the command will raise an er
 
 // Usage example
 InitCommand.usage = `init \\
-   --auth0domain "yourdomain.auth0.com" \\
+   --auth0Domain "yourdomain.auth0.com" \\
    --auth0ClientId "..." \\
    --auth0ClientSecret "..." \\
    --url "https://my.testhereditas.app"

@@ -11,8 +11,9 @@ headless: true
   * [Get started]({{< relref "/" >}})
   * [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}})
   * [Login notifications]({{< relref "/guides/login-notifications.md" >}})
-  * [Managing users]({{< relref "/" >}})
-  * [Configuration file]({{< relref "/advanced/configuration-file.md" >}})
+  * [Managing users]({{< relref "/guides/managing-users.md" >}})
+  * [Deploying the box]({{< relref "/guides/deploying-box.md" >}})
+  * [Configuration file]({{< relref "/guides/configuration-file.md" >}})
 * **CLI Reference**
 <%# index %>
   * [<% name %>]({{< relref "/cli/<% path %>" >}})
