@@ -21,6 +21,9 @@ class WebhookSetCommand extends Command {
         config.set('webhookUrl', (flags.url === 'none') ? undefined : flags.url)
         await config.save()
         this.log('Webhook URL updated')
+
+        // Notify users that they need to run the auth0:sync command
+        this.log('Info: The configuration has been updated locally; for changes to be effective, remember to run `hereditas auth0:sync`')
     }
 }
 

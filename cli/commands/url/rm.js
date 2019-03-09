@@ -37,6 +37,9 @@ class UrlRmCommand extends Command {
         await config.save()
 
         this.log('URL list updated')
+
+        // Notify users that they need to run the auth0:sync command
+        this.log('Info: The configuration has been updated locally; for changes to be effective, remember to run `hereditas auth0:sync`')
     }
 }
 

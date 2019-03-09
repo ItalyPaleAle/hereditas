@@ -37,6 +37,9 @@ class UserAddCommand extends Command {
         await config.save()
 
         this.log(`Added user ${flags.email} (role: ${flags.role})`)
+
+        // Notify users that they need to run the auth0:sync command
+        this.log('Info: The configuration has been updated locally; for changes to be effective, remember to run `hereditas auth0:sync`')
     }
 }
 

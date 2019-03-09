@@ -21,7 +21,10 @@ class RegenerateTokenCommand extends Command {
         config.set('appToken', appToken)
         await config.save()
 
-        this.log('New token saved in the configuration file')
+        this.log('New application token saved in the configuration file')
+
+        // Notify users that they need to run the auth0:sync command
+        this.log('Info: The new application token will be used for boxes you build from now on, using `hereditas build`; it will not impact existing boxes. Additionally, remember to run `hereditas auth0:sync` to update the application token on Auth0 after deploying the new box.')
     }
 }
 
