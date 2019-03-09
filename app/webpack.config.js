@@ -5,7 +5,7 @@ const {DefinePlugin} = require('webpack')
 const {sass} = require('svelte-preprocess-sass')
 const path = require('path')
 
-const mode = process.env.NODE_ENV || 'development'
+const mode = process.env.NODE_ENV || 'production'
 const prod = mode === 'production'
 
 const htmlMinifyOptions = {
