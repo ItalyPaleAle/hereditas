@@ -1,7 +1,6 @@
 ---
 title: What is Hereditas
 type: docs
-bookShowToC: false
 ---
 
 # What is Hereditas
@@ -18,11 +17,11 @@ We've designed Hereditas with three principles in mind.
 
 With Hereditas, you don't need to trust any person or provider. No other person or company has standing access to your data.
 
-As the owner of a Hereditas box, you can nominate some authorized users by whitelisting their email address and giving them a *user passphrase*.
+As the owner of an Hereditas box, you can nominate some authorized users by whitelisting their email address and giving them a *user passphrase*.
 
 To prevent authorized users from having standing access to your data, however, once they log into your Hereditas box for the first time, they need to wait for a few hours or days before they can unlock the box. This gives you, the owner of the box, enough time to stop the timer, by simply logging into the same Hereditas box.
 
-For example, if you set the waiting time to 24 hours (the default), when a relative of yours tries to log in, the timer starts and Hereditas sends you a notification right away. If you've not disappered, you can authenticate to the same Hereditas box within 24 hours and stop the timer. After that, all your relatives would be able to unlock your Hereditas box by logging in again and typing the *user passphrase*.
+For example, if you set the waiting time to 24 hours (the default), when a relative of yours tries to log in, the timer starts and Hereditas sends you a notification right away. If you've not disappeared, you can authenticate to the same Hereditas box within 24 hours and stop the timer. After that, all your relatives would be able to unlock your Hereditas box by logging in again and typing the *user passphrase*.
 
 Hereditas generates digital legacy boxes that are encrypted bundles within static HTML5 applications. The encryption key is split between what you give your users and what's stored inside the Auth0 authorization provider, so no company or provider has standing access to your data.
 
@@ -40,7 +39,7 @@ Hereditas outputs a static HTML5 app that you can host anywhere you'd like, for 
 
 ## Open source
 
-We made Hereditas fully open source, so you can study how the app works in details. We wrote the app in JavaScript, and we use Node.js for the CLI and HTML5 for the static web app. The source code is available on GitHub at [ItalyPaleAle/hereditas](https://github.com/ItalyPaleAle/hereditas), under GNU General Public License (GPL) version 3.0 (see [LICENSE](https://github.com/ItalyPaleAle/hereditas/tree/master/LICENSE.md)).
+We made Hereditas fully open source so you can study how the app works in detail. We wrote the app in JavaScript, and we use Node.js for the CLI and HTML5 for the static web app. The source code is available on GitHub at [ItalyPaleAle/hereditas](https://github.com/ItalyPaleAle/hereditas), under GNU General Public License (GPL) version 3.0 (see [LICENSE](https://github.com/ItalyPaleAle/hereditas/tree/master/LICENSE.md)).
 
 We happily accept contributions! Feel free to submit a Pull Request to fix bugs or add new features. Equally important, you can contribute by improving this [documentation](https://github.com/ItalyPaleAle/hereditas/tree/master/docs-source).
 

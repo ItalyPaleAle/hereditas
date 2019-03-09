@@ -39,6 +39,8 @@ Replace `{event}` with an event name (e.g. `hereditas_auth`) and `{key}` with yo
 https://maker.ifttt.com/trigger/hereditas_auth/with/key/123abc456def
 ````
 
+Note down your webhook URL, as we'll need it soon.
+
 You can then configure your IFTTT applet to perform any action as a consequence of this. For example, you could send yourself an email, a message on Telegram, or a notification on Slack (or turn the lights red in your home, etc!).
 
 If you send yourself a message, you can use `{{value1}}` as a pre-made mesasge, or you can write whatever body you prefer. As example:
@@ -46,3 +48,9 @@ If you send yourself a message, you can use `{{value1}}` as a pre-made mesasge, 
 ````text
 {{Value2}} (role: {{Value3}}) just logged into your Hereditas box at {{OccurredAt}}!
 ````
+
+## Next step: Build the static web app
+
+We're finally ready to use the Hereditas CLI to build our static app! Follow the next document for how:
+
+<a class="hereditas-button" href="{{< relref "/guides/build-static-web-app.md" >}}">Build the static web app</a>
