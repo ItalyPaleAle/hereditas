@@ -102,7 +102,7 @@ function webpackConfig(appParams) {
                 'process.env.KEY_DERIVATION_FUNCTION': JSON.stringify(appParams.kdf)
             }),
 
-            // Minify all extracted CSS
+            // Extract CSS
             new MiniCssExtractPlugin({
                 filename: '[name].[hash].css'
             }),

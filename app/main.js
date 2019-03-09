@@ -1,3 +1,7 @@
+// CSS
+import '../vendor/bootstrap/css/bootstrap.min.css'
+
+// JavaScript modules
 import App from './layout/App.html'
 import credentials from './lib/Credentials'
 import {Box} from './lib/Box'
