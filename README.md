@@ -26,7 +26,7 @@ For example, you could use this to pass information such as passwords, cryptogra
 
 **Your help is highly appreciated.** If you are an expert on security or cryptography, please help us reviewing the code and let us know what you think - including if everything looks fine, or if you found a bug.
 
-Responsible disclosure: if you believe you've found a security issue that could compromise current users of Hereditas, please send a confidential email to `security` [at] `hereditas` [dot] `app`.
+Responsible disclosure: if you believe you've found a security issue that could compromise current users of Hereditas, please [report it confidentially](https://www.npmjs.com/advisories/report?package=hereditas).
 
 ## License
 

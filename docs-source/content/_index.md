@@ -45,7 +45,7 @@ We made Hereditas fully open source so you can study how the app works in detail
 
 We happily accept contributions! Feel free to submit a Pull Request to fix bugs or add new features. Equally important, you can contribute by improving this [documentation](https://github.com/ItalyPaleAle/hereditas/tree/master/docs-source).
 
-If you believe you've found a security issue that could impact other people, please report it confidentially by sending an email to `security` [at] `hereditas` [dot] `app`.
+If you believe you've found a security issue that could impact other people, please [report it confidentially](https://www.npmjs.com/advisories/report?package=hereditas).
 
 ## Get started
 
