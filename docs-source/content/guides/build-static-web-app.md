@@ -46,6 +46,14 @@ Place all the content you want to encrypt in the `content` folder. You can store
 
 Markdown documents are automatically converted to HTML chunks, so that's a great way to include information. However, at the Hereditas web apps do not support hyperlinks, images or videos in Markdown or HTML files linking to other content within the box.
 
+## Set the webhook URL
+
+We need to set the URL of the webhook we created in the previous step. We can use [`hereditas webhook:set`]({{< relref "/cli/webhook_set.md" >}}) for that, replacing the URL below with yours:
+
+````sh
+hereditas webhook:set --url "https://maker.ifttt.com/trigger/hereditas_auth/with/key/123abc456def"
+````
+
 ## Build the web app
 
 You're finally ready to build the static web app, using the [`hereditas build`]({{< relref "/cli/build.md" >}}) command:
