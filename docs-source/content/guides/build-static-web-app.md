@@ -38,7 +38,7 @@ hereditas.json
 - The `dist` folder will contain the generated web app
 - The `hereditas.json` file contains the configuration for the Hereditas box
 
-> In most cases you will not need to manually edit the `hereditas.json` configuration file, as you can use the Hereditas CLI to change the most common options. However, you can find the full reference for the configuration file in the [Configuration file]({{< relref "/guides/configuration-file.md" >}}) article.
+> In most cases you will not need to manually edit the `hereditas.json` configuration file, as you can use the Hereditas CLI to change the most common options. However, you can find the full reference for the configuration file in the [Configuration file]({{< relref "/advanced/configuration-file.md" >}}) article.
 
 ## Content
 
