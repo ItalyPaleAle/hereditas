@@ -85,6 +85,7 @@ Finished building project in dist (took 3.895 seconds)
 _index
 d0160be2ee0f1479367b325c
 d9f2eb6a0f34382c36d2a116
+hereditas.1e03804dc40e456286e7.css
 hereditas.1e03804dc40e456286e7.js
 index.html
 ````
