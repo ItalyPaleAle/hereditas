@@ -33,7 +33,11 @@ function webpackConfig(appParams) {
         },
         resolve: {
             mainFields: ['svelte', 'browser', 'module', 'main'],
-            extensions: ['.js', '.html', '.svelte']
+            extensions: ['.js', '.html', '.svelte'],
+            modules: [path.resolve(__dirname, '../node_modules')]
+        },
+        resolveLoader: {
+            modules: [path.resolve(__dirname, '../node_modules')]
         },
         output: {
             path: path.resolve(process.cwd(), appParams.distDir),
