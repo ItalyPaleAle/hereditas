@@ -51,7 +51,9 @@
   ],
   "homepage": "https://github.com/ItalyPaleAle/hereditas",
   "keywords": [
-    "oclif"
+    "digital legacy",
+    "cli",
+    "generator"
   ],
   "license": "GPL-3.0-only",
   "main": "cli/index.js",
