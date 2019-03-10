@@ -52,6 +52,38 @@ Lastly, from the Settings tab, take note of the following values, which we'll ne
 
 ![Auth0 management portal: obtain credentials for API Access app](/images/auth0-setup-credentials.png)
 
+## Configure connections
+
+One of the main benefits of using Auth0 is that it integrates with third-party identity providers such as Google, Microsoft, Facebook, etc. This lets you skip creating new accounts for your users, so they can sign in with their existing credentials. Not only there's one less password for them to remember, but it's also safer: the external providers can support Multi-Factor Authentication, and can use advanced tools (often AI-based) to better detect hacked accounts.
+
+### Disable Username and Password authentication
+
+By default, Auth0 offers users the possibility to create a new account specific to your app. You might want to disable that and allow social logins only.
+
+In the Auth0 Management management portal, on the menu on the left side navigate to **Connections**, then **Database**.
+
+In the row for the "Username-Password-Authentication" database, click on "Settings".
+
+![Auth0 management portal: database](/images/auth0-setup-database.png)
+
+Scroll to the bottom of the page and click on the big, red button to remove the connection.
+
+![Auth0 management portal: remove the database](/images/auth0-setup-database-remove.png)
+
+### Configure social logins
+
+In the Auth0 management portal, this time navigate to the **Connections** and then **Social** page.
+
+Here, you can configure all the social login providers, including Google, Facebook, and Microsoft.
+
+![Auth0 management portal: social logins](/images/auth0-setup-social-logins.png)
+
+Each provider has a different procedure for setting the connection up, and you can follow the Auth0 documentation for instructions.
+
+You can enable any provider you want, and your users will be able to use any enabled provider. Since Hereditas whitelists users based on their email addresses, it doesn't matter what provider they use to authenticate, as long as the email address matches.
+
+Because we need users' email addresses, when you configure a new social provider, make sure that it supports sharing of users' email addresses, and that the **_email_ scope is enabled**.
+
 ## Next step: Login notifications
 
 In the next step, we'll configure a webhook to send notifications when users sign into your Hereditas box.
