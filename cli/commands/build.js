@@ -17,6 +17,13 @@ class BuildCommand extends Command {
             return this.exit(1)
         }
 
+        // Make sure that we have an Auth0 client id
+        const clientId = config.get('auth0.hereditasClientId')
+        if (!clientId) {
+            this.error('The Hereditas application hasn\'t been configured on Auth0 yet. Please run `hereditas auth0:sync` first')
+            return this.exit(1)
+        }
+
         // Ask for the user passphrase
         const passphrase = await cli.prompt('User passphrase', {type: 'mask'})
         if (!passphrase || passphrase.length < 8) {
