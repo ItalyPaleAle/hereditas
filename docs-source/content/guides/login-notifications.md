@@ -49,8 +49,8 @@ If you send yourself a message, you can use `{{value1}}` as a pre-made mesasge, 
 {{Value2}} (role: {{Value3}}) just logged into your Hereditas box at {{OccurredAt}}!
 ````
 
-## Next step: Build the static web app
+## Next step: Create the box
 
-We're finally ready to use the Hereditas CLI to build our static app! Follow the next document for how:
+We now have all the information we need to create the Hereditas box in our laptop and start putting content in there.
 
-<a class="hereditas-button" href="{{< relref "/guides/build-static-web-app.md" >}}">Build the static web app</a>
+<a class="hereditas-button" href="{{< relref "/guides/create-box.md" >}}">Create the box</a>

@@ -48,7 +48,7 @@ The commands above save the changes in the local `hereditas.json` configuration 
 
 In order for changes like adding/removing users (and others including changing the wait time, the webhook URL, or re-generating the application token) to be effective, you need to synchronize them with Auth0.
 
-The Hereditas CLI has a built-in command [`hereditas auth0:sync`]({{< relref "/cli/auth0_sync.md" >}}) that manages the application, configuration and rules inside Auth0, in a fully-automated way. So, syncing the changes is as simple as running:
+We can use again the [`hereditas auth0:sync`]({{< relref "/cli/auth0_sync.md" >}}) command, which will synchronize all changes in Auth0, updating our rules and application configuration, in a fully-automated way.
 
 ````sh
 hereditas auth0:sync

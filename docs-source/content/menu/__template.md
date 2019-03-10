@@ -11,6 +11,7 @@ headless: true
   * [Get started]({{< relref "/guides/get-started.md" >}})
   * [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}})
   * [Login notifications]({{< relref "/guides/login-notifications.md" >}})
+  * [Create the box]({{< relref "/guides/create-box.md" >}})
   * [Build the static web app]({{< relref "/guides/build-static-web-app.md" >}})
   * [Managing users]({{< relref "/guides/managing-users.md" >}})
   * [Deploy the box]({{< relref "/guides/deploy-box.md" >}})
