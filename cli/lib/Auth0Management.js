@@ -48,6 +48,9 @@ class Auth0Management {
                 if (err.toString().match(/Not Found/i)) {
                     data = null
                 }
+                else if (err.name && err.name == 'access_denied') {
+                    throw Error('Invalid Auth0 credentials')
+                }
                 else {
                     throw err
                 }
@@ -55,7 +58,17 @@ class Auth0Management {
 
             // If we have an existing client, update it
             if (data) {
-                this.updateClient(clientId)
+                try {
+                    await this.updateClient(clientId)
+                }
+                catch (err) {
+                    if (err.name && err.name == 'access_denied') {
+                        throw Error('Invalid Auth0 credentials')
+                    }
+                    else {
+                        throw err
+                    }
+                }
             }
             else {
                 clientId = undefined
@@ -64,7 +77,17 @@ class Auth0Management {
 
         // If client doesn't exist, create it
         if (!clientId) {
-            clientId = await this.createClient()
+            try {
+                clientId = await this.createClient()
+            }
+            catch (err) {
+                if (err.name && err.name == 'access_denied') {
+                    throw Error('Invalid Auth0 credentials')
+                }
+                else {
+                    throw err
+                }
+            }
         }
 
         return clientId
@@ -176,7 +199,7 @@ class Auth0Management {
         ]
 
         // Replacer function in scripts
-        const users = this._config.get('users')
+        const users = this._config.get('users') || []
         const replacer = (script) => {
             const vars = {
                 '/*%ALL_USERS%*/': JSON.stringify(users.map((el) => el.email)),
