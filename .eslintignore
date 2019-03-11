@@ -1,5 +1,8 @@
 # Vendored dependencies
 app/vendor
 
+# Auth0 rules (they follow a different style)
+auth0
+
 # Test data
 testfolder

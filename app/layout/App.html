@@ -3,13 +3,17 @@
         <div class="col-md-10">
             <h1>Hereditas</h1>
 
-            {#each routes as r}
-                {#if r.exact}
-                    <Route exact path="{r.path}" component={r.component} />
-                {:else}
-                    <Route path="{r.path}" component={r.component} />
-                {/if}
-            {/each}
+            {#if unrecoverableError}
+                <RequestAuthentication error={unrecoverableError} />
+            {:else}
+                {#each routes as r}
+                    {#if r.exact}
+                        <Route exact path="{r.path}" component={r.component} />
+                    {:else}
+                        <Route path="{r.path}" component={r.component} />
+                    {/if}
+                {/each}
+            {/if}
         </div>
     </div>
 </div>
@@ -19,7 +23,8 @@ import Route from '../../vendor/svelte-routing/Route.html'
 
 export default {
     components: {
-        Route
+        Route,
+        RequestAuthentication: '../components/RequestAuthentication.html'
     }
 }
 </script>

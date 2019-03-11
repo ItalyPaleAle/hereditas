@@ -1,4 +1,8 @@
-<p>Your authentication failed or the session has expired.</p>
+{#if error}
+    <p><b>Error:</b> {error}</p>
+{:else}
+    <p>Your authentication failed or the session has expired.</p>
+{/if}
 <a href={authUrl} class="btn btn-primary">Authenticate</a>
 
 <script type="text/javascript">
@@ -9,6 +13,12 @@ export default {
         authUrl: ({$profile}) => {
             // If we're not authenticated, request a URL
             return $profile ? undefined : credentials.authorizationUrl()
+        }
+    },
+
+    data() {
+        return {
+            error: null
         }
     }
 }

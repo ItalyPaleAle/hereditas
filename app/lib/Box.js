@@ -164,7 +164,7 @@ export class Box {
 
             // Exceptions likely mean that the key/passphrase are wrong
             .catch((err) => {
-                // Log the error
+                // eslint-disable-next-line no-console
                 console.error('Error while unlocking the box:', err)
 
                 // Ensure the box remains locked

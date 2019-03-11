@@ -147,6 +147,7 @@ export class Credentials {
             data = JSON.parse(read)
         }
         catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Error while parsing JSON from sessionStorage', error)
             throw Error('Could not get the token from session storage')
         }
@@ -205,12 +206,14 @@ export class Credentials {
         const payload = await new Promise((resolve) => {
             verifier.verify(jwt, this._nonce.retrieve(), (error, payload) => {
                 if (error) {
+                    // eslint-disable-next-line no-console
                     console.error('Validation error', error)
                     throw Error('Invalid token')
                 }
 
                 // Check if the payload contains the Hereditas namespace
                 if (!payload[process.env.ID_TOKEN_NAMESPACE]) {
+                    // eslint-disable-next-line no-console
                     console.error('Token doesn\'t contain the Hereditas namespace')
                     throw Error('Token doesn\'t contain the Hereditas namespace')
                 }

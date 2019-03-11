@@ -94,8 +94,10 @@ class Builder {
         // Check if webpack compilation had errors
         if (webpackStats.hasErrors()) {
             const errors = webpackStats.toJson().errors
+            // eslint-disable-next-line no-console
             console.error('\x1b[31m\x1b[1m' + 'WEBPACK ERRORS' + '\x1b[0m\n')
             for (const i in errors) {
+                // eslint-disable-next-line no-console
                 console.error('\x1b[31m' + errors[i] + '\x1b[0m\n')
             }
 
@@ -103,8 +105,10 @@ class Builder {
         }
         if (webpackStats.hasWarnings()) {
             const warnings = webpackStats.toJson().warnings
+            // eslint-disable-next-line no-console
             console.warn('\x1b[33m\x1b[1m' + 'WEBPACK WARNINGS' + '\x1b[0m\n')
             for (const i in warnings) {
+                // eslint-disable-next-line no-console
                 console.warn('\x1b[33m' + warnings[i] + '\x1b[0m\n')
             }
         }

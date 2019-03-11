@@ -4,6 +4,7 @@ import '../vendor/bootstrap/css/bootstrap.min.css'
 // JavaScript modules
 import App from './layout/App.html'
 import credentials from './lib/Credentials'
+import queryString from 'query-string'
 import {Box} from './lib/Box'
 import {AuthenticationAttempts} from './lib/Credentials'
 import {Store} from 'svelte/store.js'
@@ -17,27 +18,59 @@ import './main.scss'
 
 const attempts = new AuthenticationAttempts()
 
-async function handleSession() {
+function getHash() {
+    let hash = window.location.hash
+    if (hash && hash.length > 2) {
+        // Remove the leading # and / characters
+        if (hash.charAt(0) == '#') {
+            hash = hash.substr(1)
+        }
+        if (hash.charAt(0) == '/') {
+            hash = hash.substr(1)
+        }
+        const parsed = queryString.parse(hash)
+
+        // Remove the information from the URL (for security, in case it contains an id_token)
+        history.replaceState(undefined, undefined, '#')
+
+        return parsed
+    }
+    else {
+        return null
+    }
+}
+
+function checkAuthError(hash) {
+    // Check if we have an error from the authentication server
+    if (hash && hash.error) {
+        // Check for the error type
+        if (hash.error == 'unauthorized') {
+            return hash.error_description || 'Unauthorized'
+        }
+        else {
+            return hash.error_description || hash.error
+        }
+    }
+
+    return false
+}
+
+async function handleSession(hash) {
     // Check if we have an id_token
-    if (window.location.hash) {
-        const match = window.location.hash.match(/id_token=(([A-Za-z0-9\-_~+/]+)\.([A-Za-z0-9\-_~+/]+)(?:\.([A-Za-z0-9\-_~+/]+)))/)
-        if (match && match[1]) {
-            // First thing: remove the token from the URL (for security)
-            history.replaceState(undefined, undefined, '#')
+    if (hash && hash.id_token) {
+        // Validate and store the JWT
+        // If there's an error, redirect to auth page
+        try {
+            await credentials.setToken(hash.id_token)
 
-            // Validate and store the JWT
-            // If there's an error, redirect to auth page
-            try {
-                await credentials.setToken(match[1])
+            // Reset attempts counter
+            attempts.resetAttempts()
+        }
+        catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('Token error', error)
 
-                // Reset attempts counter
-                attempts.resetAttempts()
-            }
-            catch (error) {
-                console.error('Token error', error)
-
-                return false
-            }
+            throw Error('Token error')
         }
     }
 
@@ -53,42 +86,59 @@ async function handleSession() {
         profile = await credentials.getProfile()
     }
     catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Token error', error)
 
-        return false
+        throw Error('Token error')
     }
 
     return profile
 }
 
 const app = (async function() {
-    // Load profile and check session
-    const profile = await handleSession()
+    let profile
     let hereditasProfile = null
     let box = null
 
-    // If we're not authenticated, and this is the first attempt, automatically redirect users
-    if (!profile) {
-        if (attempts.increaseAttempts() < 1) {
-            window.location.href = credentials.authorizationUrl()
-            return
+    // Parse the hash if any
+    const hash = getHash()
+
+    // Check if we have an error from the authentication server
+    let unrecoverableError = checkAuthError(hash)
+    if (!unrecoverableError) {
+        // Load profile and check session
+        try {
+            profile = await handleSession(hash)
         }
-    }
-    else {
-        // Hereditas profile (from the profile)
-        hereditasProfile = profile[process.env.ID_TOKEN_NAMESPACE] || {}
+        catch (err) {
+            profile = false
+            unrecoverableError = err
+        }
 
-        // Check if we have an app token
-        if (hereditasProfile.token) {
-            try {
-                // Create a new box and fetch the index
-                box = new Box()
-
-                // Fetch the index asynchronously and do not wait for completion
-                box.fetchIndex()
+        // If we're not authenticated, and this is the first attempt, automatically redirect users
+        if (!profile) {
+            if (attempts.increaseAttempts() < 1) {
+                window.location.href = credentials.authorizationUrl()
+                return
             }
-            catch (err) {
-                console.error('Error while requesting box\'s data', err)
+        }
+        else {
+            // Hereditas profile (from the profile)
+            hereditasProfile = profile[process.env.ID_TOKEN_NAMESPACE] || {}
+
+            // Check if we have an app token
+            if (hereditasProfile.token) {
+                try {
+                    // Create a new box and fetch the index
+                    box = new Box()
+
+                    // Fetch the index asynchronously and do not wait for completion
+                    box.fetchIndex()
+                }
+                catch (err) {
+                    // eslint-disable-next-line no-console
+                    console.error('Error while requesting box\'s data', err)
+                }
             }
         }
     }
@@ -108,6 +158,7 @@ const app = (async function() {
         target: document.body,
         store,
         data: {
+            unrecoverableError,
             routes
         }
     })

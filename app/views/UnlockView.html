@@ -16,7 +16,7 @@ export default {
     oncreate() {
         // If box has already been unlocked, just go straight to the list
         const {box} = this.store.get()
-        if (box.isUnlocked()) {
+        if (box && box.isUnlocked()) {
             // Do this in the next tick
             setTimeout(() => {
                 getHistory().replace('/list')
