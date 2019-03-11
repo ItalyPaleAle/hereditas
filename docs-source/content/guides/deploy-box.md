@@ -19,29 +19,29 @@ hereditas auth0:sync
 
 ## Testing locally
 
-Before deploying your app, you can test it running on your laptop with a local server. There are multiple options to run a local server; an option is:
+Before deploying your app, you can test it running on your laptop with a local server. There are multiple options to run a local server; a simple one is:
 
 ````sh
 npx serve dist -n
 ````
 
-This will serve all files in the `dist` directory at the URL `http://localhost:5000`, which you can browse with any web browser.
+This will serve all files in the `dist` directory at the URL `http://localhost:5000`, which you can open with any web browser.
 
 Keep in mind that the URL and port must be whitelisted in the Hereditas app and Auth0. In the previous step, we did whitelist `http://localhost:5000` when running [`hereditas init`]({{< relref "/cli/init.md" >}}), so we're good for now. If you use a local server listening on another port, however, you'll have to allow that URL too – see the [managing deployment URLs](#managing-deployment-urls) section below.
 
 ## Choosing where to host your box
 
-Your box is just a static HTML5 web app, with HTML, JavaScript and CSS files. You can deploy it on any service capable of serving HTML5 apps via HTTP(S).
+Your box is just a static HTML5 web app, with HTML, JavaScript and CSS files, plus a bunch of encrypted documents. You can deploy it on any service capable of serving HTML5 apps via HTTP(S).
 
-Since all of your data is encrypted, Hereditas boxes are designed to be deployed on publicly-accessible endpoints too, safely.
+Because all of your data is encrypted, Hereditas boxes are designed to be deployed on publicly-accessible endpoints too, safely.
 
 Good solutions include [Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website), or [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html). Any provider that supports static website hosting should work; this service is often free, or very inexpensive.
 
-While possible, we do not recommend deploying Hereditas on a cloud server or VPS (*what would happen if your credit card got canceled and your services stopped?*), nor inside a server in your home (*would your relatives know how to access it from within your LAN?*). Ultimately, however, it's up to you, your specific situation, and to the trust you put in the technical skills of your loved ones.
+While possible, we do not recommend deploying Hereditas on a VPS (*what would happen if your credit card got canceled and your services stopped?*), nor inside a server in your home (*would your relatives know how to access it from within your LAN? what if your landlord disconnected your servers, would people know how to rebuild your network?*). Ultimately, however, it's up to you, your specific situation, and to the trust you put in the technical skills of your loved ones.
 
 ## Managing deployment URLs
 
-After you've decided where to deploy to your app, you need to whitelist the URL where it will be reachable at. This is necessary because after a successful authentication, Auth0 will redirect users only to URLs you specifically whitelist, for security reasons.
+After you've decided where to deploy your app to, you need to whitelist the URL where it will be reachable at. This is necessary because after a successful authentication, Auth0 will redirect users only to URLs you specifically whitelist, for security reasons.
 
 You can manage the list of allowed URLs using the Hereditas CLI, with the commands:
 
@@ -75,7 +75,7 @@ Azure Storage is an object storage provider that offers static website hosting t
 
 In order to deploy to Azure Storage, you'll need:
 
-- An Azure account. You can get one [for free](https://azure.com/free) if you don't have one already.
+- An Azure account. You can get it [for free](https://azure.com/free) if you don't have one already.
 - The Azure CLI installed on your laptop. Installation instructions are in the [official documentation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
 
 Start by logging into Azure and creating an Azure Storage Account:
@@ -103,7 +103,7 @@ az storage account create \
     --kind StorageV2
 ````
 
-At this point, enable static website hosting for your storage account, and retrieve the URL with:
+At this point, enable static website hosting for your Storage Account, and retrieve the URL with:
 
 ````sh
 az storage blob service-properties update \
@@ -147,7 +147,9 @@ At this point, you have all the information you need to give to your relatives, 
 
 Make sure to include:
 
-- An explanation of what this Hereditas box is, and what information they can find in there.
-- The URL they need to type
-- The *user passphrase*
-- The name of the account they need to use to sign in (the email address)
+1. An explanation of what this Hereditas box is, and what information they can find in there.
+2. The URL they need to type
+3. The *user passphrase*
+4. The name of the account they need to use to sign in (the email address)
+
+This is all and only the information they need to use Hereditas.

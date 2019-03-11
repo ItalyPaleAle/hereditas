@@ -11,9 +11,9 @@ This document explains the configuration that the Hereditas CLI performs when yo
 
 > **Important:** this page is primarily primarily meant as reference. We recommend letting the Hereditas CLI manage the Auth0 configuration with the [`hereditas auth0:sync`]({{< relref "/cli/auth0_sync.md" >}}) command rather than changing settings manually.
 
-## Differences with the API application
+## Differences with the "API Access" application
 
-In the [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}}) guide we guided you through the creation of an **API Access** app ("Machine to Machine") and how to get the credentials, which are used by the Hereditas CLI to configure Hereditas on Auth0, including setting up the rules, and also by the Hereditas rules on Auth0 to set timers.
+In the [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}}) article we guided you through the creation of an **API Access** app ("Machine to Machine") and how to get the credentials, which are used by the Hereditas CLI to configure Hereditas on Auth0, including setting up the rules, and also by the Hereditas rules on Auth0 to set timers.
 
 This document focuses on the main "Hereditas" application on Auth0, which is what users will authenticate with.
 
@@ -45,7 +45,7 @@ In the **Grant types** tab:
 The application needs to be configured with the following "Application Metadata" (called `client_metadata` in the Auth0 APIs):
 
 - **`hereditas`**: this is required and must be set to `1`.
-- **`requestTime`**: set this value to `0`. When users that are not owners sign in, rules update this value with the current time (as UNIX timestamp).
+- **`requestTime`**: set this value to `0`. When users that are not owners sign in, the application rules automatically update this value with the current time (as UNIX timestamp).
 - **`waitTime`**: the amount of time, in seconds, to wait before Auth0 can return to users (non-owners) the app token. Set this value to whatever makes sense for you; `86400` (1 day) is often a good amount of time.
 
 ## Rules
@@ -58,8 +58,8 @@ The `auth0` folder in the repository contains the rules that need to be configur
 
 The scripts above contain some tokens that need to be replaced with the list of email addresses of all users or just owners.
 
-- **`/*%OWNERS%*/`** This token needs to be replaced with the JSON-encoded array of all email addresses of users who are owners.
-- **`/*%ALL_USERS%*/`** This token needs to be replaced with the JSON-encoded array of all email addresses of all users.
+- **`/*%OWNERS%*/`** This token needs to be replaced with the JSON-encoded array of the email addresses of users who are owners.
+- **`/*%ALL_USERS%*/`** This token needs to be replaced with the JSON-encoded array of the email addresses of all users.
 
 For example:
 
@@ -76,4 +76,4 @@ In the rules page, add the following settings. You will need some credentials fr
 - **`APP_TOKEN`**: the application token part of the encryption key.
 - **`AUTH0_CLIENT_ID`**: Set this to the Client ID of the API Access app.
 - **`AUTH0_CLIENT_SECRET`**: Set this to the Client Secret of the API Access app.
-- **`WEBHOOK_URL`**: URL of the webhook invoked when a new authentication is successful (see the [Login notifications]({{< relref "/guides/login-notifications.md" >}})).
+- **`WEBHOOK_URL`**: URL of the webhook invoked after a successful authentication (see the [Login notifications]({{< relref "/guides/login-notifications.md" >}})).

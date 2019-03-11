@@ -11,7 +11,7 @@ Each Hereditas box contains an encrypted file named `_index`.
 
 The index file is encrypted with AES-256-GCM, using the same key as the other files in the Hereditas box, and a unique IV of 12 bytes stored at the beginning of the encrypted file.
 
-As a result of the usage of GCM, which is an authenticated cipher, the encryption step outputs an authentication tag too. This is stored inside the JavaScript file in cleartext and it's used to authenticate that the index file's content are authentic.
+As a result of the usage of GCM, which is an authenticated cipher, the encryption step outputs an authentication tag too. This is stored inside the JavaScript file in cleartext and it's used to certify that the index file's content are authentic.
 
 ## Contents
 
@@ -55,5 +55,5 @@ The JSON document is an array of objects each representing a file:
     - `image`: Display the image inline (for images)
     - `attach`: Prompts to download the file
 - `tag`: The authentication tag for the encrypted file, as returned by the GCM cipher
-- `processed`: Contains information on how the file was pre-processed. If not present, means the file wasn't pre-processed. Possible values:
+- `processed`: Contains information on how the file was pre-processed. If not present, it means the file wasn't pre-processed. Possible values:
     - `markdown`: The Markdown file was converted to HTML

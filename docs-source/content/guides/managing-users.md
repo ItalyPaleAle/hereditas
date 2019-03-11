@@ -11,8 +11,8 @@ You can use the Hereditas CLI to add or remove authorized users and owners.
 
 Hereditas users can have one of two roles:
 
-- **user**: This is the normal user role. When someone with an *user* role signs into your Hereditas box, they do are not immediately able to unlock it. Instead, a successful authentication of someone with a *user* role will start the timer, and after the delay you configure (e.g. 24 hours), users can sign in again and this time they'll be able to unlock the box (as long as they know the *user passphrase*).
-- **owner**: When an *owner* successfully signs in, two things happen. First, they are always returned the *application token* by Auth0, so they can unlock the Hereditas box at any time (as long as they know the *user passphrase*). Second, an *owner* logging in always stops any running timer, preventing normal people with an *user* role from accessing your data when you don't want them to.
+- **user**: This is the normal user role. When someone with a *user* role signs into your Hereditas box, they are not immediately able to unlock it. Instead, a successful authentication of someone with a *user* role will start the timer, and after a certain delay (e.g. 24 hours, or as you configured it), users can sign in again and this time they'll be able to unlock the box (as long as they know the *user passphrase*).
+- **owner**: When an *owner* successfully signs in, two things happen. First, they are always returned the *application token* by Auth0, so they can unlock the Hereditas box at any time (as long as they know the *user passphrase*). Second, an *owner* logging in always stops any running timer. This prevents those with a *user* role from accessing your data when you don't want them to.
 
 ## Add or remove authorized users
 

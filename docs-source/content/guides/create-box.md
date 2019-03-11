@@ -5,7 +5,7 @@ type: docs
 
 # Create the box
 
-After gathering all the content you want to encrypt, setting up our "API Access" application on Auth0, and configuring a webhook endpoints to send notifications, we can now create a box on our machine.
+After gathering all the content you want to encrypt, setting up our "API Access" application on Auth0, and configuring a webhook endpoints to send notifications, we can now create a box on our laptop. This will be our "working directory".
 
 ## Initialize a working directory
 
@@ -25,7 +25,7 @@ You'll need to pass some options to the command above:
 - Set `--auth0ClientId` and `--auth0ClientSecret` to the Client Id and Client Secret for the "API Access" app you just created in Auth0
 - `--url` is the URL where the app will be deployed to. We'll be testing locally before deploying the app, so for now you might just want to keep this to `http://localhost:5000`. We can always change this later, without having to re-build the Hereditas box.
 
-After running the command, you'll see that your folder will contain three new objects:
+After running the command, you'll see that your folder now contains three objects:
 
 ````text
 ~/hereditas $ ls
@@ -34,7 +34,7 @@ dist
 hereditas.json
 ````
 
-- The `content` folder is where you can store the data you wish to encrypt
+- The `content` folder is where you store the data you wish to encrypt
 - The `dist` folder will contain the generated web app
 - The `hereditas.json` file contains the configuration for the Hereditas box
 
@@ -68,7 +68,7 @@ The command above will create the application and the rules on Auth0, and make s
 
 ## Next step: Build the static web app
 
-We're finally ready to use the Hereditas CLI to build our static app! Follow the next document for how:
+We're finally ready to use the Hereditas CLI to build our static app! Follow the instructions in the next article for how:
 
 <a class="hereditas-button" href="{{< relref "/guides/build-static-web-app.md" >}}">Build the static web app</a>
 
