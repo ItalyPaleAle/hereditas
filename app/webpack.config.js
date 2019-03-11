@@ -121,7 +121,11 @@ function webpackConfig(appParams) {
                 enabled: prod,
             })
         ],
-        devtool: prod ? false : 'source-map'
+        devtool: prod ? false : 'source-map',
+        performance: {
+            // 400 KB (up from default 250 KB)
+            maxEntrypointSize: 400000
+        }
     }
 }
 
