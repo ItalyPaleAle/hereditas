@@ -11,6 +11,12 @@ Hereditas, which means *inheritance* in Latin, is a static website generator tha
 
 For example, you could use this to pass information such as passwords, cryptographic keys, cryptocurrency wallets, sensitive documents, etc.
 
+**YOUTUBE VIDEO GOES HERE**
+
+## Why we built Hereditas
+
+Check out the announcement [**blog post**](https://withblue.ink) to understand more about why we built Hereditas, and how it's better than the alternatives.
+
 ## Design
 
 We've designed Hereditas with three principles in mind.
@@ -41,7 +47,7 @@ You don't want to rely on a solution that you'll have to keep paying and/or patc
 
 ## Open source
 
-We made Hereditas fully open source so you can study how the app works down to every detail. We wrote the app in JavaScript, and we use Node.js for the CLI and HTML5 for the static web app. The source code is available on GitHub at [ItalyPaleAle/hereditas](https://github.com/ItalyPaleAle/hereditas) under GNU General Public License (GPL) version 3.0 (see [LICENSE](https://github.com/ItalyPaleAle/hereditas/tree/master/LICENSE.md)).
+We made Hereditas fully open source so you can study how the app works down to every detail. We wrote the app in JavaScript, and we use Node.js for the CLI and HTML5 for the static web app. **The source code is available on GitHub at [ItalyPaleAle/hereditas](https://github.com/ItalyPaleAle/hereditas)** under GNU General Public License (GPL) version 3.0 (see [LICENSE](https://github.com/ItalyPaleAle/hereditas/tree/master/LICENSE.md)).
 
 We happily accept contributions! Feel free to submit a Pull Request to fix bugs or add new features. Equally important, you can contribute by improving this [documentation](https://github.com/ItalyPaleAle/hereditas/tree/master/docs-source) you're reading.
 

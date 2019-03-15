@@ -1,6 +1,6 @@
 baseURL: "https://hereditas.app/"
 languageCode: en-us
-title: Hereditas Documentation
+title: Hereditas
 
 # Ignore files
 ignoreFiles:

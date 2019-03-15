@@ -14,9 +14,9 @@ For example, you could use this to pass information such as passwords, cryptogra
 
 ❓ [**What is Hereditas**](https://hereditas.app)
 
-🔐 [**Security model**](https://hereditas.app/introduction/security-model.html)
-
 🚀 [**Get started guide**](https://hereditas.app/guides/get-started.html)
+
+🔐 [**Security model**](https://hereditas.app/introduction/security-model.html)
 
 📘 [**Documentation and CLI reference**](https://hereditas.app)
 
