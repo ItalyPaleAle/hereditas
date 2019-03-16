@@ -39,7 +39,7 @@ We designed Hereditas so it's simple to use for your loved ones, when they need 
 
 As the owner of the Hereditas box, you will provide them with the URL where they can find your box, and the *user passphrase* they need to use to unlock it. You will also whitelist their email address so they can log in with their existing accounts (e.g. Google, Facebook, Microsoft…) – no need to create new accounts for them and have new passwords around.
 
-### No expensive and/or time-consuming maintenance
+### No costly and/or time-consuming maintenance
 
 You don't want to rely on a solution that you'll have to keep paying and/or patching for the rest of your life (and in this case, we mean that literally).
 
