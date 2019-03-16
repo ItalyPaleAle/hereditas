@@ -50,7 +50,6 @@ function webpackConfig(appParams) {
                 {
                     test: /\.(html|svelte)$/,
                     exclude: [
-                        /node_modules/,
                         /main\.html/
                     ],
                     use: {
