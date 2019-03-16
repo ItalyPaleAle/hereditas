@@ -29,7 +29,7 @@ As the owner of an Hereditas box, you can nominate some authorized users by whit
 
 To prevent authorized users from having standing access to your data, however, once they log into your Hereditas box for the first time, they need to wait for a few hours or days before they can unlock the box. This gives you, the owner of the box, enough time to stop the timer, by simply logging into the same Hereditas box.
 
-For example, if you set the waiting time to 24 hours (the default), when a relative of yours tries to log in the timer starts and Hereditas sends you a notification right away. If you've not disappeared, you can log into the same Hereditas box within 24 hours and stop the timer. After that, all your relatives would be able to unlock your Hereditas box by logging in again and typing the *user passphrase*.
+For example, if you set the waiting time to 24 hours (the default), when a relative of yours tries to log in the timer starts and Hereditas sends you a notification right away. If you've not disappeared, you can log into the same Hereditas box within 24 hours and stop the timer. Without any action from you, after the delay has passed all your relatives would be able to unlock your Hereditas box by logging in again and typing the *user passphrase*.
 
 Hereditas generates digital legacy boxes that are encrypted bundles within static HTML5 applications. The encryption key is split between what you give your users and what's stored inside the authorization provider, so no company or provider has standing access to your data.
 
