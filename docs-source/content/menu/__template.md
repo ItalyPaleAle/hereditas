@@ -23,3 +23,5 @@ headless: true
   * [Auth0 manual configuration]({{< relref "/advanced/auth0-manual-configuration.md" >}})
   * [Configuration file]({{< relref "/advanced/configuration-file.md" >}})
   * [Index file]({{< relref "/advanced/index-file.md" >}})
+* **Other**
+  * [GitHub project page](https://github.com/ItalyPaleAle/hereditas)

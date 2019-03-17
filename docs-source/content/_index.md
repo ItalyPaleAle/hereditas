@@ -3,6 +3,8 @@ title: What is Hereditas
 type: docs
 ---
 
+![Hereditas logo](/images/hereditas-logo.png)
+
 # What is Hereditas
 
 **What happens to your digital life after you're gone?**
@@ -15,7 +17,7 @@ For example, you could use this to pass information such as passwords, cryptogra
 
 ## Why we built Hereditas
 
-Check out the announcement [**blog post**](https://withblue.ink) to understand more about why we built Hereditas, and how it's better than the alternatives.
+Check out the announcement [**blog post**](https://withblue.ink/2019/03/19/what-happens-to-your-digital-life-after-youre-gone-introducing-hereditas.html?utm_source=web&utm_campaign=hereditas-docs) to understand more about why we built Hereditas and why you need it too.
 
 ## Design
 
