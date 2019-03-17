@@ -7,7 +7,7 @@
     <tbody>
     {#each list.folders as folder}
         <tr>
-            <td><a href="/list/{folder}" use:link>{folder}</a></td>
+            <td><a href="/list/{list.prefix ? list.prefix + '/' : ''}{folder}" use:link>{folder}</a></td>
         </tr>
     {/each}
     {#each list.files as file}
@@ -28,7 +28,7 @@ export default {
     computed: {
         list: ({match, $box}) => {
             // Check if we have a prefix (folder)
-            const prefix = (match && match.params && match.params.prefix) || ''
+            const prefix = (match && match.params && match.params[0]) || ''
 
             // Get the list
             const folders = []
@@ -59,7 +59,7 @@ export default {
                     })
                 }
             }
-            return {files, folders}
+            return {files, folders, prefix}
         }
     },
 
