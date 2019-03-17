@@ -4,7 +4,7 @@
 [![Downloads/week](https://img.shields.io/npm/dw/hereditas.svg)](https://npmjs.org/package/hereditas)
 [![License](https://img.shields.io/npm/l/hereditas.svg)](https://github.com/ItalyPaleAle/hereditas/blob/master/package.json)
 
-## What happens to your digital life after you die?
+## What happens to your digital life after you're gone?
 
 ![Hereditas logo](./assets/hereditas-logo.png)
 

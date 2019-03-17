@@ -1,6 +1,6 @@
 {
   "name": "hereditas",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Alessandro Segala @ItalyPaleAle",
   "bin": {
     "hereditas": "./bin/run"

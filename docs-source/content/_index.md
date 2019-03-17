@@ -5,7 +5,7 @@ type: docs
 
 # What is Hereditas
 
-**What happens to your digital life after you die?**
+**What happens to your digital life after you're gone?**
 
 Hereditas, which means *inheritance* in Latin, is a static website generator that builds **fully-trustless digital legacy boxes**, where you can store information for your relatives to access in case of your sudden death or disappearance.
 
