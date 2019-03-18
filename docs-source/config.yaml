@@ -25,8 +25,13 @@ disableKinds:
 pygmentsCodeFences: true
 pygmentsStyle: "tango"
 
+# Google analytics
+googleAnalytics: UA-72379106-2
+
 # Privacy
 privacy:
+  googleAnalytics:
+    anonymizeIP: true
   youtube:
     privacyEnhanced: true
 
