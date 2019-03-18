@@ -16,7 +16,7 @@ For example, you could use this to pass information such as passwords, cryptogra
 
 Read the [Hereditas announcement](https://withblue.ink/2019/03/19/what-happens-to-your-digital-life-after-youre-gone-introducing-hereditas.html?utm_source=web&utm_campaign=hereditas-github) to understand more on why we need Hereditas.
 
-You can also watch this intro video: **YOUTUBE LINK GOES HERE**
+You can also watch this short [intro video](https://www.youtube.com/watch?v=lZEKgB5dzQ4).
 
 ## Get started and documentation
 
