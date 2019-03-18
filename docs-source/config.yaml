@@ -25,6 +25,11 @@ disableKinds:
 pygmentsCodeFences: true
 pygmentsStyle: "tango"
 
+# Privacy
+privacy:
+  youtube:
+    privacyEnhanced: true
+
 # Theme
 theme: book
 

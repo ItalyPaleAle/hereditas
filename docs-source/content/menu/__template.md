@@ -6,7 +6,8 @@ headless: true
 
 * **Introduction**
   * [What is Hereditas]({{< relref "/" >}})
-  * [Security Model]({{< relref "/introduction/security-model.md" >}})
+  * [Quickstart video]({{< relref "/introduction/quickstart-video.md" >}})
+  * [Security model]({{< relref "/introduction/security-model.md" >}})
 * **Guides**
   * [Get started]({{< relref "/guides/get-started.md" >}})
   * [Auth0 setup]({{< relref "/guides/auth0-setup.md" >}})

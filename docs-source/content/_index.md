@@ -13,7 +13,7 @@ Hereditas, which means *inheritance* in Latin, is a static website generator tha
 
 For example, you could use this to pass information such as passwords, cryptographic keys, cryptocurrency wallets, sensitive documents, etc.
 
-**YOUTUBE VIDEO GOES HERE**
+{{< youtube lZEKgB5dzQ4 >}}
 
 ## Why we built Hereditas
 
@@ -59,4 +59,8 @@ If you believe you've found a security issue that could impact other people, ple
 
 Ready? Get started with Hereditas now!
 
-<a class="hereditas-button" href="{{< relref "/guides/get-started.md" >}}">Get started with Hereditas</a>
+<a class="hereditas-button" href="{{< relref "/introduction/quickstart-video.md" >}}">Quickstart Video</a>
+
+Or:
+
+<a class="hereditas-button" href="{{< relref "/guides/get-started.md" >}}">Get started documentation</a>
