@@ -72,6 +72,9 @@ export class Box {
 
                 return Decrypt(this._key, iv, data, tag)
                     .then((data) => {
+                        // Clone the info object
+                        info = JSON.parse(JSON.stringify(info))
+
                         // If it's text, decode it
                         if (info.display == 'text' || info.display == 'html') {
                             info.text = buf2str(new Uint8Array(data))

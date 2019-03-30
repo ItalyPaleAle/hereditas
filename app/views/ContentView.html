@@ -1,6 +1,16 @@
 {#await contentPromise}
     Loading...
 {:then content}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/list/" use:link>home</a></li>
+            {#each content.path as path, i}
+                <li class="breadcrumb-item"><a href="/list/{content.path.slice(0, i + 1).join('/') + '/'}" use:link>{path}</a></li>
+            {/each}
+            <li class="breadcrumb-item active" aria-current="page">{content.name}</li>
+        </ol>
+    </nav>
+
     {#if content.display == 'text'}
         <pre>{content.text}</pre>
     {:elseif content.display == 'html'}
@@ -17,6 +27,7 @@
 
 <script type="text/javascript">
 import {getHistory} from '../../vendor/svelte-routing'
+import link from '../../vendor/svelte-routing/link'
 
 export default {
     computed: {
@@ -45,19 +56,19 @@ export default {
 
             // Fetch the data
             return $box.fetchContent(element)
-                .then((element) => {
+                .then((result) => {
                     // Build the URL for attachments and images, and get the file name
-                    if (element.display != 'text' && element.display != 'html') {
+                    if (result.display != 'text' && result.display != 'html') {
                         // Convert data to a Blob
-                        element.blob = URL.createObjectURL(new Blob([element.data], {type: "octet/stream"}))
-                        delete element.data
-
-                        // Get file name
-                        const parts = element.path.split('/')
-                        element.name = parts[parts.length - 1]
+                        result.blob = URL.createObjectURL(new Blob([result.data], {type: "octet/stream"}))
+                        delete result.data
                     }
 
-                    return element
+                    // Get the path components
+                    result.path = element.path.split('/')
+                    result.name = result.path.pop()
+
+                    return result
                 })
                 .catch((error) => {
                     // Log the error
@@ -77,6 +88,10 @@ export default {
                 getHistory().replace('/')
             }, 0)
         }
-	}
+    },
+
+    actions: {
+        link
+    }
 }
 </script>

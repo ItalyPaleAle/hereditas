@@ -11,7 +11,7 @@ export default [
         component: UnlockView
     },
     {
-        path: '/list/(.*?)',
+        path: '/list/(.+)',
         exact: true,
         component: ListView
     },

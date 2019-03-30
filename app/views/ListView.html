@@ -1,3 +1,20 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {#if list.paths && list.paths.length}
+            <li class="breadcrumb-item"><a href="/list/" use:link>home</a></li>
+            {#each list.paths as path, i}
+                {#if i == (list.paths.length - 1)}
+                    <li class="breadcrumb-item active" aria-current="page">{path}</li>
+                {:else}
+                    <li class="breadcrumb-item"><a href="/list/{list.paths.slice(0, i + 1).join('/') + '/'}" use:link>{path}</a></li>
+                {/if}
+            {/each}
+        {:else}
+            <li class="breadcrumb-item active" aria-current="page">home</li>
+        {/if}
+    </ol>
+</nav>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -28,7 +45,10 @@ export default {
     computed: {
         list: ({match, $box}) => {
             // Check if we have a prefix (folder)
-            const prefix = (match && match.params && match.params[0]) || ''
+            let prefix = (match && match.params && match.params[0]) || ''
+            if (prefix.charAt(prefix.length - 1) == '/') {
+                prefix = prefix.substring(0, prefix.length - 1)
+            }
 
             // Get the list
             const folders = []
@@ -59,7 +79,8 @@ export default {
                     })
                 }
             }
-            return {files, folders, prefix}
+            const paths = prefix ? prefix.split('/') : []
+            return {files, folders, prefix, paths}
         }
     },
 
