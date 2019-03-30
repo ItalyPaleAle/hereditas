@@ -24,8 +24,16 @@ class BuildCommand extends Command {
             return this.exit(1)
         }
 
-        // Ask for the user passphrase
-        const passphrase = await cli.prompt('User passphrase', {type: 'mask'})
+        // Check if we have a passphrase passed as environmental variable (useful for development only)
+        let passphrase
+        if (process.env.HEREDITAS_PASSPHRASE) {
+            passphrase = process.env.HEREDITAS_PASSPHRASE
+            this.warn('Passphrase set through the HEREDITAS_PASSPHRASE environmental variable; this should be used for development only')
+        }
+        else {
+            // Ask for the user passphrase
+            passphrase = await cli.prompt('User passphrase', {type: 'mask'})
+        }
         if (!passphrase || passphrase.length < 8) {
             this.error('Passphrase needs to be at least 8 characters long')
             return this.exit(1)
