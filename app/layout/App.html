@@ -1,8 +1,16 @@
+<nav class="navbar navbar-light bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <span class="navbar-brand mb-0 h1">{$pageTitle}</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h1>Hereditas</h1>
-
+        <div class="col-12">
             {#if unrecoverableError}
                 <RequestAuthentication error={unrecoverableError} />
             {:else}

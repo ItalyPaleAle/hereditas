@@ -147,7 +147,8 @@ const app = (async function() {
     const store = new Store({
         profile,
         hereditasProfile,
-        box
+        box,
+        pageTitle: 'Hereditas'
     })
 
     // Hash-based history for svelte-routing

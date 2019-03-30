@@ -1,9 +1,10 @@
+<h1>Authentication error</h1>
 {#if error}
-    <p><b>Error:</b> {error}</p>
+    <p><b>Error description:</b> {error}</p>
 {:else}
-    <p>Your authentication failed or the session has expired.</p>
+    <p>Your session has expired, or you've run into an unspecified authentication error.</p>
 {/if}
-<a href={authUrl} class="btn btn-primary">Authenticate</a>
+<a href={authUrl} class="btn btn-primary">Try authenticating again</a>
 
 <script type="text/javascript">
 import credentials from '../lib/Credentials'

@@ -1,13 +1,14 @@
-<p>Hello, <b>{$profile.name}!</b></p>
+<h1>Hello, {$profile.name}!</h1>
 {#if $hereditasProfile.role == 'owner'}
-    <p>You're the owner of this Hereditas instance. By logging in, you have just reset the timer for the waiting period before other users can get access. As you're the owner, you can browse the full content of this Hereditas.</p>
+    <h2>You're the owner of this Hereditas box, so you can unlock it at any time.</h2>
+    <p class="alert alert-info" role="alert">By logging in, you have stopped the timer for the waiting period before other users can unlock your box.</p>
     <PassphraseBox />
 {:else}
     {#if $hereditasProfile.token}
-        <p>You have now access to the content of this Hereditas.</p>
+        <p>You can now access to the content of this Hereditas.</p>
         <PassphraseBox />
     {:else}
-        <p>Thanks for requesting access. This Hereditas will be unlocked at {unlockedDate.toLocaleString()}; please check later.<br/>
+        <p class="alert alert-info" role="alert">Thanks for requesting access. This Hereditas box will be unlocked on <b>{unlockedDate.toLocaleString()}</b>. Please check later.<br/>
         Important: if an owner signs in with their account, this Hereditas will be locked again.</p>
     {/if}
 {/if}
