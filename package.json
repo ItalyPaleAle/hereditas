@@ -7,13 +7,13 @@
   },
   "bugs": "https://github.com/ItalyPaleAle/hereditas/issues",
   "dependencies": {
-    "@oclif/command": "^1.5.11",
-    "@oclif/config": "^1.12.9",
+    "@oclif/command": "^1.5.12",
+    "@oclif/config": "^1.12.12",
     "@oclif/plugin-help": "^2.1.6",
-    "auth0": "^2.14.0",
-    "cli-ux": "^5.2.0",
+    "auth0": "^2.16.0",
+    "cli-ux": "^5.2.1",
     "css-loader": "^2.1.1",
-    "history": "^4.7.2",
+    "history": "^4.9.0",
     "html-webpack-plugin": "^3.2.0",
     "idtoken-verifier": "^1.2.0",
     "lodash.clonedeep": "^4.5.0",
@@ -22,7 +22,7 @@
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.11.0",
     "path-to-regexp": "^2.4.0",
-    "query-string": "^6.3.0",
+    "query-string": "^6.4.2",
     "sass-loader": "^7.1.0",
     "smhelper": "^1.2.2",
     "style-loader": "^0.23.1",
@@ -33,8 +33,8 @@
     "webpack-subresource-integrity": "^1.3.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.21.3",
-    "eslint": "^5.15.1",
+    "@oclif/dev-cli": "^1.22.0",
+    "eslint": "^5.16.0",
     "globby": "^9.1.0",
     "mustache": "^3.0.1",
     "serve": "^10.1.2"
