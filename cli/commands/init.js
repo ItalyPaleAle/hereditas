@@ -47,6 +47,23 @@ class InitCommand extends Command {
         })
         await config.save()
 
+        // Create the welcome.md file
+        const welcomeContent = `## What is this?
+
+Someone (likely, a loved one) told you to come here in case they suddenly disappeared. This box contains important information about the digital life of the person that shared it with you, for example passwords, digital documents, photos, cryptocurrency wallets, etc.
+
+## How do I use this?
+
+Sign in above using your existing account. You will then need to type the passphrase that you've been given.
+
+Unless you're the owner of this box, you won't immediately have access to its content, but instead you'll have to wait a certain amount of time. During that time, if the owner signs in here, they will block the timer and you will not get access to this box.
+
+## About Hereditas
+
+[Hereditas](https://hereditas.app) is an open source project to generate "fully-trustless" digital legacy boxes.`
+
+        await util.promisify(fs.writeFile)(path.relative('', 'welcome.md'), welcomeContent)
+
         this.log('Project initialized')
     }
 }

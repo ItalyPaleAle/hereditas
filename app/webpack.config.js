@@ -4,6 +4,8 @@ const SriPlugin = require('webpack-subresource-integrity')
 const {DefinePlugin} = require('webpack')
 const {sass} = require('svelte-preprocess-sass')
 const path = require('path')
+const fs = require('fs')
+const marked = require('marked')
 
 const mode = process.env.NODE_ENV || 'production'
 const prod = mode === 'production'
@@ -19,6 +21,10 @@ const htmlMinifyOptions = {
     processConditionalComments: true,
     removeEmptyAttributes: true
 }
+
+// Welcome content
+const welcomeMarkdown = fs.readFileSync('welcome.md', 'utf8')
+const welcomeContent = marked(welcomeMarkdown)
 
 /**
  * Returns a configuration object for webpack
@@ -98,7 +104,8 @@ function webpackConfig(appParams) {
                 'process.env.KEY_SALT': JSON.stringify(appParams.keySalt.toString('base64')),
                 'process.env.INDEX_TAG': JSON.stringify(appParams.indexTag.toString('base64')),
                 'process.env.PBKDF2_ITERATIONS': JSON.stringify(appParams.pbkdf2Iterations),
-                'process.env.KEY_DERIVATION_FUNCTION': JSON.stringify(appParams.kdf)
+                'process.env.KEY_DERIVATION_FUNCTION': JSON.stringify(appParams.kdf),
+                'process.env.WELCOME_MD': JSON.stringify(welcomeContent)
             }),
 
             // Extract CSS

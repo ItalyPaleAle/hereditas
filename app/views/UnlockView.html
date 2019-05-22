@@ -4,6 +4,19 @@
     <RequestAuthentication />
 {/if}
 
+<section class="welcome">
+{@html welcome}
+</section>
+
+<style>
+.welcome {
+    margin: 0.5em 1em 0 1em;
+    padding: 1em;
+    border: 1px solid #333333;
+    color: #333333;
+}
+</style>
+
 <script type="text/javascript">
 import {getHistory} from '../../vendor/svelte-routing'
 
@@ -11,6 +24,12 @@ export default {
     components: {
         UserProfile: '../components/UserProfile.html',
         RequestAuthentication: '../components/RequestAuthentication.html'
+    },
+
+    data() {
+        return {
+            welcome: process.env.WELCOME_MD
+        }
     },
 
     oncreate() {
