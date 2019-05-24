@@ -2,16 +2,14 @@
 import '../vendor/bootstrap/css/bootstrap.min.css'
 
 // JavaScript modules
-import App from './layout/App.html'
+import App from './layout/App.svelte'
 import credentials from './lib/Credentials'
 import queryString from 'query-string'
 import {Box} from './lib/Box'
 import {AuthenticationAttempts} from './lib/Credentials'
-import {Store} from 'svelte/store.js'
-import {createHashHistory} from '../vendor/svelte-routing'
 
-// Import routes
-import routes from './routes'
+// Import stores
+import {profile, hereditasProfile, box} from './stores'
 
 // Style
 import './main.scss'
@@ -81,9 +79,9 @@ async function handleSession(hash) {
 
     // Get the profile
     // If there's no session or it has expired, redirect to auth page
-    let profile
+    let profileData
     try {
-        profile = await credentials.getProfile()
+        profileData = await credentials.getProfile()
     }
     catch (error) {
         // eslint-disable-next-line no-console
@@ -92,13 +90,13 @@ async function handleSession(hash) {
         throw Error('Token error')
     }
 
-    return profile
+    return profileData
 }
 
 const app = (async function() {
-    let profile
-    let hereditasProfile = null
-    let box = null
+    let _profile
+    let _hereditasProfile = null
+    let _box = null
 
     // Parse the hash if any
     const hash = getHash()
@@ -108,15 +106,15 @@ const app = (async function() {
     if (!unrecoverableError) {
         // Load profile and check session
         try {
-            profile = await handleSession(hash)
+            _profile = await handleSession(hash)
         }
         catch (err) {
-            profile = false
+            _profile = null
             unrecoverableError = err
         }
 
         // If we're not authenticated, and this is the first attempt, automatically redirect users
-        if (!profile) {
+        if (!_profile) {
             if (attempts.increaseAttempts() < 1) {
                 window.location.href = credentials.authorizationUrl()
                 return
@@ -124,16 +122,16 @@ const app = (async function() {
         }
         else {
             // Hereditas profile (from the profile)
-            hereditasProfile = profile[process.env.ID_TOKEN_NAMESPACE] || {}
+            _hereditasProfile = _profile[process.env.ID_TOKEN_NAMESPACE] || {}
 
             // Check if we have an app token
-            if (hereditasProfile.token) {
+            if (_hereditasProfile.token) {
                 try {
                     // Create a new box and fetch the index
-                    box = new Box()
+                    _box = new Box()
 
                     // Fetch the index asynchronously and do not wait for completion
-                    box.fetchIndex()
+                    _box.fetchIndex()
                 }
                 catch (err) {
                     // eslint-disable-next-line no-console
@@ -143,24 +141,16 @@ const app = (async function() {
         }
     }
 
-    // Create a Store for the Svelte app
-    const store = new Store({
-        profile,
-        hereditasProfile,
-        box,
-        pageTitle: 'Hereditas'
-    })
-
-    // Hash-based history for svelte-routing
-    createHashHistory()
+    // Store the profile, hereditasProfile and box into Svelte stores
+    profile.set(_profile)
+    hereditasProfile.set(_hereditasProfile)
+    box.set(_box)
 
     // Crete a Svelte app by loading the main view
     return new App({
         target: document.body,
-        store,
-        data: {
-            unrecoverableError,
-            routes
+        props: {
+            unrecoverableError
         }
     })
 })()
