@@ -6,21 +6,20 @@
 {/if}
 <a href={authUrl} class="btn btn-primary">Try authenticating again</a>
 
-<script type="text/javascript">
+<script>
+// Libs
 import credentials from '../lib/Credentials'
 
-export default {
-    computed: {
-        authUrl: ({$profile}) => {
-            // If we're not authenticated, request a URL
-            return $profile ? undefined : credentials.authorizationUrl()
-        }
-    },
+// Stores
+import {profile} from '../stores'
 
-    data() {
-        return {
-            error: null
-        }
-    }
+// Props
+export const error = null
+
+// Generate authentication url
+let authUrl = undefined
+$: {
+    // If we're not authenticated, request a URL
+    authUrl = $profile ? undefined : credentials.authorizationUrl()
 }
 </script>

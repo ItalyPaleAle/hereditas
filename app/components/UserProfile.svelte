@@ -13,19 +13,17 @@
     {/if}
 {/if}
 
-<script type="text/javascript">
-import credentials from '../lib/Credentials'
+<script>
+// Components
+import PassphraseBox from './PassphraseBox.svelte'
 
-export default {
-    components: {
-        PassphraseBox: './PassphraseBox.html'
-    },
+// Stores
+import {profile, hereditasProfile} from '../stores'
 
-    computed: {
-        unlockedDate: ({$hereditasProfile}) => {
-            // Get the date at which this Hereditas instance is unlocked
-            return new Date(($hereditasProfile.requestTime + $hereditasProfile.waitTime) * 1000)
-        }
-    }
+// Unlocked date
+let unlockedDate = new Date()
+$: {
+    // Get the date at which this Hereditas instance is unlocked
+    unlockedDate = new Date(($hereditasProfile.requestTime + $hereditasProfile.waitTime) * 1000)
 }
 </script>

@@ -39,7 +39,7 @@ function webpackConfig(appParams) {
         },
         resolve: {
             mainFields: ['svelte', 'browser', 'module', 'main'],
-            extensions: ['.js', '.html', '.svelte'],
+            extensions: ['.mjs', '.js', '.svelte'],
             modules: [path.resolve(__dirname, '../node_modules')]
         },
         resolveLoader: {
@@ -54,17 +54,12 @@ function webpackConfig(appParams) {
         module: {
             rules: [
                 {
-                    test: /\.(html|svelte)$/,
-                    exclude: [
-                        /main\.html/
-                    ],
+                    test: /\.(svelte)$/,
+                    exclude: [],
                     use: {
                         loader: 'svelte-loader',
                         options: {
-                            skipIntroByDefault: true,
-                            nestedTransitions: true,
                             emitCss: true,
-                            hotReload: true,
 
                             // Preprocess SASS/SCSS
                             preprocess: {

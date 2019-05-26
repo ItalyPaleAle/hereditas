@@ -14,26 +14,23 @@
             {#if unrecoverableError}
                 <RequestAuthentication error={unrecoverableError} />
             {:else}
-                {#each routes as r}
-                    {#if r.exact}
-                        <Route exact path="{r.path}" component={r.component} />
-                    {:else}
-                        <Route path="{r.path}" component={r.component} />
-                    {/if}
-                {/each}
+                <Router {routes}/>
             {/if}
         </div>
     </div>
 </div>
 
-<script type="text/javascript">
-import Route from '../../vendor/svelte-routing/Route.html'
+<script>
+// Components
+import RequestAuthentication from '../components/RequestAuthentication.svelte'
 
-export default {
-    components: {
-        Route,
-        RequestAuthentication: '../components/RequestAuthentication.html'
-    }
-}
+// Router and routes
+import Router from 'svelte-spa-router'
+import routes from '../routes'
+
+// Stores
+import {pageTitle} from '../stores'
+
+// Props
+export const unrecoverableError = null
 </script>
-

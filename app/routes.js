@@ -1,28 +1,12 @@
 // Import routes
-import UnlockView from './views/UnlockView.html'
-import ListView from './views/ListView.html'
-import ContentView from './views/ContentView.html'
+import UnlockView from './views/UnlockView.svelte'
+import ListView from './views/ListView.svelte'
+import ContentView from './views/ContentView.svelte'
 
 // Map of all routes
-export default [
-    {
-        path: '/',
-        exact: true,
-        component: UnlockView
-    },
-    {
-        path: '/list/(.+)',
-        exact: true,
-        component: ListView
-    },
-    {
-        path: '/list',
-        exact: true,
-        component: ListView
-    },
-    {
-        path: '/content/:element',
-        exact: true,
-        component: ContentView
-    }
-]
+export default {
+    '/': UnlockView,
+    '/list/*': ListView,
+    '/list': ListView,
+    '/content/:element': ContentView
+}
