@@ -21,7 +21,7 @@
     <p>Error while fetching the index: {error}</p>
 {/await}
 
-<script type="text/javascript">
+<script>
 // Libs
 import {replace} from 'svelte-spa-router'
 
