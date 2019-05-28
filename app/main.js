@@ -4,7 +4,7 @@ import '../vendor/bootstrap/css/bootstrap.min.css'
 // JavaScript modules
 import App from './layout/App.svelte'
 import credentials from './lib/Credentials'
-import queryString from 'query-string'
+import qs from 'qs'
 import {Box} from './lib/Box'
 import {AuthenticationAttempts} from './lib/Credentials'
 
@@ -26,7 +26,11 @@ function getHash() {
         if (hash.charAt(0) == '/') {
             hash = hash.substr(1)
         }
-        const parsed = queryString.parse(hash)
+        const parsed = qs.parse(hash, {
+            depth: 1,
+            parameterLimit: 20,
+            ignoreQueryPrefix: true,
+        })
 
         // Remove the information from the URL (for security, in case it contains an id_token)
         history.replaceState(undefined, undefined, '#')

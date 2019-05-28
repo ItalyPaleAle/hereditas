@@ -22,7 +22,7 @@
     "mini-css-extract-plugin": "^0.6.0",
     "node-sass": "^4.12.0",
     "path-to-regexp": "^2.4.0",
-    "query-string": "^6.5.0",
+    "qs": "^6.7.0",
     "sass-loader": "^7.1.0",
     "smhelper": "^1.2.2",
     "style-loader": "^0.23.1",
