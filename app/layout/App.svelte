@@ -1,8 +1,8 @@
-<nav class="navbar navbar-light bg-light">
+<nav class="navbar navbar-dark bg-primary">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12">
-                <span class="navbar-brand mb-0 h1">{$pageTitle}</span>
+                <span class="navbar-brand mb-0">{$pageTitle}</span>
             </div>
         </div>
     </div>

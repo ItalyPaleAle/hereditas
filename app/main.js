@@ -1,5 +1,6 @@
 // CSS
 import '../vendor/bootstrap/css/bootstrap.min.css'
+import '../vendor/shards/css/shards.min.css'
 
 // JavaScript modules
 import App from './layout/App.svelte'
