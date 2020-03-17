@@ -44,29 +44,6 @@ class Nonce {
 }
 
 /**
- * Manages authentication attemps and keeps a counter. This is important to avoid endless loops between the app and the auth provider.
- */
-export class AuthenticationAttempts {
-    constructor() {
-        this._attemptsKeyName = 'hereditas-attempts'
-    }
-
-    getAttempts() {
-        return parseInt((storage.sessionStorage.getItem(this._attemptsKeyName) || 0), 10)
-    }
-
-    increaseAttempts() {
-        const attempts = this.getAttempts()
-        storage.sessionStorage.setItem(this._attemptsKeyName, attempts + 1)
-        return attempts
-    }
-
-    resetAttempts() {
-        storage.sessionStorage.setItem(this._attemptsKeyName, 0)
-    }
-}
-
-/**
  * Managed the authentication flow, and validates the JWT token.
  */
 export class Credentials {

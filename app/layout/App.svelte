@@ -11,11 +11,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12">
-            {#if unrecoverableError}
-                <RequestAuthentication error={unrecoverableError} />
-            {:else}
-                <Router {routes}/>
-            {/if}
+            <Router {routes}/>
         </div>
     </div>
 </div>
@@ -30,7 +26,4 @@ import routes from '../routes'
 
 // Stores
 import {pageTitle} from '../stores'
-
-// Props
-export const unrecoverableError = null
 </script>

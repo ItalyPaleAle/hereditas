@@ -1,20 +1,18 @@
-<h1>Authentication error</h1>
-{#if error}
-    <p><b>Error description:</b> {error}</p>
+{#if $authError}
+    <h1>Authentication error</h1>
+    <p><b>Error description:</b> {$authError}</p>
+    <a href={authUrl} class="btn btn-primary">Try authenticating again</a>
 {:else}
-    <p>Your session has expired, or you've run into an unspecified authentication error.</p>
+    <h1>Welcome to this Hereditas box</h1>
+    <a href={authUrl} class="btn btn-primary">Authenticate</a>
 {/if}
-<a href={authUrl} class="btn btn-primary">Try authenticating again</a>
 
 <script>
 // Libs
 import credentials from '../lib/Credentials'
 
 // Stores
-import {profile} from '../stores'
-
-// Props
-export const error = null
+import {profile, authError} from '../stores'
 
 // Generate authentication url
 let authUrl = undefined

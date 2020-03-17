@@ -6,15 +6,12 @@ import App from './layout/App.svelte'
 import credentials from './lib/Credentials'
 import qs from 'qs'
 import {Box} from './lib/Box'
-import {AuthenticationAttempts} from './lib/Credentials'
 
 // Import stores
-import {profile, hereditasProfile, box} from './stores'
+import {profile, hereditasProfile, box, authError} from './stores'
 
 // Style
 import './main.scss'
-
-const attempts = new AuthenticationAttempts()
 
 function getHash() {
     let hash = window.location.hash
@@ -54,7 +51,7 @@ function checkAuthError(hash) {
         }
     }
 
-    return false
+    return null
 }
 
 async function handleSession(hash) {
@@ -64,9 +61,6 @@ async function handleSession(hash) {
         // If there's an error, redirect to auth page
         try {
             await credentials.setToken(hash.id_token)
-
-            // Reset attempts counter
-            attempts.resetAttempts()
         }
         catch (error) {
             // eslint-disable-next-line no-console
@@ -117,14 +111,8 @@ const app = (async function() {
             unrecoverableError = err
         }
 
-        // If we're not authenticated, and this is the first attempt, automatically redirect users
-        if (!_profile) {
-            if (attempts.increaseAttempts() < 1) {
-                window.location.href = credentials.authorizationUrl()
-                return
-            }
-        }
-        else {
+        // Hereditas profile (from the profile)
+        if (_profile) {
             // Hereditas profile (from the profile)
             _hereditasProfile = _profile[process.env.ID_TOKEN_NAMESPACE] || {}
 
@@ -149,13 +137,11 @@ const app = (async function() {
     profile.set(_profile)
     hereditasProfile.set(_hereditasProfile)
     box.set(_box)
+    authError.set(unrecoverableError)
 
     // Crete a Svelte app by loading the main view
     return new App({
-        target: document.body,
-        props: {
-            unrecoverableError
-        }
+        target: document.body
     })
 })()
 
