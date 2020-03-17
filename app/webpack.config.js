@@ -23,8 +23,11 @@ const htmlMinifyOptions = {
 }
 
 // Welcome content
-const welcomeMarkdown = fs.readFileSync('welcome.md', 'utf8')
-const welcomeContent = marked(welcomeMarkdown)
+let welcomeContent = ''
+if (fs.existsSync('welcome.md')) {
+    const welcomeMarkdown = fs.readFileSync('welcome.md', 'utf8')
+    welcomeContent = marked(welcomeMarkdown)
+}
 
 /**
  * Returns a configuration object for webpack

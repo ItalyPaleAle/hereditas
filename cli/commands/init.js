@@ -56,11 +56,15 @@ Someone (likely, a loved one) told you to come here in case they suddenly disapp
 
 Sign in above using your existing account. You will then need to type the passphrase that you've been given.
 
-Unless you're the owner of this box, you won't immediately have access to its content, but instead you'll have to wait a certain amount of time. During that time, if the owner signs in here, they will block the timer and you will not get access to this box.
+Unless you're the owner of this box, you won't immediately have access to its content, but instead you'll have to wait a certain amount of time.
+
+During that time, if the owner signs in here too, they will reset the timer and you will not get access to this box.
 
 ## About Hereditas
 
-[Hereditas](https://hereditas.app) is an open source project to generate "fully-trustless" digital legacy boxes.`
+[Hereditas](https://hereditas.app) is an open source project to generate "fully-trustless" digital legacy boxes.
+s
+`
 
         await util.promisify(fs.writeFile)(path.relative('', 'welcome.md'), welcomeContent)
 
