@@ -1,7 +1,7 @@
 <h1>Hello, {$profile.name}!</h1>
 {#if $hereditasProfile.role == 'owner'}
     <p class="mb-2">You're the owner of this Hereditas box, so you can unlock it at any time.</p>
-    <p class="m-2 p-2 border border-blue-600 bg-blue-400 text-white shadow" role="alert">By logging in, you have stopped the timer for the waiting period before other users can unlock your box.</p>
+    <p class="mx-2 my-4 p-2 border border-blue-600 bg-blue-400 text-white shadow" role="alert">By logging in, you have stopped the timer for the waiting period before other users can unlock your box.</p>
     <PassphraseBox />
 {:else}
     {#if $hereditasProfile.token}

@@ -1,22 +1,30 @@
 {#await $box.fetchIndex()}
     <p>Fetching index, please wait…</p>
 {:then response}
-    <form on:submit|preventDefault={handleSubmit}>
-        <div class="form-group row">
-            <label for="inputPassphrase" class="col-sm-4 col-form-label">Unlock passphrase:</label>
-            <div class="col-sm-8">
-                <input type="password" class="form-control {unlockError ? 'is-invalid' : ''}" id="inputPassphrase" bind:value={passphrase} />
-                <div class="invalid-feedback">
-                    The passphrase isn't correct.
-                </div>
+    <form class="w-full max-w-md" on:submit|preventDefault={handleSubmit}>
+        <div class="md:flex md:items-center mb-6">
+            <div class="md:w-1/3">
+                <label class="block md:text-right mb-1 md:mb-0 pr-4" for="inputPassphrase">
+                    Unlock passphrase:
+                </label>
+            </div>
+            <div class="md:w-2/3">
+                <input class="bg-white appearance-none border {unlockError ? 'border-red-500' : 'border-gray-200'} rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500" id="inputPassphrase" bind:value={passphrase} type="password" placeholder="•••••••" />
+                {#if unlockError}
+                    <p class="text-xs text-red-500">This passphrase isn't correct</p>
+                {/if}
             </div>
         </div>
-        <div class="form-group row">
-            <div class="col-sm-8">
-                <button type="submit" class="btn btn-primary">Browse this Hereditas</button>
+        <div class="md:flex md:items-center">
+            <div class="md:w-1/3"></div>
+            <div class="md:w-2/3">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white no-underline font-bold py-2 px-4 rounded" type="submit">
+                    Browse this Hereditas
+                </button>
             </div>
         </div>
     </form>
+
 {:catch error}
     <p>Error while fetching the index: {error}</p>
 {/await}
@@ -34,6 +42,7 @@ let unlockError = false
 
 // Form submit handler
 function handleSubmit() {
+    unlockError = false
     $box.unlock(passphrase, $hereditasProfile.token)
         .then((_) => {
             unlockError = false

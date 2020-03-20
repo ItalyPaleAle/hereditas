@@ -4,8 +4,8 @@
     <RequestAuthentication />
 {/if}
 
-<h1 class="mb-4">About this page</h1>
-<section class="markdown mt-4">
+<h1 class="my-4">About this page</h1>
+<section class="rendered mt-4">
   {@html welcome}
 </section>
 

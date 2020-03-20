@@ -1,6 +1,6 @@
 {#if $authError}
     <h1>Authentication error</h1>
-    <p><b>Error description:</b> {$authError}</p>
+    <p class="mb-2"><b>Error description:</b> {$authError}</p>
     <a href={authUrl} class="bg-blue-500 hover:bg-blue-700 text-white no-underline font-bold py-2 px-4 rounded">Try authenticating again</a>
 {:else}
     <h1>Authenticate with this Hereditas box</h1>

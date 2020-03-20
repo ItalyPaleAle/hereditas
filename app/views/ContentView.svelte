@@ -1,20 +1,30 @@
 {#await contentPromise}
     Loading...
 {:then content}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/list/" use:link>home</a></li>
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a href="/list/" use:link>home</a>
+                <span class="px-1">&gt;</span>
+            </li>
             {#each content.path as path, i}
-                <li class="breadcrumb-item"><a href="/list/{content.path.slice(0, i + 1).join('/') + '/'}" use:link>{path}</a></li>
+                <li class="flex items-center">
+                    <a href="/list/{content.path.slice(0, i + 1).join('/') + '/'}" use:link>{path}</a>
+                    <span class="px-1">&gt;</span>
+                </li>
             {/each}
-            <li class="breadcrumb-item active" aria-current="page">{content.name}</li>
+            <li class="text-gray-600" aria-current="page">{content.name}</li>
         </ol>
     </nav>
 
     {#if content.display == 'text'}
-        <pre>{content.text}</pre>
+        <section class="rendered">
+            <pre class="w-full whitespace-pre-wrap">{content.text}</pre>
+        </section>
     {:else if content.display == 'html'}
-        {@html content.text}
+        <section class="rendered">
+            {@html content.text}
+        </section>
     {:else if content.display == 'image'}
         <img src="{content.blob}" alt="{content.name}" class="img-fluid" />
     {:else}

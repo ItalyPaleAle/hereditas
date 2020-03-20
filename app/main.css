@@ -20,10 +20,31 @@ a {
     @apply text-blue-600 underline;
 }
 
-/* Markdown-rendered content */
-section.markdown {
-    @apply my-2 mx-4;
+/* Rendered content */
+section.rendered {
+    @apply my-2 mx-4 px-3 py-1 bg-white border border-blue-500;
 }
-.markdown h1, .markdown h2, .markdown h3 {
-    @apply mt-2;
+.rendered h1, .rendered h2, .rendered h3, .rendered h4, .rendered h5, .rendered h6 {
+    @apply mt-4 mb-2;
+}
+.rendered p {
+    @apply my-2;
+}
+.rendered pre {
+    @apply mx-2;
+}
+.rendered code {
+    @apply w-full whitespace-pre-wrap text-sm;
+}
+.rendered ul {
+    @apply list-disc list-inside;
+}
+.rendered ol {
+    @apply list-decimal list-inside;
+}
+.rendered ul li, .rendered ol li {
+    @apply pl-6;
+}
+.rendered blockquote {
+    @apply italic px-6 text-sm;
 }
