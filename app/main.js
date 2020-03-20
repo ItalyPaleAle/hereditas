@@ -1,5 +1,5 @@
-// CSS
-import '../vendor/bootstrap/css/bootstrap.min.css'
+// Style
+import './main.css'
 
 // JavaScript modules
 import App from './layout/App.svelte'
@@ -9,9 +9,6 @@ import {Box} from './lib/Box'
 
 // Import stores
 import {profile, hereditasProfile, box, authError} from './stores'
-
-// Style
-import './main.scss'
 
 function getHash() {
     let hash = window.location.hash

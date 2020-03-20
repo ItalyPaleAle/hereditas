@@ -1,29 +1,15 @@
-<nav class="navbar navbar-light bg-light">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <span class="navbar-brand mb-0 h1">{$pageTitle}</span>
-            </div>
-        </div>
-    </div>
-</nav>
+<Navbar />
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-12">
-            <Router {routes}/>
-        </div>
-    </div>
+<div class="container w-full lg:w-3/5 px-2 pt-10 lg:pt-10 mt-10">
+    <Router {routes}/>
 </div>
 
 <script>
 // Components
 import RequestAuthentication from '../components/RequestAuthentication.svelte'
+import Navbar from '../components/Navbar.svelte'
 
 // Router and routes
 import Router from 'svelte-spa-router'
 import routes from '../routes'
-
-// Stores
-import {pageTitle} from '../stores'
 </script>

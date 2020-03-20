@@ -63,7 +63,6 @@ During that time, if the owner signs in here too, they will reset the timer and 
 ## About Hereditas
 
 [Hereditas](https://hereditas.app) is an open source project to generate "fully-trustless" digital legacy boxes.
-s
 `
 
         await util.promisify(fs.writeFile)(path.relative('', 'welcome.md'), welcomeContent)

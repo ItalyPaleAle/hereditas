@@ -4,18 +4,10 @@
     <RequestAuthentication />
 {/if}
 
-<section class="welcome">
-{@html welcome}
+<h1 class="mb-4">About this page</h1>
+<section class="markdown mt-4">
+  {@html welcome}
 </section>
-
-<style>
-.welcome {
-    margin: 0.5em 1em 0 1em;
-    padding: 1em;
-    border: 1px solid #333333;
-    color: #333333;
-}
-</style>
 
 <script>
 // Libs

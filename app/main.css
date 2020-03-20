@@ -1,0 +1,29 @@
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Default styles */
+h1 {
+    @apply text-2xl mb-2;
+}
+
+h2 {
+    @apply text-xl mb-2;
+}
+
+h3 {
+    @apply text-lg mb-2;
+}
+
+a {
+    @apply text-blue-600 underline;
+}
+
+/* Markdown-rendered content */
+section.markdown {
+    @apply my-2 mx-4;
+}
+.markdown h1, .markdown h2, .markdown h3 {
+    @apply mt-2;
+}
