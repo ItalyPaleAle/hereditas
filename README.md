@@ -28,6 +28,10 @@ You can also watch this short [intro video](https://www.youtube.com/watch?v=lZEK
 
 📘 [**Documentation and CLI reference**](https://hereditas.app)
 
+## Screenshot
+
+![Screenshot of Hereditas 0.2](./screenshot.png)
+
 ## Warning: alpha quality software
 
 **Hereditas is currently alpha quality software; use at your own risk.** While we've developed Hereditas with security always as the top priority, this software leverages a lot of cryptographic primitives under the hood. We won't release a stable (e.g. "1.0") version of Hereditas until we're confident that enough people and cryptography experts have audited and improved the code.
