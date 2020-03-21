@@ -44,7 +44,7 @@ Things you might want to include:
 
 This step is very personal, and Hereditas gives you total flexibility to decide what to include in your box.
 
-While it would technically be possible, we recommend that you don't store large amount of data, or data that chages frequently, inside an Hereditas box. In fact, every time you change any information, you'd have to re-encrypt and publish again the entire box, which can be very time-consuming, and could lead to your box containing outdated information.
+While it would technically be possible, we recommend that you don't store large amount of data, or data that changes frequently, inside an Hereditas box. In fact, every time you change any information, you'd have to encrypt and publish again the entire box, which can be very time-consuming, and could lead to your box containing outdated information.
 
 For example, rather than including gigabytes of photos, we recommend that you store them in a safe place (encrypted drive, cloud storage, etc) and use your Hereditas box to explain how to retrieve them. Similarly, instead of including every single password (which can change frequently), just put the recovery key of your password manager.
 

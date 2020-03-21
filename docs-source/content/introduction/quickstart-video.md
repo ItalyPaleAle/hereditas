@@ -9,6 +9,8 @@ This quickstart video shows you how to get an Hereditas box configured, built an
 
 {{< youtube iGgza7AK7ow >}}
 
+> Note: the quickstart video was recorded with Hereditas 0.1. All instructions remain the same for Hereditas 0.2, but the user interface looks better now.
+
 ## Get started documentation
 
 For more information, check out our Get Started documentation.

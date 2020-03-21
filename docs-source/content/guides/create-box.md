@@ -32,11 +32,13 @@ After running the command, you'll see that your folder now contains three object
 content
 dist
 hereditas.json
+welcome.md
 ````
 
 - The `content` folder is where you store the data you wish to encrypt
 - The `dist` folder will contain the generated web app
 - The `hereditas.json` file contains the configuration for the Hereditas box
+- The `welcome.md` file contains a welcome message that is displayed in the login page; this file is not encrypted.
 
 > In most cases you will not need to manually edit the `hereditas.json` configuration file, as you can use the Hereditas CLI to change the most common options. However, you can find the full reference for the configuration file in the [Configuration file]({{< relref "/advanced/configuration-file.md" >}}) article.
 
@@ -45,6 +47,14 @@ hereditas.json
 Place all the content you want to encrypt in the `content` folder. You can store any kind of file in this folder and sub-folders. The [Get started]({{< relref "/guides/get-started.md" >}}#step-zero-gather-all-content) article has some suggestions on what kind of content to store.
 
 Markdown documents are automatically converted to HTML chunks, so that's a great way to include information. However, at present Hereditas web apps do not support hyperlinks, images or videos in Markdown or HTML files linking to other content within the box.
+
+### Welcome file
+
+As mentioned above, Hereditas generates a `welcome.md` file and pre-populates it with some default content.
+
+The welcome file is displayed in the authentication page, and you can use it to provide some information about what your Hereditas box is, and how it can be used.
+
+Note that the welcome file is **not encrypted**, so do not store any confidential information in there!
 
 ## Set the webhook URL
 
