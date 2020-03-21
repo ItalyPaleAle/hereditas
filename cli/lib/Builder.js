@@ -6,6 +6,7 @@ const {Readable} = require('stream')
 const util = require('util')
 const Content = require('./Content')
 const path = require('path')
+const kw = require('./aes-kw')
 
 // Webpack
 const webpack = util.promisify(require('webpack'))
@@ -69,14 +70,14 @@ class Builder {
         // This needs to be of 64 bytes, which is the length of a SHA-512 hash
         this.keySalt = await randomBytesPromise(64)
 
-        // Step 4: derive the key
-        const key = await this._deriveKey(this._passphrase + this._config.get('appToken'), this.keySalt)
+        // Step 4: derive the master key
+        const masterKey = await this._deriveKey(this._passphrase + this._config.get('appToken'), this.keySalt)
 
         // Step 5: encrypt all files
-        content = await this._encryptContent(key, content)
+        content = await this._encryptContent(masterKey, content)
 
         // Step 6: write an (encrypted) index file
-        this.indexTag = await this._createIndex(key, content)
+        this.indexTag = await this._createIndex(masterKey, content)
 
         // Step 7: build the app with webpack
         const appParams = {
@@ -151,12 +152,12 @@ class Builder {
     /**
      * Creates an index file and encrypts it on disk.
      *
-     * @param {Buffer} key - Encryption key
+     * @param {Buffer} masterKey - Master encryption key
      * @param {HereditasContentFile[]} content - List of content
      * @returns {Buffer} Authentication tag
      * @async
      */
-    async _createIndex(key, content) {
+    async _createIndex(masterKey, content) {
         // Creat the index file, and convert it to a Readable Stream
         const indexData = JSON.stringify(content)
         const inStream = new Readable()
@@ -168,17 +169,17 @@ class Builder {
         const outStream = fs.createWriteStream(path.join(this._config.get('distDir'), '_index'))
 
         // Encrypt the index and write it, returning the tag
-        return this._encryptStream(key, inStream, outStream)
+        return this._encryptStream(masterKey, inStream, outStream)
     }
 
     /**
      * Encrypts all the content
-     * @param {Buffer} key - Encryption key
+     * @param {Buffer} masterKey - Master encryption key
      * @param {HereditasContentFile[]} content - List of content
      * @returns {HereditasContentFile[]} - List of content with the dist and tag properties set
      * @async
      */
-    async _encryptContent(key, content) {
+    async _encryptContent(masterKey, content) {
         // Clone the content object
         const result = JSON.parse(JSON.stringify(content))
 
@@ -196,7 +197,7 @@ class Builder {
             result[i] = content.el
 
             // Encrypt the stream and get the tag
-            const tagBuf = await this._encryptStream(key, content.inStream, outStream)
+            const tagBuf = await this._encryptStream(masterKey, content.inStream, outStream)
             const tag = tagBuf.toString('base64')
 
             // Add the dist and tag properties to the result object
@@ -210,22 +211,28 @@ class Builder {
     /**
      * Encrypts a stream using aes-256-gcm
      *
-     * @param {Buffer} key - Encryption key; must be 256 bit long
+     * @param {Buffer} masterKey - Master key; must be 256 bit long
      * @param {Stream} inStream - Readable stream with the data to encrypt
      * @param {Stream} outStream - Writable stream to pipe the data to
      * @returns {Buffer} Authentication tag
      * @async
      */
-    async _encryptStream(key, inStream, outStream) {
+    async _encryptStream(masterKey, inStream, outStream) {
+        // Generate a key for this specific file
+        const fileKey = await randomBytesPromise(32)
         // Generate an IV
-        const iv = await randomBytesPromise(12)
+        const fileIV = await randomBytesPromise(12)
+
+        // Wrap the file's key with the master key, using AES-KW (RFC-3394)
+        const wrappedKey = kw.encrypt(masterKey, fileKey)
 
         return new Promise((resolve, reject) => {
-            // Write the IV to the outStream, at the beginning
-            outStream.write(iv)
+            // Write the wrapped key and IV to the outStream, at the beginning
+            outStream.write(wrappedKey)
+            outStream.write(fileIV)
 
             // Create the Cipher, which can be used as a stream transform too
-            const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+            const cipher = crypto.createCipheriv('aes-256-gcm', fileKey, fileIV)
 
             // When the encryption is done, get the authentication tag
             cipher.on('end', () => {

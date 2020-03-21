@@ -51,6 +51,7 @@ function handleSubmit() {
             replace('/list')
         })
         .catch((err) => {
+            // eslint-disable-next-line no-console
             console.error('err caught', err)
             unlockError = true
         })

@@ -59,8 +59,6 @@ import {box} from '../stores'
 // Params from the route, which includes the prefix
 export let params = {}
 
-let i = 0
-
 // List of contents
 const list = {
     files: [],
@@ -112,7 +110,6 @@ $: {
     list.files = files
     list.paths = list.prefix ? list.prefix.split('/') : []
     list.i = 0
-    console.log(list)
 }
 
 // Ensure that we have unlocked the box

@@ -19,6 +19,10 @@ module.exports = {
             processor: 'svelte3/svelte3'
         }
     ],
+    globals: {
+        // See https://github.com/eslint/eslint/issues/11524
+        BigInt: true
+    },
     settings: {
         'svelte3/ignore-styles': () => true,
         'html': {
@@ -166,12 +170,8 @@ module.exports = {
             'error',
             'always'
         ],
-        'no-multiple-empty-lines': [
-            'error',
-            {
-                max: 1
-            }
-        ],
+        // Need to disable this because it causes issues with Svelte
+        'no-multiple-empty-lines': 'off',
         'operator-linebreak': [
             'error',
             'after'

@@ -43,15 +43,15 @@ function concatBuffers(buffer1, buffer2) {
  * @async
  */
 export function DeriveKey(passphrase, salt) {
-    salt = salt || crypto.getRandomValues(new Uint8Array(64))
-    return crypto.subtle.importKey('raw', str2buf(passphrase), 'PBKDF2', false, ['deriveKey'])
+    salt = salt || window.crypto.getRandomValues(new Uint8Array(64))
+    return window.crypto.subtle.importKey('raw', str2buf(passphrase), 'PBKDF2', false, ['deriveKey'])
         .then((key) =>
-            crypto.subtle.deriveKey(
+            window.crypto.subtle.deriveKey(
                 {name: 'PBKDF2', salt, iterations: process.env.PBKDF2_ITERATIONS, hash: 'SHA-512'},
                 key,
-                {name: 'AES-GCM', length: 256},
+                {name: 'AES-KW', length: 256},
                 false,
-                ['decrypt'],
+                ['unwrapKey'],
             )
         )
         .then((key) => [key, salt])
@@ -70,5 +70,30 @@ export function DeriveKey(passphrase, salt) {
  */
 export function Decrypt(key, iv, data, tag) {
     const ciphertext = concatBuffers(data, tag)
-    return crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext)
+    return window.crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext)
+}
+
+/**
+ * Unwraps a key wrapped with AES-KW (per RFC 3349)
+ *
+ * @param {CryptoKey} wrappingKey - Key used to wrap/unwrap the key
+ * @param {ArrayBuffer} ciphertext - Wrapped key
+ * @returns {Promise<CryptoKey>} Unwrapped key
+ * @async
+ * @throws Throws an error if the decryption fails, likely meaning that the key was wrong.
+ */
+export function UnwrapKey(wrappingKey, ciphertext) {
+    return window.crypto.subtle.unwrapKey(
+        'raw',
+        ciphertext,
+        wrappingKey,
+        {name: 'AES-KW'},
+        {name: 'AES-GCM'},
+        false,
+        ['decrypt']
+    )
+    .then((key) => {
+        console.log(key)
+        return key
+    })
 }

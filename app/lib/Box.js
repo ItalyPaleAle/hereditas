@@ -1,4 +1,4 @@
-import {DeriveKey, Decrypt, buf2str} from './CryptoUtils'
+import {DeriveKey, Decrypt, buf2str, UnwrapKey} from './CryptoUtils'
 import {DecodeArrayBuffer} from './Base64Utils'
 
 /**
@@ -6,7 +6,7 @@ import {DecodeArrayBuffer} from './Base64Utils'
  */
 export class Box {
     constructor() {
-        this._key = null
+        this._masterKey = null
         this._contents = null
         this._indexFetchingPromise = null
         this._encryptedIndex = null
@@ -18,14 +18,14 @@ export class Box {
      * @returns {boolean}
      */
     isUnlocked() {
-        return this._key && this._contents
+        return this._masterKey && this._contents
     }
 
     /**
      * Lock the box again, removing the key and the decrypted index from memory
      */
     lock() {
-        this._key = null
+        this._masterKey = null
         this._contents = null
     }
 
@@ -58,19 +58,27 @@ export class Box {
         }
 
         // Return the promise
+        let iv = null
+        let data = null
         return fetch(info.dist)
             // Grab the encrypted contents as ArrayBuffer
             .then((response) => response.arrayBuffer())
             // Decrypt the data
             .then((buffer) => {
-                // The first 12 bytes are the IV
-                const iv = buffer.slice(0, 12)
-                const data = buffer.slice(12)
+                // The first 40 bytes are the wrapped key, and the next 12 bytes are the IV
+                const wrappedKey = buffer.slice(0, 40)
+                iv = buffer.slice(40, 52)
+                data = buffer.slice(52)
 
+                // Un-wrap the key
+                return UnwrapKey(this._masterKey, wrappedKey)
+            })
+
+            .then((key) => {
                 // Get the tag
                 const tag = DecodeArrayBuffer(info.tag)
 
-                return Decrypt(this._key, iv, data, tag)
+                return Decrypt(key, iv, data, tag)
                     .then((data) => {
                         // Clone the info object
                         info = JSON.parse(JSON.stringify(info))
@@ -112,9 +120,10 @@ export class Box {
             .then((buffer) => {
                 // Read the data from the response
                 this._encryptedIndex = {
-                    // The first 12 bytes are the IV
-                    iv: buffer.slice(0, 12),
-                    data: buffer.slice(12)
+                    // The first 40 bytes are the wrapped key, and the next 12 bytes are the IV
+                    wrappedKey: buffer.slice(0, 40),
+                    iv: buffer.slice(40, 52),
+                    data: buffer.slice(52)
                 }
 
                 // Request is done
@@ -152,11 +161,14 @@ export class Box {
             // First: derive the encryption key
             .then(() => DeriveKey(passphrase + appToken, keySalt))
             .then(([key]) => {
-                this._key = key
+                this._masterKey = key
             })
 
+            // Un-wrap the key
+            .then(() => UnwrapKey(this._masterKey, this._encryptedIndex.wrappedKey))
+
             // Decrypt the index
-            .then(() => Decrypt(this._key, this._encryptedIndex.iv, this._encryptedIndex.data, indexTag))
+            .then((key) => Decrypt(key, this._encryptedIndex.iv, this._encryptedIndex.data, indexTag))
             .then((data) => {
                 // Convert the buffer to string
                 const str = buf2str(new Uint8Array(data))
