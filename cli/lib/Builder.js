@@ -286,6 +286,11 @@ class Builder {
             for (const e in list) {
                 const el = folder + list[e]
 
+                // Check if we need to include this path or ignore it
+                if (!includePath(el)) {
+                    continue
+                }
+
                 // Check if it's a directory
                 const stat = await statPromise(path.join(this._config.get('contentDir'), el))
                 if (!stat) {
@@ -310,6 +315,31 @@ class Builder {
         await scanFolder()
         return result
     }
+}
+
+// Returns true if a path should be included in the box
+// This ignores files such as operating system's metadata
+function includePath(str) {
+    const base = path.basename(str)
+
+    if (
+        // Linux
+        base.endsWith('~') ||
+        base == '.directory' ||
+        // macOS
+        base == '.DS_Store' ||
+        base == '.AppleDouble' ||
+        base == '.LSOverride' ||
+        base.startsWith('._') ||
+        // Windows
+        base == 'Thumbs.db' ||
+        base == 'Thumbs.db:encryptable' ||
+        base == 'desktop.ini' ||
+        base == 'Desktop.ini'
+    ) {
+        return false
+    }
+    return true
 }
 
 module.exports = Builder
