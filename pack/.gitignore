@@ -1,0 +1,9 @@
+# Test files
+dist/
+
+# Compiled files
+pack
+
+# Packr'd files
+packrd/
+*-packr.go
