@@ -48,7 +48,13 @@ class InitCommand extends Command {
         await config.save()
 
         // Create the welcome.md file
-        const welcomeContent = `## What is this?
+        const welcomeContent = `---
+# This welcome file is displayed in the box's authentication page.
+# It can be used to provide information to visitors about what this Hereditas box is, and how it can be used.
+# Note that this file is NOT ENCRYPTED, and it's accessible to the entire world; do not write anything confidential in here.
+---
+
+## What is this?
 
 Someone (likely, a loved one) told you to come here in case they suddenly disappeared. This box contains important information about the digital life of the person that shared it with you, for example passwords, digital documents, photos, cryptocurrency wallets, etc.
 

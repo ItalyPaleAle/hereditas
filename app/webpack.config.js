@@ -25,7 +25,11 @@ const htmlMinifyOptions = {
 // Welcome content
 let welcomeContent = ''
 if (fs.existsSync('welcome.md')) {
-    const welcomeMarkdown = fs.readFileSync('welcome.md', 'utf8')
+    let welcomeMarkdown = fs.readFileSync('welcome.md', 'utf8')
+    // Remove the front matter, if any
+    if (welcomeMarkdown.startsWith('---')) {
+        welcomeMarkdown = welcomeMarkdown.replace(/^---$.*^---$/ms, '')
+    }
     welcomeContent = marked(welcomeMarkdown)
 }
 
