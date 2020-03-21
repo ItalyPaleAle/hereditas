@@ -69,8 +69,11 @@ export function DeriveKey(passphrase, salt) {
  * @throws Throws an error if the decryption fails, likely meaning that the key was wrong.
  */
 export function Decrypt(key, iv, data, tag) {
-    const ciphertext = concatBuffers(data, tag)
-    return window.crypto.subtle.decrypt({name: 'AES-GCM', iv}, key, ciphertext)
+    return window.crypto.subtle.decrypt(
+        {name: 'AES-GCM', iv},
+        key,
+        concatBuffers(data, tag)
+    )
 }
 
 /**
