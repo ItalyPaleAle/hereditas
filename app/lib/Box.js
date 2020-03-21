@@ -1,4 +1,4 @@
-import {DeriveKey, Decrypt, buf2str, UnwrapKey} from './CryptoUtils'
+import {Decrypt, buf2str, UnwrapKey, DeriveKeyArgon2, DeriveKeyPBKDF2} from './CryptoUtils'
 import {DecodeArrayBuffer} from './Base64Utils'
 
 /**
@@ -156,12 +156,24 @@ export class Box {
         const keySalt = DecodeArrayBuffer(process.env.KEY_SALT)
         const indexTag = DecodeArrayBuffer(process.env.INDEX_TAG)
 
+        // Key derivation function: PBKDF2 or Argon2
+        let kdf
+        if (process.env.KEY_DERIVATION_FUNCTION == 'pbkdf2') {
+            kdf = DeriveKeyPBKDF2
+        }
+        else if (process.env.KEY_DERIVATION_FUNCTION == 'argon2') {
+            kdf = DeriveKeyArgon2
+        }
+        else {
+            throw Error('Invalid key derivation function requested')
+        }
+
         // Try decrypting the index: this will verify the passphrase too
         return Promise.resolve()
             // First: derive the encryption key
-            .then(() => DeriveKey(passphrase + appToken, keySalt))
-            .then(([key]) => {
-                this._masterKey = key
+            .then(() => kdf(passphrase + appToken, keySalt))
+            .then((masterKey) => {
+                this._masterKey = masterKey
             })
 
             // Un-wrap the key

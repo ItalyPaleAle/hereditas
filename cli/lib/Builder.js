@@ -7,6 +7,7 @@ const util = require('util')
 const Content = require('./Content')
 const path = require('path')
 const kw = require('./aes-kw')
+const argon2 = require('argon2-browser')
 
 // Webpack
 const webpack = util.promisify(require('webpack'))
@@ -88,7 +89,8 @@ class Builder {
             indexTag: this.indexTag,
             keySalt: this.keySalt,
             kdf: this._config.get('kdf'),
-            pbkdf2Iterations: this._config.get('pbkdf2.iterations')
+            pbkdf2Iterations: this._config.get('pbkdf2.iterations'),
+            argon2Memory: this._config.get('argon2.memory')
         }
         const webpackStats = await webpack(webpackConfig(appParams))
 
@@ -131,18 +133,36 @@ class Builder {
      * The key can be used directly for symmetric encryption.
      *
      * @param {string} passphrase - Passphrase for the key
-     * @param {string} salt - Salt for the key
-     * @returns {Buffer} Promise that resolves to the buffer with the key
+     * @param {Buffer} salt - Salt for the key
+     * @returns {Promise<Buffer>} Promise that resolves to the buffer with the key
      * @async
      */
     _deriveKey(passphrase, salt) {
         const kdf = this._config.get('kdf')
         if (kdf == 'pbkdf2') {
             // Using SHA-512, the result is a 512 bit key, so truncate it to 256 bit (32 bytes)
-            return pbkdf2Promise(passphrase, salt, this._config.get('pbkdf2.iterations'), 32, 'sha512')
+            return pbkdf2Promise(
+                passphrase,
+                salt,
+                this._config.get('pbkdf2.iterations'),
+                32,
+                'sha512'
+            )
         }
         else if (kdf == 'argon2') {
-            throw Error('Key derivation with argon2 has not been implemented yet')
+            return Promise.resolve()
+                .then(() => argon2.hash({
+                    pass: passphrase,
+                    salt: salt,
+                    type: argon2.ArgonType.Argon2id,
+                    time: 1,
+                    mem: this._config.get('argon2.memory'),
+                    hashLen: 32,
+                    parallelism: 1
+                }))
+                .then((res) => {
+                    return Buffer.from(res.hash)
+                })
         }
         else {
             throw Error('Invalid key derivation function requested')

@@ -33,28 +33,65 @@ function concatBuffers(buffer1, buffer2) {
 }
 
 /**
- * Given a passphrase, this generates a crypto key
- * using `PBKDF2` with SHA-512 and N iterations.
- * If no salt is given, a new one is generated.
- * The return value is an array of `[key, salt]`.
+ * Given a passphrase  and a salt, this generates a crypto key
+ * using Argon2.
  * @param {string} passphrase
- * @param {UInt8Array} [salt] Random bytes; will be generated if not set
- * @returns {Promise<[CryptoKey,UInt8Array]>}
+ * @param {ArrayBuffer} salt
+ * @returns {Promise<CryptoKey>}
  * @async
  */
-export function DeriveKey(passphrase, salt) {
-    salt = salt || window.crypto.getRandomValues(new Uint8Array(64))
-    return window.crypto.subtle.importKey('raw', str2buf(passphrase), 'PBKDF2', false, ['deriveKey'])
-        .then((key) =>
-            window.crypto.subtle.deriveKey(
-                {name: 'PBKDF2', salt, iterations: process.env.PBKDF2_ITERATIONS, hash: 'SHA-512'},
-                key,
+export function DeriveKeyArgon2(passphrase, salt) {
+    // Import argon2 dynamically to reduce bundle size, if it's not necessary
+    const saltArr = new Uint8Array(salt)
+    return import('argon2-browser')
+        .then((argon2) => argon2.hash({
+            pass: passphrase,
+            salt: saltArr,
+            type: argon2.ArgonType.Argon2id,
+            time: 1,
+            mem: 64 * 1024,
+            hashLen: 32,
+            parallelism: 1
+        }))
+        .then((res) =>
+            window.crypto.subtle.importKey(
+                'raw',
+                res.hash,
                 {name: 'AES-KW', length: 256},
                 false,
-                ['unwrapKey'],
+                ['unwrapKey']
             )
         )
-        .then((key) => [key, salt])
+}
+
+/**
+ * Given a passphrase and a salt, this generates a crypto key
+ * using `PBKDF2` with SHA-512 and N iterations.
+ * @param {string} passphrase
+ * @param {ArrayBuffer} salt
+ * @returns {Promise<CryptoKey>}
+ * @async
+ */
+export function DeriveKeyPBKDF2(passphrase, salt) {
+    return Promise.resolve()
+        .then(() =>
+            window.crypto.subtle.importKey(
+                'raw',
+                str2buf(passphrase),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            )
+        )
+        .then((k) =>
+            window.crypto.subtle.deriveKey(
+                {name: 'PBKDF2', salt, iterations: process.env.PBKDF2_ITERATIONS, hash: 'SHA-512'},
+                k,
+                {name: 'AES-KW', length: 256},
+                false,
+                ['unwrapKey']
+            )
+        )
 }
 
 /**
