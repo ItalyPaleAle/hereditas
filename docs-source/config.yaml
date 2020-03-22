@@ -21,6 +21,12 @@ disableKinds:
 - taxonomyTerm
 - section
 
+# Goldmark
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
 # Syntax highlighting
 pygmentsCodeFences: true
 pygmentsStyle: "tango"
