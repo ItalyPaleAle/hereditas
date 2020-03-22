@@ -22,7 +22,7 @@ variables:
   SITE_PRODUCTION: 'hereditas.app'
   SITE_STAGING: 'staging.hereditas.app'
   # Azure connection ID
-  AZURE_SERVICE_CONNECTION: '2ac418d2-f0b4-4d6f-be85-f4998ea75559'
+  AZURE_SERVICE_CONNECTION: '6cb9442a-95ca-4ad5-8e94-39bc01f6c948'
   # DNSLink DNS record to update (for IPFS)
   CLOUDFLARE_DOMAIN: '_dnslink.hereditas.app'
   # Version of Hugo to use
