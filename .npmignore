@@ -3,3 +3,4 @@ assets/
 .vscode/
 docs-source/
 testfolder/
+azure-pipelines.yaml

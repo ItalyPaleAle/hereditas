@@ -1,0 +1,294 @@
+# Required variables:
+# NODE_ADDRESS: Address (IP or hostname) of the Statiko node to connect to (must be able to accept connections on port 2265 from the Azure Pipelines agent)
+# NODE_KEY (secret): pre-shared key for authenticating with the Statiko node
+# PINATA_API_KEY: API key for Pinata
+# PINATA_SECRET_KEY (secret): Secret key for Pinata
+# CLOUDFLARE_ZONE_ID: ID of the Cloudflare zone
+# CLOUDFLARE_API_TOKEN (secret): API token for updating the DNS zone on Cloudflare
+
+# Site is published on both the Statiko platform and on IPFS (via Pinata)
+
+# Define repository
+resources:
+  - repo: self
+
+# Trigger on changes to the master branch
+trigger:
+  - master
+
+# Variables for the entire pipeline
+variables:
+  # Sites
+  SITE_PRODUCTION: 'hereditas.app'
+  SITE_STAGING: 'staging.hereditas.app'
+  # Azure connection ID
+  AZURE_SERVICE_CONNECTION: '2ac418d2-f0b4-4d6f-be85-f4998ea75559'
+  # DNSLink DNS record to update (for IPFS)
+  CLOUDFLARE_DOMAIN: '_dnslink.hereditas.app'
+  # Version of Hugo to use
+  HUGO_VERSION: 0.68.1
+
+# Stages
+stages:
+
+  # Build site stage
+  - stage: build
+    displayName: 'Build site'
+    jobs:
+
+    # Build site job
+      - job: build
+        displayName: 'Build site'
+
+        # Run on Linux (Ubuntu 18.04)
+        pool:
+          vmImage: 'Ubuntu-18.04'
+
+        # Steps
+        steps:
+
+          # Install Node.js first, which is necessary for the module depdendencies
+          - task: NodeTool@0
+            displayName: 'Use Node.js 12.x'
+            inputs:
+              versionSpec: 12.x
+
+          # Install Hugo
+          - script: |
+              set -e
+              cd /tmp
+              echo "Using Hugo $(HUGO_VERSION)"
+              curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_extended_$(HUGO_VERSION)_Linux-64bit.tar.gz" -o hugo.tar.gz
+              tar -zxf hugo.tar.gz
+              sudo mv hugo /usr/local/bin
+            displayName: 'Install Hugo'
+
+          # Build the site
+          - script: |
+              set -e
+
+              # Install NPM modules
+              npm install
+
+              # Build the site
+              cd docs-source
+              node generate-cli-docs.js
+              hugo
+            displayName: 'Build site'
+
+          # Publish the compiled site as pipeline artifact
+          - publish: '$(System.DefaultWorkingDirectory)/public'
+            displayName: 'Publish Artifact: public'
+            artifact: 'public'
+
+  # Stage app stage
+  - stage: staging
+    displayName: 'Stage app'
+    jobs:
+
+      # Stage app job
+      - deployment: staging
+        environment: Staging
+        displayName: 'Stage app'
+
+        # Run on the self-hosted agent in the LAN
+        pool:
+          name: Default
+          demands:
+            - network -equals lacasetta
+
+        # Deployment strategy is "runOnce"
+        strategy:
+          runOnce:
+            deploy:
+              # Steps
+              steps:
+                # Do not checkout source
+                - checkout: none
+
+                # Download pipeline artifact
+                - download: current
+                  artifact: 'public'
+
+                # Install stkcli
+                - bash: |
+                    set -e
+                    URL=$(curl -s https://api.github.com/repos/ItalyPaleAle/stkcli/releases/latest -H "Accept: application/vnd.github.v3+json" \
+                      | jq -r ".assets[] | select(.name | test(\"linux_arm32v7\")) | .browser_download_url")
+                    echo "Downloading stkcli: $URL"
+                    curl -L "$URL" -o stkcli
+                    chmod +x stkcli
+                    ./stkcli version
+                  displayName: "Install stkcli"
+
+                # Install pinatapinner
+                - bash: |
+                    set -e
+                    URL=$(curl -s https://api.github.com/repos/ItalyPaleAle/pinatapinner/releases/latest -H "Accept: application/vnd.github.v3+json" \
+                      | jq -r ".assets[] | select(.name | test(\"linux_arm$\", \"xs\")) | .browser_download_url")
+                    echo "Downloading pinatapinner: $URL"
+                    curl -L "$URL" -o pinatapinner
+                    chmod +x pinatapinner
+                  displayName: "Install pinatapinner"
+
+                # Deploy app to staging on Statiko (with Azure CLI authorization)
+                - task: AzureCLI@2
+                  displayName: 'Deploy app to staging on Statiko'
+                  inputs:
+                    azureSubscription: $(AZURE_SERVICE_CONNECTION)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      set -e
+
+                      # Get version from Azure Pipelines
+                      echo "Version: $(Build.BuildNumber)"
+
+                      echo "Folder: $(Pipeline.Workspace)/public"
+                      ls -l $(Pipeline.Workspace)/public
+
+                      # Upload the app
+                      export NODE_KEY="$(NODE_KEY)"
+                      ./stkcli upload app \
+                        -n $(NODE_ADDRESS) \
+                        -k \
+                        -a hereditas-docs \
+                        -v $(Build.BuildNumber) \
+                        -f $(Pipeline.Workspace)/public
+
+                      # Deploy to staging
+                      ./stkcli deploy \
+                        -n $(NODE_ADDRESS) \
+                        -k \
+                        -d $(SITE_STAGING) \
+                        -a hereditas-docs \
+                        -v $(Build.BuildNumber)
+
+                # Pin on Pinata
+                - script: |
+                    set -e
+                    ./pinatapinner $(Pipeline.Workspace)/public "Hereditas-Docs-${BUILD_BUILDID}" | tee out.tmp
+                    IPFS_HASH=$(cat out.tmp | jq -r ".IpfsHash")
+                    echo "##vso[task.setvariable variable=IPFS_HASH]$IPFS_HASH"
+                  displayName: 'Pin on Pinata'
+                  env:
+                    PINATA_API_KEY: $(PINATA_API_KEY)
+                    PINATA_SECRET_KEY: $(PINATA_SECRET_KEY)
+
+                # Write IPFS hash to file
+                - script: |
+                    set -e
+                    echo "IPFS Hash is: $IPFS_HASH"
+                    mkdir -p $(Pipeline.Workspace)/variables
+                    echo "$IPFS_HASH" > $(Pipeline.Workspace)/variables/IPFS_HASH
+                  displayName: 'Write IPFS hash to file'
+
+                # Publish the variables artifact
+                - publish: $(Pipeline.Workspace)/variables
+                  artifact: variables
+                  displayName: 'Publish pipeline artifacts'
+
+                # Post-build cleanup
+                # Necessary only for self-hosted pipelines
+                - bash: |
+                    # Delete files from disk
+                    rm -rvf $(Agent.BuildDirectory) || true
+                    rm -rvf $(Build.SourcesDirectory) || true
+                    rm -rvf $(Build.ArtifactStagingDirectory) || true
+                  displayName: "Post-build cleanup"
+                  # This step always runs, even if the pipeline failed
+                  condition: always()
+
+  # Deploy to production stage
+  - stage: production
+    displayName: 'Deploy to production'
+    jobs:
+
+      # Deploy to production
+      - deployment: production
+        environment: Production
+        displayName: 'Deploy to production'
+
+        # Run on the self-hosted agent in the LAN
+        pool:
+          name: Default
+          demands:
+            - network -equals lacasetta
+
+        # Deployment strategy is "runOnce"
+        strategy:
+          runOnce:
+            deploy:
+              # Steps
+              steps:
+                # Do not checkout source
+                - checkout: none
+
+                # Download the variables artifact
+                - download: current
+                  artifact: variables
+                  displayName: 'Download pipeline artifacts'
+
+                # Install stkcli
+                - bash: |
+                    set -e
+                    URL=$(curl -s https://api.github.com/repos/ItalyPaleAle/stkcli/releases/latest -H "Accept: application/vnd.github.v3+json" \
+                      | jq -r ".assets[] | select(.name | test(\"linux_arm32v7\")) | .browser_download_url")
+                    echo "Downloading stkcli: $URL"
+                    curl -L "$URL" -o stkcli
+                    chmod +x stkcli
+                    ./stkcli version
+                  displayName: "Install stkcli"
+
+                # Deploy app to production on Statiko
+                - script: |
+                    set -e
+
+                    # Deploy app
+                    ./stkcli deploy \
+                      -n $(NODE_ADDRESS) \
+                      -k \
+                      -d $(SITE_PRODUCTION) \
+                      -a hereditas-docs \
+                      -v $(Build.BuildNumber)
+
+                    # Purge DNS cache
+                    curl -X POST "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/purge_cache" \
+                      -H "Authorization: Bearer $(CLOUDFLARE_API_TOKEN)" \
+                      -H "Content-Type: application/json" \
+                      --data '{"purge_everything":true}'
+                  displayName: 'Deploy app to production on Statiko'
+                  env:
+                    NODE_KEY: $(NODE_KEY)
+
+                # Update DNSLink record
+                - script: |
+                    set -e
+
+                    IPFS_HASH=$(cat $(Pipeline.Workspace)/variables/IPFS_HASH)
+
+                    echo "Updating DNSLink to ${IPFS_HASH}"
+
+                    [[ -z "$IPFS_HASH" ]] && { echo "Variable IPFS_HASH is empty" ; exit 1; }
+
+                    RECORD_ID=$(curl -sS -X GET "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/dns_records?type=TXT&name=$(CLOUDFLARE_DOMAIN)" \
+                          -H "Content-Type:application/json" \
+                          -H "Authorization:Bearer $(CLOUDFLARE_API_TOKEN)" \
+                              | jq -r '.result[0].id')
+
+                    curl -sS -X PUT "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/dns_records/$RECORD_ID" \
+                          -H "Content-Type:application/json" \
+                          -H "Authorization:Bearer $(CLOUDFLARE_API_TOKEN)" \
+                          --data "{\"type\":\"TXT\",\"name\":\"$(CLOUDFLARE_DOMAIN)\",\"content\":\"dnslink=/ipfs/$IPFS_HASH\",\"ttl\":120,\"priority\":10,\"proxied\":false}"
+                  displayName: 'Update DNSLink record'
+
+                # Post-build cleanup
+                # Necessary only for self-hosted pipelines
+                - bash: |
+                    # Delete files from disk
+                    rm -rvf $(Agent.BuildDirectory) || true
+                    rm -rvf $(Build.SourcesDirectory) || true
+                    rm -rvf $(Build.ArtifactStagingDirectory) || true
+                  displayName: "Post-build cleanup"
+                  # This step always runs, even if the pipeline failed
+                  condition: always()
