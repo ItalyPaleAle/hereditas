@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"os/exec"
 	"runtime"
 	"time"
@@ -13,25 +12,19 @@ import (
 
 // Main entry-point
 func main() {
-	// Port to listen to
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
 	// Box with data
-	box := packr.New("dist", "./dist")
+	box := packr.New("dist", "dist")
 	http.Handle("/", http.FileServer(box))
 
 	// Launch the web browser
 	go func() {
-		fmt.Println("Hereditas box listening on http://localhost:" + port)
+		fmt.Println("Hereditas box listening on http://localhost:8080")
 		time.Sleep(200 * time.Millisecond)
-		LaunchBrowser("http://localhost:" + port)
+		LaunchBrowser("http://localhost:8080")
 	}()
 
 	// Start the server
-	if err := http.ListenAndServe("127.0.0.1:"+port, nil); err != nil {
+	if err := http.ListenAndServe("127.0.0.1:8080", nil); err != nil {
 		panic(err)
 	}
 }

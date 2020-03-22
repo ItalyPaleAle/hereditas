@@ -5,6 +5,7 @@ const crypto = require('crypto')
 const {Readable} = require('stream')
 const util = require('util')
 const Content = require('./Content')
+const {CleanDirectory} = require('./Utils')
 const path = require('path')
 const kw = require('./aes-kw')
 const argon2 = require('argon2-browser')
@@ -16,7 +17,6 @@ const webpackConfig = require('../../app/webpack.config')
 // Promisified fs.readdir, fs.stat and fs.unlink
 const readdirPromise = util.promisify(fs.readdir)
 const statPromise = util.promisify(fs.stat)
-const unlinkPromise = util.promisify(fs.unlink)
 
 // Promisified crypto.pbkdf2 and crypto.randomBytes
 const pbkdf2Promise = util.promisify(crypto.pbkdf2)
@@ -62,7 +62,7 @@ class Builder {
      */
     async build() {
         // Step 1: clean dist directory
-        await this._cleanDirectory(this._config.get('distDir'))
+        await CleanDirectory(this._config.get('distDir'))
 
         // Step 2: get the list of files
         let content = await this._scanContent()
@@ -115,17 +115,6 @@ class Builder {
                 console.warn('\x1b[33m' + warnings[i] + '\x1b[0m\n')
             }
         }
-    }
-
-    /**
-     * Deletes all files in a directory, without removing the directory itself.
-     *
-     * @param {string} directory - Directory to clean
-     * @async
-     */
-    async _cleanDirectory(directory) {
-        const files = await readdirPromise(directory)
-        return Promise.all(files.map((file) => unlinkPromise(path.join(directory, file))))
     }
 
     /**
