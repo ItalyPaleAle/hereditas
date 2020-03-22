@@ -5,7 +5,10 @@ const crypto = require('crypto')
 const {Readable} = require('stream')
 const util = require('util')
 const Content = require('./Content')
+const {CleanDirectory} = require('./Utils')
 const path = require('path')
+const kw = require('./aes-kw')
+const argon2 = require('argon2-browser')
 
 // Webpack
 const webpack = util.promisify(require('webpack'))
@@ -14,7 +17,6 @@ const webpackConfig = require('../../app/webpack.config')
 // Promisified fs.readdir, fs.stat and fs.unlink
 const readdirPromise = util.promisify(fs.readdir)
 const statPromise = util.promisify(fs.stat)
-const unlinkPromise = util.promisify(fs.unlink)
 
 // Promisified crypto.pbkdf2 and crypto.randomBytes
 const pbkdf2Promise = util.promisify(crypto.pbkdf2)
@@ -60,7 +62,7 @@ class Builder {
      */
     async build() {
         // Step 1: clean dist directory
-        await this._cleanDirectory(this._config.get('distDir'))
+        await CleanDirectory(this._config.get('distDir'))
 
         // Step 2: get the list of files
         let content = await this._scanContent()
@@ -69,14 +71,14 @@ class Builder {
         // This needs to be of 64 bytes, which is the length of a SHA-512 hash
         this.keySalt = await randomBytesPromise(64)
 
-        // Step 4: derive the key
-        const key = await this._deriveKey(this._passphrase + this._config.get('appToken'), this.keySalt)
+        // Step 4: derive the master key
+        const masterKey = await this._deriveKey(this._passphrase + this._config.get('appToken'), this.keySalt)
 
         // Step 5: encrypt all files
-        content = await this._encryptContent(key, content)
+        content = await this._encryptContent(masterKey, content)
 
         // Step 6: write an (encrypted) index file
-        this.indexTag = await this._createIndex(key, content)
+        this.indexTag = await this._createIndex(masterKey, content)
 
         // Step 7: build the app with webpack
         const appParams = {
@@ -87,7 +89,8 @@ class Builder {
             indexTag: this.indexTag,
             keySalt: this.keySalt,
             kdf: this._config.get('kdf'),
-            pbkdf2Iterations: this._config.get('pbkdf2.iterations')
+            pbkdf2Iterations: this._config.get('pbkdf2.iterations'),
+            argon2Memory: this._config.get('argon2.memory')
         }
         const webpackStats = await webpack(webpackConfig(appParams))
 
@@ -115,33 +118,40 @@ class Builder {
     }
 
     /**
-     * Deletes all files in a directory, without removing the directory itself.
-     *
-     * @param {string} directory - Directory to clean
-     * @async
-     */
-    async _cleanDirectory(directory) {
-        const files = await readdirPromise(directory)
-        return Promise.all(files.map((file) => unlinkPromise(path.join(directory, file))))
-    }
-
-    /**
      * Derives a 256 bit key from the passphrase and the salt, using the preferred key derivation function.
      * The key can be used directly for symmetric encryption.
      *
      * @param {string} passphrase - Passphrase for the key
-     * @param {string} salt - Salt for the key
-     * @returns {Buffer} Promise that resolves to the buffer with the key
+     * @param {Buffer} salt - Salt for the key
+     * @returns {Promise<Buffer>} Promise that resolves to the buffer with the key
      * @async
      */
     _deriveKey(passphrase, salt) {
         const kdf = this._config.get('kdf')
         if (kdf == 'pbkdf2') {
             // Using SHA-512, the result is a 512 bit key, so truncate it to 256 bit (32 bytes)
-            return pbkdf2Promise(passphrase, salt, this._config.get('pbkdf2.iterations'), 32, 'sha512')
+            return pbkdf2Promise(
+                passphrase,
+                salt,
+                this._config.get('pbkdf2.iterations'),
+                32,
+                'sha512'
+            )
         }
         else if (kdf == 'argon2') {
-            throw Error('Key derivation with argon2 has not been implemented yet')
+            return Promise.resolve()
+                .then(() => argon2.hash({
+                    pass: passphrase,
+                    salt: salt,
+                    type: argon2.ArgonType.Argon2id,
+                    time: 1,
+                    mem: this._config.get('argon2.memory'),
+                    hashLen: 32,
+                    parallelism: 1
+                }))
+                .then((res) => {
+                    return Buffer.from(res.hash)
+                })
         }
         else {
             throw Error('Invalid key derivation function requested')
@@ -151,12 +161,12 @@ class Builder {
     /**
      * Creates an index file and encrypts it on disk.
      *
-     * @param {Buffer} key - Encryption key
+     * @param {Buffer} masterKey - Master encryption key
      * @param {HereditasContentFile[]} content - List of content
      * @returns {Buffer} Authentication tag
      * @async
      */
-    async _createIndex(key, content) {
+    async _createIndex(masterKey, content) {
         // Creat the index file, and convert it to a Readable Stream
         const indexData = JSON.stringify(content)
         const inStream = new Readable()
@@ -168,17 +178,17 @@ class Builder {
         const outStream = fs.createWriteStream(path.join(this._config.get('distDir'), '_index'))
 
         // Encrypt the index and write it, returning the tag
-        return this._encryptStream(key, inStream, outStream)
+        return this._encryptStream(masterKey, inStream, outStream)
     }
 
     /**
      * Encrypts all the content
-     * @param {Buffer} key - Encryption key
+     * @param {Buffer} masterKey - Master encryption key
      * @param {HereditasContentFile[]} content - List of content
      * @returns {HereditasContentFile[]} - List of content with the dist and tag properties set
      * @async
      */
-    async _encryptContent(key, content) {
+    async _encryptContent(masterKey, content) {
         // Clone the content object
         const result = JSON.parse(JSON.stringify(content))
 
@@ -196,7 +206,7 @@ class Builder {
             result[i] = content.el
 
             // Encrypt the stream and get the tag
-            const tagBuf = await this._encryptStream(key, content.inStream, outStream)
+            const tagBuf = await this._encryptStream(masterKey, content.inStream, outStream)
             const tag = tagBuf.toString('base64')
 
             // Add the dist and tag properties to the result object
@@ -210,22 +220,28 @@ class Builder {
     /**
      * Encrypts a stream using aes-256-gcm
      *
-     * @param {Buffer} key - Encryption key; must be 256 bit long
+     * @param {Buffer} masterKey - Master key; must be 256 bit long
      * @param {Stream} inStream - Readable stream with the data to encrypt
      * @param {Stream} outStream - Writable stream to pipe the data to
      * @returns {Buffer} Authentication tag
      * @async
      */
-    async _encryptStream(key, inStream, outStream) {
+    async _encryptStream(masterKey, inStream, outStream) {
+        // Generate a key for this specific file
+        const fileKey = await randomBytesPromise(32)
         // Generate an IV
-        const iv = await randomBytesPromise(12)
+        const fileIV = await randomBytesPromise(12)
+
+        // Wrap the file's key with the master key, using AES-KW (RFC-3394)
+        const wrappedKey = kw.encrypt(masterKey, fileKey)
 
         return new Promise((resolve, reject) => {
-            // Write the IV to the outStream, at the beginning
-            outStream.write(iv)
+            // Write the wrapped key and IV to the outStream, at the beginning
+            outStream.write(wrappedKey)
+            outStream.write(fileIV)
 
             // Create the Cipher, which can be used as a stream transform too
-            const cipher = crypto.createCipheriv('aes-256-gcm', key, iv)
+            const cipher = crypto.createCipheriv('aes-256-gcm', fileKey, fileIV)
 
             // When the encryption is done, get the authentication tag
             cipher.on('end', () => {
@@ -259,6 +275,11 @@ class Builder {
             for (const e in list) {
                 const el = folder + list[e]
 
+                // Check if we need to include this path or ignore it
+                if (!includePath(el)) {
+                    continue
+                }
+
                 // Check if it's a directory
                 const stat = await statPromise(path.join(this._config.get('contentDir'), el))
                 if (!stat) {
@@ -283,6 +304,31 @@ class Builder {
         await scanFolder()
         return result
     }
+}
+
+// Returns true if a path should be included in the box
+// This ignores files such as operating system's metadata
+function includePath(str) {
+    const base = path.basename(str)
+
+    if (
+        // Linux
+        base.endsWith('~') ||
+        base == '.directory' ||
+        // macOS
+        base == '.DS_Store' ||
+        base == '.AppleDouble' ||
+        base == '.LSOverride' ||
+        base.startsWith('._') ||
+        // Windows
+        base == 'Thumbs.db' ||
+        base == 'Thumbs.db:encryptable' ||
+        base == 'desktop.ini' ||
+        base == 'Desktop.ini'
+    ) {
+        return false
+    }
+    return true
 }
 
 module.exports = Builder

@@ -32,14 +32,16 @@ User passphrase: ***********
 Finished building project in dist (took 3.895 seconds)
 
 ~/hereditas $ ls dist
+0.0.9a2b99a07d39e25b4b7f.js
+0.0.9a2b99a07d39e25b4b7f.js.map
 14ec53f0e99728db2f471caf
 15bc79f07f20c003532724bf
 430c96dc23ccca5eb4227508
 _index
 d0160be2ee0f1479367b325c
 d9f2eb6a0f34382c36d2a116
-hereditas.1e03804dc40e456286e7.css
-hereditas.1e03804dc40e456286e7.js
+hereditas.9a2b99a07d39e25b4b7f.css
+hereditas.9a2b99a07d39e25b4b7f.js
 index.html
 ````
 

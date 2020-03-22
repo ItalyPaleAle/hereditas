@@ -9,9 +9,9 @@ Each Hereditas box contains an encrypted file named `_index`.
 
 ## Encryption details
 
-The index file is encrypted with AES-256-GCM, using the same key as the other files in the Hereditas box, and a unique IV of 12 bytes stored at the beginning of the encrypted file.
+The index file is encrypted, just like all other files, with AES-256-GCM. The encryption key is a unique, random sequence of 32 bytes (256 bits), which is wrapped with the master key and then stored (wrapped) at the beginning of the file. Additionally, the 12-byte IV is randomly generated too and stored in the file's data right after the wrapped key.
 
-As a result of the usage of GCM, which is an authenticated cipher, the encryption step outputs an authentication tag too. This is stored inside the JavaScript file in cleartext and it's used to certify that the index file's content are authentic.
+As a result of the usage of GCM, which is an authenticated cipher, the encryption step outputs an authentication tag too. The index file's authentication tag is stored inside the JavaScript file in cleartext and it's used to certify that the index file's content are authentic.
 
 ## Contents
 

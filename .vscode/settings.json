@@ -9,5 +9,6 @@
     "files.insertFinalNewline": true,
     "eslint.options": {
         "configFile": ".eslintrc.yml"
-    }
+    },
+    "eslint.validate": [ "javascript", "html", "svelte" ]
 }

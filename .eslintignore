@@ -1,5 +1,5 @@
-# Vendored dependencies
-app/vendor
+# Docs
+docs-source
 
 # Auth0 rules (they follow a different style)
 auth0

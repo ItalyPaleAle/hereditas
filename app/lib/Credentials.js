@@ -1,16 +1,6 @@
 import {RandomString} from './Utils'
 import storage from './StorageService'
-const IdTokenVerifier = require('idtoken-verifier')
-
-/**
- * Returns true if a string represents a JWT token. This only checks if the string is in the right format, and doesn't parse the token.
- *
- * @param {string} string - String to test
- * @returns {boolean} True if the string is in the format of a JWT token
- */
-export function IsJWT(string) {
-    return string && !!string.match(/^([A-Za-z0-9\-_~+/]+[=]{0,2})\.([A-Za-z0-9\-_~+/]+[=]{0,2})(?:\.([A-Za-z0-9\-_~+/]+[=]{0,2}))?$/)
-}
+import IdTokenVerifier from 'idtoken-verifier'
 
 /**
  * During the authentication process we need to use nonce's to protect against certain kinds of attacks.
@@ -50,29 +40,6 @@ class Nonce {
         }
 
         return read
-    }
-}
-
-/**
- * Manages authentication attemps and keeps a counter. This is important to avoid endless loops between the app and the auth provider.
- */
-export class AuthenticationAttempts {
-    constructor() {
-        this._attemptsKeyName = 'hereditas-attempts'
-    }
-
-    getAttempts() {
-        return parseInt((storage.sessionStorage.getItem(this._attemptsKeyName) || 0), 10)
-    }
-
-    increaseAttempts() {
-        const attempts = this.getAttempts()
-        storage.sessionStorage.setItem(this._attemptsKeyName, attempts + 1)
-        return attempts
-    }
-
-    resetAttempts() {
-        storage.sessionStorage.setItem(this._attemptsKeyName, 0)
     }
 }
 
@@ -123,12 +90,19 @@ export class Credentials {
         }
 
         // Get the profile out of the token
-        const profile = await this._validateToken(jwt)
-        if (!profile) {
-            return {}
+        let profile
+        try {
+            profile = await this._validateToken(jwt)
+            if (!profile) {
+                profile = {}
+            }
+            this._profile = profile
+            return profile
         }
-        this._profile = profile
-        return profile
+        catch (e) {
+            this._profile = {}
+            throw e
+        }
     }
 
     /**
@@ -152,7 +126,7 @@ export class Credentials {
             throw Error('Could not get the token from session storage')
         }
 
-        if (!data || !data.jwt || !IsJWT(data.jwt)) {
+        if (!data || !data.jwt) {
             return null
         }
 
@@ -190,11 +164,6 @@ export class Credentials {
      * @private
      */
     async _validateToken(jwt) {
-        // Check the format
-        if (!jwt || !IsJWT(jwt)) {
-            throw Error('Invalid token')
-        }
-
         // Ensure issuer ends with /
         const issuer = process.env.AUTH_ISSUER + (process.env.AUTH_ISSUER.charAt(process.env.AUTH_ISSUER.length - 1) != '/' ? '/' : '')
 
@@ -203,19 +172,19 @@ export class Credentials {
             issuer,
             audience: process.env.AUTH_CLIENT_ID
         })
-        const payload = await new Promise((resolve) => {
+        const payload = await new Promise((resolve, reject) => {
             verifier.verify(jwt, this._nonce.retrieve(), (error, payload) => {
                 if (error) {
                     // eslint-disable-next-line no-console
                     console.error('Validation error', error)
-                    throw Error('Invalid token')
+                    return reject('Invalid token')
                 }
 
                 // Check if the payload contains the Hereditas namespace
                 if (!payload[process.env.ID_TOKEN_NAMESPACE]) {
                     // eslint-disable-next-line no-console
                     console.error('Token doesn\'t contain the Hereditas namespace')
-                    throw Error('Token doesn\'t contain the Hereditas namespace')
+                    return reject('Token doesn\'t contain the Hereditas namespace')
                 }
 
                 resolve(payload)

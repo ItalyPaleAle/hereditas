@@ -44,7 +44,10 @@ The structure of the document is similar to the following:
         "https://another.testhereditas.app"
     ],
     "webhookUrl": "https://example.com/webhook/token/abc123XYZ",
-    "kdf": "pbkdf2",
+    "kdf": "argon2",
+    "argon2": {
+        "memory": 65536
+    },
     "pbkdf2": {
         "iterations": 100000
     },
@@ -93,7 +96,9 @@ The Hereditas configuration file stores two separate kinds of URLs:
 
 These options are set by default by Hereditas. You shouldn't change these options unless you have a good reason for that, and you're confident that you know what you're doing.
 
-- **`kdf`** (string): Key derivation function to use. Currently, only `pbkdf2` is supported.
-- **`pbkdf2`** (object): Parameters for pbkdf2.
-    - **`pbkdf2.iterations`** (int): Number of iterations to use for pbkdf2. Default value is 100000 (1E+06)
+- **`kdf`** (string): Key derivation function to use. Supported values are `argon2` for Argon2id (default), and `pbkdf2` for PBKDF2.
+- **`argon2`** (object): Parameters for deriving a key with Argon2.
+    - **`argon2.memory`** (int): Memory used by Argon2 (in Argon2id mode), in kilobytes. Default value is 65536 (64MB)
+- **`pbkdf2`** (object): Parameters for deriving a key with PBKDF2.
+    - **`pbkdf2.iterations`** (int): Number of iterations to use for PBKDF2. Default value is 100000 (1E+05)
 - **`processMarkdown`** (boolean): Switch to enable/disable the conversion of Markdown documents into HTML, when building the box. Default is true (enabled).

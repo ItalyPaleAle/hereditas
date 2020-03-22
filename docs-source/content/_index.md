@@ -15,6 +15,8 @@ For example, you could use this to pass information such as passwords, cryptogra
 
 {{< youtube lZEKgB5dzQ4 >}}
 
+> Note: the video above was recorded with Hereditas 0.1. The design of the interface has been improved and made nicer in 0.2.
+
 ## Why we built Hereditas
 
 Check out the announcement [**blog post**](https://withblue.ink/2019/03/18/what-happens-to-your-digital-life-after-youre-gone-introducing-hereditas.html?utm_source=web&utm_campaign=hereditas-docs) to understand more about why we built Hereditas and why you need it too.

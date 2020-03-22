@@ -30,7 +30,7 @@ const ConfigVersion = 20190222
  * @property {string} auth0.managementClientId - Client ID for the Auth0 Management app
  * @property {string} auth0.managementClientSecret - Client Secret for the Auth0 Management app
  * @property {Array<string>} rules - ID of the Auth0 rules created by the Hereditas CLI
- * @property {"pbkdf2"|"argon2"} kdf - Key derivation function to use: pbkdf2 (default) or argon2
+ * @property {"pbkdf2"|"argon2"} kdf - Key derivation function to use: pbkdf2 or argon2 (default)
  * @property {object} pbkdf2 - Configuration for pbkdf2
  * @property {string} pbkdf2.iterations - Number of iterations
  * @property {string} webhookUrl - URL of the webhook to trigger when a new user logs into Hereditas.
@@ -203,9 +203,12 @@ class Config {
     _defaults() {
         defaultsDeep(this._config, this._userConfig, {
             processMarkdown: true,
-            kdf: 'pbkdf2',
+            kdf: 'argon2',
             pbkdf2: {
                 iterations: 100000
+            },
+            argon2: {
+                memory: 64 * 1024
             }
         })
     }
