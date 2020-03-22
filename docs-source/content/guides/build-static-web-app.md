@@ -32,10 +32,9 @@ User passphrase: ***********
 Finished building project in dist (took 3.895 seconds)
 
 ~/hereditas $ ls dist
-0.0.9a2b99a07d39e25b4b7f.js
-0.0.9a2b99a07d39e25b4b7f.js.map
-14ec53f0e99728db2f471caf
-15bc79f07f20c003532724bf
+1.1.9a2b99a07d39e25b4b7f.js
+24ec53f0e99728db2f471caf
+35bc79f07f20c003532724bf
 430c96dc23ccca5eb4227508
 _index
 d0160be2ee0f1479367b325c
@@ -43,9 +42,10 @@ d9f2eb6a0f34382c36d2a116
 hereditas.9a2b99a07d39e25b4b7f.css
 hereditas.9a2b99a07d39e25b4b7f.js
 index.html
+robots.txt
 ````
 
-> The Hereditas CLI uses webpack behind the scenes to generate your static app. By default, the JavaScript code is bundled and minified. If you're looking at modifying the Hereditas source and want to skip the minification (for much faster builds) and include a sourcemap, you can call `NODE_ENV=development hereditas build` instead.
+> The Hereditas CLI uses [webpack](https://webpack.js.org/) behind the scenes to generate your static app. By default, the JavaScript code is bundled and minified. If you're looking at modifying the Hereditas source and want to skip the minification (for much faster builds) and include a sourcemap, you can call `NODE_ENV=development hereditas build` instead.
 
 ## Next step: Managing users
 
