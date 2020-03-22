@@ -77,7 +77,7 @@ stages:
             displayName: 'Build site'
 
           # Publish the compiled site as pipeline artifact
-          - publish: '$(System.DefaultWorkingDirectory)/public'
+          - publish: '$(System.DefaultWorkingDirectory)/docs-source/public'
             displayName: 'Publish Artifact: public'
             artifact: 'public'
 
