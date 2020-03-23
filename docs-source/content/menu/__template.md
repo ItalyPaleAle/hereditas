@@ -21,6 +21,7 @@ headless: true
   * [<% name %>]({{< relref "/cli/<% path %>" >}})
 <%/ index %>
 * **Advanced topics**
+  * [Building self-contained binaries]({{< relref "/advanced/building-self-contained-binaries.md" >}})
   * [Auth0 manual configuration]({{< relref "/advanced/auth0-manual-configuration.md" >}})
   * [Configuration file]({{< relref "/advanced/configuration-file.md" >}})
   * [Index file]({{< relref "/advanced/index-file.md" >}})
