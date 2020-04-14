@@ -73,3 +73,8 @@ params:
   # Disabled by default. Uncomment to enable. Requires 'BookRepo' param.
   # Path must point to 'content' directory of repo.
   #BookEditPath: edit/master/exampleSite/content
+
+  # Fathom Analytics
+  FathomAnalytics:
+    Endpoint: st.italypaleale.me
+    SiteID: QFLVP
