@@ -130,9 +130,11 @@ function webpackConfig(appParams) {
             }),
 
             // Copy files
-            new CopyPlugin([
-                {from: path.resolve(__dirname, 'robots.txt'), to: ''},
-            ]),
+            new CopyPlugin({
+                patterns: [
+                    {from: path.resolve(__dirname, 'robots.txt'), to: ''},
+                ]
+            }),
         ],
         devtool: prod ? false : 'source-map',
         performance: {
