@@ -48,7 +48,7 @@ export function DeriveKeyArgon2(passphrase, salt) {
             pass: passphrase,
             salt: saltArr,
             type: argon2.ArgonType.Argon2id,
-            time: 1,
+            time: 2,
             mem: 64 * 1024,
             hashLen: 32,
             parallelism: 1
@@ -133,7 +133,6 @@ export function UnwrapKey(wrappingKey, ciphertext) {
         ['decrypt']
     )
     .then((key) => {
-        console.log(key)
         return key
     })
 }
