@@ -48,8 +48,8 @@ export function DeriveKeyArgon2(passphrase, salt) {
             pass: passphrase,
             salt: saltArr,
             type: argon2.ArgonType.Argon2id,
-            time: 2,
-            mem: 64 * 1024,
+            time: process.env.ARGON2_ITERATIONS,
+            mem: process.env.ARGON2_MEMORY,
             hashLen: 32,
             parallelism: 1
         }))

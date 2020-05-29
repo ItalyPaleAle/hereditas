@@ -98,7 +98,8 @@ These options are set by default by Hereditas. You shouldn't change these option
 
 - **`kdf`** (string): Key derivation function to use. Supported values are `argon2` for Argon2id (default), and `pbkdf2` for PBKDF2.
 - **`argon2`** (object): Parameters for deriving a key with Argon2.
-    - **`argon2.memory`** (int): Memory used by Argon2 (in Argon2id mode), in kilobytes. Default value is 65536 (64MB)
+    - **`argon2.iterations`** (int): Iterations used by Argon2 (in Argon2id mode). Default value is 2.
+    - **`argon2.memory`** (int): Memory used by Argon2 (in Argon2id mode), in bytes. Default value is 65536 (64KB)
 - **`pbkdf2`** (object): Parameters for deriving a key with PBKDF2.
     - **`pbkdf2.iterations`** (int): Number of iterations to use for PBKDF2. Default value is 100000 (1E+05)
 - **`processMarkdown`** (boolean): Switch to enable/disable the conversion of Markdown documents into HTML, when building the box. Default is true (enabled).

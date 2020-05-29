@@ -208,6 +208,7 @@ class Config {
                 iterations: 100000
             },
             argon2: {
+                iterations: 2,
                 memory: 64 * 1024
             }
         })

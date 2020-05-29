@@ -90,6 +90,7 @@ class Builder {
             keySalt: this.keySalt,
             kdf: this._config.get('kdf'),
             pbkdf2Iterations: this._config.get('pbkdf2.iterations'),
+            argon2Iterations: this._config.get('argon2.iterations'),
             argon2Memory: this._config.get('argon2.memory')
         }
         const webpackStats = await webpack(webpackConfig(appParams))
@@ -144,7 +145,7 @@ class Builder {
                     pass: passphrase,
                     salt: salt,
                     type: argon2.ArgonType.Argon2id,
-                    time: 1,
+                    time: this._config.get('argon2.iterations'),
                     mem: this._config.get('argon2.memory'),
                     hashLen: 32,
                     parallelism: 1

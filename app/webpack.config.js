@@ -105,6 +105,7 @@ function webpackConfig(appParams) {
                 'process.env.INDEX_TAG': JSON.stringify(appParams.indexTag.toString('base64')),
                 'process.env.KEY_DERIVATION_FUNCTION': JSON.stringify(appParams.kdf),
                 'process.env.PBKDF2_ITERATIONS': JSON.stringify(appParams.pbkdf2Iterations),
+                'process.env.ARGON2_ITERATIONS': JSON.stringify(appParams.argon2Iterations),
                 'process.env.ARGON2_MEMORY': JSON.stringify(appParams.argon2Memory),
                 'process.env.WELCOME_MD': JSON.stringify(welcomeContent)
             }),
