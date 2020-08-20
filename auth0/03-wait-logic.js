@@ -9,7 +9,7 @@ function (user, context, callback) {
     const owners = /*%OWNERS%*/;
 
     // Get the Auth0 management client
-    const ManagementClient = require('auth0@2.19.0').ManagementClient;
+    const ManagementClient = require('auth0@2.27.0').ManagementClient;
     const management = new ManagementClient({
         domain: auth0.domain,
         clientId: configuration.AUTH0_CLIENT_ID,

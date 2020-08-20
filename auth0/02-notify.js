@@ -20,21 +20,23 @@ function (user, context, callback) {
         value2: user.email,
         value3: role
     };
-    const request = require('request');
-    request({
-        uri: configuration.WEBHOOK_URL,
+    const fetch = require('node-fetch@2.6.0');
+    fetch(configuration.WEBHOOK_URL, {
         method: 'POST',
-        json: true,
-        body
-    }, (error, response) => {
-        if (error) {
-            // Fail on errors, even for notifications
-            console.log(error);
+        body: JSON.stringify(body),
+        headers: {'Content-Type': 'application/json'}
+    })
+        // Ensure the response has a valid status code
+        .then((response) => {
+            if (response.ok) {
+                return callback(null, user, context);
+            } else {
+                return Promise.reject('Invalid response status code');
+            }
+        })
+        // Catch errors and fail (fail the login even if the notification fails to send)
+        .catch((err) => {
+            console.error(err);
             callback(new Error('Error sending the notification'));
-        }
-        else {
-            // Continue
-            callback(null, user, context);
-        }
-    });
+        });
 }
