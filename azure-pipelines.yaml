@@ -21,8 +21,6 @@ variables:
   # Sites
   SITE_PRODUCTION: 'hereditas.app'
   SITE_STAGING: 'staging.hereditas.app'
-  # Azure connection ID
-  AZURE_SERVICE_CONNECTION: '6cb9442a-95ca-4ad5-8e94-39bc01f6c948'
   # DNSLink DNS record to update (for IPFS)
   CLOUDFLARE_DOMAIN: '_dnslink.hereditas.app'
   # Version of Hugo to use
@@ -110,64 +108,41 @@ stages:
                 - download: current
                   artifact: 'public'
 
-                # Install stkcli
+                # Configure stkcli
                 - bash: |
                     set -e
-                    URL=$(curl -s https://api.github.com/repos/Statiko-dev/stkcli/releases/latest -H "Accept: application/vnd.github.v3+json" \
-                      | jq -r ".assets[] | select(.name | test(\"linux_arm32v7\")) | .browser_download_url")
-                    echo "Downloading stkcli: $URL"
-                    curl -L "$URL" -o stkcli
-                    chmod +x stkcli
-                    ./stkcli version
-                  displayName: "Install stkcli"
 
-                # Install pinatapinner
+                    # Show version
+                    stkcli version
+
+                    # Configure stkcli
+                    cat /dev/null > ~/.stkcli/config.yaml
+                    echo "node: '$(NODE_ADDRESS)'" >> ~/.stkcli/config.yaml
+                    echo "insecure: true" >> ~/.stkcli/config.yaml
+                  displayName: "Configure stkcli"
+
+                # Upload app to Statiko
                 - bash: |
                     set -e
-                    URL=$(curl -s https://api.github.com/repos/ItalyPaleAle/pinatapinner/releases/latest -H "Accept: application/vnd.github.v3+json" \
-                      | jq -r ".assets[] | select(.name | test(\"linux_arm$\", \"xs\")) | .browser_download_url")
-                    echo "Downloading pinatapinner: $URL"
-                    curl -L "$URL" -o pinatapinner
-                    chmod +x pinatapinner
-                  displayName: "Install pinatapinner"
 
-                # Deploy app to staging on Statiko (with Azure CLI authorization)
-                - task: AzureCLI@2
-                  displayName: 'Deploy app to staging on Statiko'
-                  inputs:
-                    azureSubscription: $(AZURE_SERVICE_CONNECTION)
-                    scriptType: 'bash'
-                    scriptLocation: 'inlineScript'
-                    inlineScript: |
-                      set -e
+                    # Get version from Azure Pipelines
+                    echo "Version: $(Build.BuildNumber)"
 
-                      # Get version from Azure Pipelines
-                      echo "Version: $(Build.BuildNumber)"
+                    echo "Folder: $(Pipeline.Workspace)/public"
+                    ls -l $(Pipeline.Workspace)/public
 
-                      echo "Folder: $(Pipeline.Workspace)/public"
-                      ls -l $(Pipeline.Workspace)/public
-
-                      # Upload the app
-                      export NODE_KEY="$(NODE_KEY)"
-                      ./stkcli upload app \
-                        -n $(NODE_ADDRESS) \
-                        -k \
-                        -a hereditas-docs \
-                        -v $(Build.BuildNumber) \
-                        -f $(Pipeline.Workspace)/public
-
-                      # Deploy to staging
-                      ./stkcli deploy \
-                        -n $(NODE_ADDRESS) \
-                        -k \
-                        -d $(SITE_STAGING) \
-                        -a hereditas-docs \
-                        -v $(Build.BuildNumber)
+                    # Upload the app
+                    stkcli app upload \
+                      -a hereditas-docs-$(Build.BuildNumber) \
+                      -f $(Pipeline.Workspace)/public
+                  displayName: "Upload app to Statiko"
+                  env:
+                    NODE_KEY: $(NODE_KEY)
 
                 # Pin on Pinata
                 - script: |
                     set -e
-                    ./pinatapinner $(Pipeline.Workspace)/public "Hereditas-Docs-${BUILD_BUILDID}" | tee out.tmp
+                    pinatapinner $(Pipeline.Workspace)/public "Hereditas-Docs-${BUILD_BUILDID}" | tee out.tmp
                     IPFS_HASH=$(cat out.tmp | jq -r ".IpfsHash")
                     echo "##vso[task.setvariable variable=IPFS_HASH]$IPFS_HASH"
                   displayName: 'Pin on Pinata'
@@ -188,10 +163,24 @@ stages:
                   artifact: variables
                   displayName: 'Publish pipeline artifacts'
 
+                # Deploy app to staging on Statiko
+                - script: |
+                    set -e
+
+                    # Deploy app
+                    stkcli deploy \
+                      -d $(SITE_STAGING) \
+                      -a hereditas-docs-$(Build.BuildNumber)
+                  displayName: 'Deploy app to staging on Statiko'
+                  env:
+                    NODE_KEY: $(NODE_KEY)
+
+
                 # Post-build cleanup
                 # Necessary only for self-hosted pipelines
                 - bash: |
                     # Delete files from disk
+                    rm -rv ~/.stkcli/config.yaml || true
                     rm -rvf $(Agent.BuildDirectory) || true
                     rm -rvf $(Build.SourcesDirectory) || true
                     rm -rvf $(Build.ArtifactStagingDirectory) || true
@@ -227,30 +216,29 @@ stages:
                 # Download the variables artifact
                 - download: current
                   artifact: variables
-                  displayName: 'Download pipeline artifacts'
+                  displayName: 'Download variables artifacts'
 
-                # Install stkcli
+                # Configure stkcli
                 - bash: |
                     set -e
-                    URL=$(curl -s https://api.github.com/repos/Statiko-dev/stkcli/releases/latest -H "Accept: application/vnd.github.v3+json" \
-                      | jq -r ".assets[] | select(.name | test(\"linux_arm32v7\")) | .browser_download_url")
-                    echo "Downloading stkcli: $URL"
-                    curl -L "$URL" -o stkcli
-                    chmod +x stkcli
-                    ./stkcli version
-                  displayName: "Install stkcli"
+
+                    # Show version
+                    stkcli version
+
+                    # Configure stkcli
+                    cat /dev/null > ~/.stkcli/config.yaml
+                    echo "node: '$(NODE_ADDRESS)'" >> ~/.stkcli/config.yaml
+                    echo "insecure: true" >> ~/.stkcli/config.yaml
+                  displayName: "Configure stkcli"
 
                 # Deploy app to production on Statiko
                 - script: |
                     set -e
 
                     # Deploy app
-                    ./stkcli deploy \
-                      -n $(NODE_ADDRESS) \
-                      -k \
+                    stkcli deploy \
                       -d $(SITE_PRODUCTION) \
-                      -a hereditas-docs \
-                      -v $(Build.BuildNumber)
+                      -a hereditas-docs-$(Build.BuildNumber)
 
                     # Purge DNS cache
                     curl -X POST "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/purge_cache" \
@@ -286,6 +274,7 @@ stages:
                 # Necessary only for self-hosted pipelines
                 - bash: |
                     # Delete files from disk
+                    rm -rv ~/.stkcli/config.yaml || true
                     rm -rvf $(Agent.BuildDirectory) || true
                     rm -rvf $(Build.SourcesDirectory) || true
                     rm -rvf $(Build.ArtifactStagingDirectory) || true
