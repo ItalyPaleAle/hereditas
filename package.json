@@ -38,7 +38,7 @@
     "svelte-spa-router": "2.2.0",
     "tailwindcss": "1.7.1",
     "webpack": "4.44.1",
-    "webpack-subresource-integrity": "1.4.1"
+    "webpack-subresource-integrity": "1.5.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "1.22.2",
