@@ -4,10 +4,10 @@ title: Hereditas
 
 # Ignore files
 ignoreFiles:
-- "\\.sh$"
-- "Makefile"
-- "Dockerfile"
-- "__template.md"
+  - "\\.sh$"
+  - "Makefile"
+  - "Dockerfile"
+  - "__template.md"
 
 # Enable all URLs to be relative, and make them end with ".html"
 relativeURLs: true
@@ -32,7 +32,7 @@ pygmentsCodeFences: true
 pygmentsStyle: "tango"
 
 # Google analytics
-googleAnalytics: UA-72379106-2
+#googleAnalytics: UA-72379106-2
 
 # Privacy
 privacy:
@@ -74,7 +74,7 @@ params:
   # Path must point to 'content' directory of repo.
   #BookEditPath: edit/master/exampleSite/content
 
-  # Fathom Analytics
-  FathomAnalytics:
-    Endpoint: st.italypaleale.me
-    SiteID: QFLVP
+  # Plausible Analytics
+  PlausibleAnalytics:
+    Endpoint: pls.italypaleale.me
+    Domain: hereditas.app
