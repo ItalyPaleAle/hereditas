@@ -3,6 +3,7 @@
 # Required secrets:
 # CF_ACCOUNT_ID: Account ID for Cloudflare Workers
 # CF_API_TOKEN: API token for Cloudflare (for the Workers CLI)
+# CF_ZONE_ID: Zone ID for the Cloudflare domain
 # AZURE_STORAGE_ACCOUNT: Name of the Azure Storage Account
 # AZCOPY_SPA_APPLICATION_ID: Application ID (Client ID) for the Service Principal with access to the Azure Storage account
 # AZCOPY_SPA_CLIENT_SECRET: Client Secret for the Service Principal
