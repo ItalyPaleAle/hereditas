@@ -1,0 +1,25 @@
+type = "webpack"
+name = "hereditas-dev"
+# Dev environment is deployed to a workers.dev domain
+workers_dev = true
+# Use CF_ACCOUNT_ID instead
+#account_id = ""
+# Use CF_ZONE_ID instead
+#zone_id = ""
+vars = {STORAGE_CONTAINER = "hereditas-dev"}
+
+[site]
+bucket = "./public"
+entry-point = "workers-site"
+
+[env.staging]
+name = "hereditas-staging"
+workers_dev = false
+route = "staging.hereditas.app/*"
+vars = {STORAGE_CONTAINER = "hereditas-staging"}
+
+[env.production]
+name = "hereditas"
+workers_dev = false
+route = "hereditas.app/*"
+vars = {STORAGE_CONTAINER = "hereditas-prod"}

@@ -1,0 +1,95 @@
+# Docs: CI: deploys to dev
+
+# Required secrets:
+# CF_ACCOUNT_ID: Account ID for Cloudflare Workers
+# CF_API_TOKEN: API token for Cloudflare (for the Workers CLI)
+# AZURE_STORAGE_ACCOUNT: Name of the Azure Storage Account
+# AZCOPY_SPA_APPLICATION_ID: Application ID (Client ID) for the Service Principal with access to the Azure Storage account
+# AZCOPY_SPA_CLIENT_SECRET: Client Secret for the Service Principal
+# AZCOPY_SPA_TENANT_ID: Tenant ID of the application (Service Principal)
+
+name: 'Docs: CI'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: 'ubuntu-20.04'
+    env:
+      # Version of Hugo to use
+      HUGO_VERSION: '0.68.1'
+    steps:
+      - name: 'Check out code'
+        uses: 'actions/checkout@v2'
+
+      - name: 'Install Node.js'
+        uses: 'actions/setup-node@v1'
+        with:
+          node-version: '14.x'
+
+      - name: 'Install npm deps'
+        run: |
+          npm ci
+
+      - name: 'Install Hugo'
+        run: |
+          cd docs-source
+          mkdir -p .bin
+          cd .bin
+          echo "Using Hugo $(HUGO_VERSION)"
+          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_extended_$(HUGO_VERSION)_Linux-64bit.tar.gz" -o hugo.tar.gz
+          tar -zxf hugo.tar.gz
+
+      - name: 'Build site'
+        run: |
+          # Build the site
+          cd docs-source
+          node generate-cli-docs.js
+          .bin/hugo
+
+      - name: 'Install azcopy and authenticate'
+        run: |
+          cd docs-source
+          mkdir -p .bin
+          curl -Ls "https://aka.ms/downloadazcopy-v10-linux" -o ".bin/azcopy.tar.gz"
+          (cd .bin && tar -xvzf azcopy.tar.gz --strip 1)
+          .bin/azcopy --version
+          .bin/azcopy login --service-principal --application-id $AZCOPY_SPA_APPLICATION_ID  --tenant-id $AZCOPY_SPA_TENANT_ID
+        env:
+          # Service Principal credentials
+          AZCOPY_SPA_APPLICATION_ID: ${{ secrets.AZCOPY_SPA_APPLICATION_ID }}
+          AZCOPY_SPA_CLIENT_SECRET: ${{ secrets.AZCOPY_SPA_CLIENT_SECRET }}
+          AZCOPY_SPA_TENANT_ID: ${{ secrets.AZCOPY_SPA_TENANT_ID }}
+
+      - name: 'Upload static assets to Azure Storage'
+        run: |
+          cd docs-source
+          # Upload assets to Azure Storage
+          ./sync-assets.sh
+          # Delete the assets from disk so they're not uploaded to Cloudflare or published as artifact
+          for asset in $ASSETS; do rm -rvf "$asset"; done
+        env:
+          # List of assets to upload
+          ASSETS: 'public/images public/svg'
+          # Container in Azure Storage
+          CONTAINER: 'hereditas-dev'
+          # Use azcopy downloaded above
+          AZCOPYCMD: '.bin/azcopy'
+          # Storage Account name
+          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+
+      - name: 'Publish docs as artifact'
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: 'docs-dev'
+          path: 'docs-source/public'
+
+      - name: 'Deploy to dev environment'
+        uses: cloudflare/wrangler-action@1.3.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
