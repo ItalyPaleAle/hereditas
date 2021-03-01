@@ -39,8 +39,8 @@ jobs:
           cd docs-source
           mkdir -p .bin
           cd .bin
-          echo "Using Hugo $(HUGO_VERSION)"
-          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v$(HUGO_VERSION)/hugo_extended_$(HUGO_VERSION)_Linux-64bit.tar.gz" -o hugo.tar.gz
+          echo "Using Hugo ${HUGO_VERSION}"
+          curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${(}HUGO_VERSION}_Linux-64bit.tar.gz" -o hugo.tar.gz
           tar -zxf hugo.tar.gz
 
       - name: 'Build site'
