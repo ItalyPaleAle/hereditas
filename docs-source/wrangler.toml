@@ -14,12 +14,12 @@ entry-point = "workers-site"
 
 [env.staging]
 name = "hereditas-staging"
-workers_dev = false
+workers_dev = true
 route = "staging.hereditas.app/*"
 vars = {STORAGE_CONTAINER = "hereditas-staging", DOMAINS = "staging.hereditas.app"}
 
 [env.production]
 name = "hereditas"
-workers_dev = false
+workers_dev = true
 route = "*hereditas.app/*"
 vars = {STORAGE_CONTAINER = "hereditas-prod", DOMAINS = "hereditas.app"}
