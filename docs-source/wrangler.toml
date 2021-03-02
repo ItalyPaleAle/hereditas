@@ -6,7 +6,7 @@ workers_dev = true
 #account_id = ""
 # Use CF_ZONE_ID instead
 #zone_id = ""
-vars = {STORAGE_CONTAINER = "hereditas-dev"}
+vars = {STORAGE_CONTAINER = "hereditas-dev", DOMAINS = "hereditas-dev.italypaleale.workers.dev"}
 
 [site]
 bucket = "./public"
@@ -16,10 +16,10 @@ entry-point = "workers-site"
 name = "hereditas-staging"
 workers_dev = false
 route = "staging.hereditas.app/*"
-vars = {STORAGE_CONTAINER = "hereditas-staging"}
+vars = {STORAGE_CONTAINER = "hereditas-staging", DOMAINS = "staging.hereditas.app"}
 
 [env.production]
 name = "hereditas"
 workers_dev = false
 route = "hereditas.app/*"
-vars = {STORAGE_CONTAINER = "hereditas-prod"}
+vars = {STORAGE_CONTAINER = "hereditas-prod", DOMAINS = "hereditas.app"}
