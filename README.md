@@ -1,5 +1,6 @@
 # Hereditas
 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/ItalyPaleAle/hereditas)
 [![Version](https://img.shields.io/npm/v/hereditas.svg)](https://npmjs.org/package/hereditas)
 [![Downloads/week](https://img.shields.io/npm/dw/hereditas.svg)](https://npmjs.org/package/hereditas)
 [![License](https://img.shields.io/npm/l/hereditas.svg)](https://github.com/ItalyPaleAle/hereditas/blob/master/package.json)
