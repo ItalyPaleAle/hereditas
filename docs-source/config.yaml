@@ -76,5 +76,4 @@ params:
 
   # Plausible Analytics
   PlausibleAnalytics:
-    Endpoint: pls.italypaleale.me
     Domain: hereditas.app

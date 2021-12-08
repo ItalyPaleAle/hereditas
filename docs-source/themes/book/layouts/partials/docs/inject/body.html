@@ -1,5 +1,5 @@
 {{ if eq hugo.Environment "production" }}
   {{ with .Site.Params.PlausibleAnalytics }}
-<script async defer data-domain="{{ .Domain }}" src="https://{{ .Endpoint }}/js/plausible.js"></script>
+<script async defer data-domain="{{ .Domain }}" data-api="/pls/api/event" src="/pls/index.d81135.js"></script>
   {{ end }}
 {{ end }}

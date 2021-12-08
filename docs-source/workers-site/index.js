@@ -1,7 +1,8 @@
 import {getAssetFromKV} from '@cloudflare/kv-asset-handler'
 import assets from './assets'
+import {cacheSettings} from './cache-config'
 
-/* global STORAGE_ACCOUNT, STORAGE_CONTAINER, DOMAINS */
+/* global STORAGE_ACCOUNT, STORAGE_CONTAINER, DOMAINS, PLAUSIBLE_ANALYTICS */
 
 /**
  * The DEBUG flag will do two things that help during development:
@@ -32,57 +33,82 @@ addEventListener('fetch', (event) => {
  * @returns {Promise<Response>} Response object
  */
 async function handleEvent(event) {
-    // Check if we need to redirect the user
-    const redirect = shouldRedirect(event)
-    if (redirect) {
-        return Response.redirect(redirect, 301)
-    }
+    const reqUrl = new URL(event.request.url)
 
     // Check if the URL points to a static asset on Azure Storage
-    const useAsset = isAsset(event.request.url)
+    const useAsset = isAsset(reqUrl)
     if (useAsset) {
         return requestAsset(useAsset)
     }
 
+    // Handle proxy for Plausible if enabled (if PLAUSIBLE_ANALYTICS contains the URL of the Plausible server, with https prefix)
+    // 1. Proxy and cache the script (from /pls/index.*.js to ${PLAUSIBLE_ANALYTICS}/js/plausible.outbound-links.js)
+    // 2. Proxy (no cache) the message sending the request (from /pls/(event|error) to ${PLAUSIBLE_ANALYTICS}/api/(event|error))
+    // Check if the URL is for the Plausible Analytics script
+    const path = reqUrl.pathname
+    if (PLAUSIBLE_ANALYTICS && path) {
+        // Script
+        if (/^\/pls\/index(\.[a-fA-F0-9]{1,6})?\.js$/.test(path)) {
+            // Request the asset and modify the response to add padding
+            return requestAsset(
+                {
+                    url: PLAUSIBLE_ANALYTICS + '/js/plausible.outbound-links.js',
+                    // Cache in the edge for a day and in the browser for 12 hours
+                    edgeTTL: 86400,
+                    browserTTL: 43200
+                },
+                async (response) => {
+                    // Get the body's text and add padding
+                    let text = await response.text()
+                    const num = Math.floor(Math.random() * 100000)
+                    if (Math.random() < 0.5) {
+                        text += `\n;'` + num + `'`
+                    } else {
+                        text = `'` + num + `';\n` + text
+                    }
+                    return text
+                }
+            )
+        }
+
+        // APIs
+        if (path.startsWith('/pls/api')) {
+            // Clone the request but change the URL
+            console.log(PLAUSIBLE_ANALYTICS + path.slice(4))
+            const newReq = new Request(
+                PLAUSIBLE_ANALYTICS + path.slice(4),
+                new Request(event.request, {})
+            )
+
+            // Set the X-Forwarded-For header
+            // Cloudflare automatically adds X-Real-IP and CF-Connecting-IP (and X-Forwarded-Proto), but we need X-Forwarded-For too
+            // First, check if the request had an X-Forwarded-For already
+            if (!newReq.headers.get('X-Forwarded-For')) {
+                // Fallback to CF-Connecting-IP if available
+                // Lastly, X-Real-IP
+                if (newReq.headers.get('CF-Connecting-IP')) {
+                    newReq.headers.set('X-Forwarded-For', newReq.headers.get('CF-Connecting-IP'))
+                } else if (newReq.headers.get('X-Real-IP')) {
+                    newReq.headers.set('X-Forwarded-For', newReq.headers.get('X-Real-IP'))
+                }
+            }
+
+            // Need to remove all Cloudflare headers (starting with cf-) and the Host and Cookie headers, or the request will fail
+            newReq.headers.delete('Host')
+            newReq.headers.delete('Cookie')
+            for (const key of newReq.headers.keys()) {
+                if (key.startsWith('cf-')) {
+                    newReq.headers.delete(key)
+                }
+            }
+
+            // Make the request
+            return fetch(newReq)
+        }
+    }
+
     // Request from the KV
     return requestFromKV(event)
-}
-
-/**
- * Checks if the user should be redirected, and returns the address.
- * Redirects from http to https, and from secondary domains (not in the DOMAINS environmental variable) to the primary one
- *
- * @param {Event} event
- * @returns {string|null} If the user should be redirected, return the location
- */
-function shouldRedirect(event) {
-    // Check the requested URL
-    const url = new URL(event.request.url)
-    if (!url || !url.host) {
-        return null
-    }
-
-    // Ensure we're using https
-    let redirect = null
-    if (url.protocol != 'https:') {
-        redirect = 'https://' + url.host + url.pathname + url.search
-    }
-
-    // If there's no list of allowed domains (as an env var, for this environment), return right away
-    if (typeof DOMAINS == 'undefined' || !DOMAINS) {
-        return redirect
-    }
-
-    // Look at the list of domains to see if the one being requested is allowed
-    /** @type Array<string> */
-    const domainList = DOMAINS.split(' ')
-    if (domainList.includes(url.host)) {
-        // Domain is in the allow-list, so just return
-        return redirect
-    }
-
-    // Redirect to the first domain in the list
-    return 'https://' + domainList[0] + url.pathname + url.search
 }
 
 /**
@@ -91,17 +117,17 @@ function shouldRedirect(event) {
  * @returns {Promise<Response>} Response object
  */
 async function requestFromKV(event) {
+    // Get cache settings for this file
+    const cacheOpts = cacheSettings(event.request.url)
     // Options for the request from the KV
     /** @type {import('@cloudflare/kv-asset-handler').Options} */
     const options = {
         // Set custom caching options
         cacheControl: {
+            // Add the options
+            ...cacheOpts,
             // Use Cloudflare cache
             bypassCache: false,
-            // Cache for 1 day in browsers
-            browserTTL: 86400,
-            // Cache for 2 days in the edge
-            edgeTTL: 86400 * 2,
         }
     }
     if (DEBUG) {
@@ -113,7 +139,15 @@ async function requestFromKV(event) {
     }
 
     try {
-        return await getAssetFromKV(event, options)
+        const response = await getAssetFromKV(event, options)
+
+        // Set the Cache-Control header for the browser
+        setCacheHeader(response.status, response.headers, cacheOpts)
+
+        // Set security headers
+        setSecurityHeaders(response.headers)
+
+        return response
     }
     catch (e) {
         // If an error is thrown try to serve the asset at 404.html
@@ -133,7 +167,13 @@ async function requestFromKV(event) {
     }
 }
 
-async function requestAsset(useAsset) {
+/**
+ * Requests an asset, optionally caching it in the edge. It also sets the correct headers in the response.
+ * @param {object} useAsset
+ * @param {(response: Response) => Promise<string>} [modifyBody] Optional method that can modify the response's body
+ * @returns {Response} A Response object
+ */
+async function requestAsset(useAsset, modifyBody) {
     // Caching options
     const cfOpts = {}
     if (useAsset.edgeTTL) {
@@ -146,11 +186,19 @@ async function requestAsset(useAsset) {
         }
     }
 
-    // Return a fetch invocation (promise) that retrieves data from Azure Storage
-    let response = await fetch(useAsset.url, cfOpts)
+    // Return a fetch invocation (promise) that retrieves data from the origin
+    let response = await fetch(useAsset.url, {
+        cf: cfOpts
+    })
+
+    // See if we want to modify the response's body
+    let body = response.body
+    if (modifyBody) {
+        body = await modifyBody(response)
+    }
 
     // Reconstruct the Response object to make its headers mutable
-    response = new Response(response.body, response)
+    response = new Response(body, response)
 
     // Delete all Azure Storage headers (x-ms-*)
     for (const key of response.headers.keys()) {
@@ -159,21 +207,60 @@ async function requestAsset(useAsset) {
         }
     }
 
-    // Check if we need to set a Cache-Control for the browser
-    if (response.status >= 200 && response.status <= 299 && useAsset.browserTTL) {
-        response.headers.set('Cache-Control', 'max-age=' + useAsset.browserTTL)
-    }
+    // Set the Cache-Control header for the browser
+    setCacheHeader(response.status, response.headers, useAsset)
+
+    // Set security headers
+    setSecurityHeaders(response.headers)
 
     // Return the data we requested (and cached)
     return response
 }
 
 /**
- * Check if the requested URL corresponds to an asset in Azure Storage
- * @param {string} urlStr - URL of the original request, as string
+ * Sets the Cache-Control header for the browser if needed
+ * @param {number} statusCode
+ * @param {Headers} headers
+ * @param {CacheOpts} cacheOpts
  */
-function isAsset(urlStr) {
-    const url = new URL(urlStr)
+function setCacheHeader(statusCode, headers, cacheOpts) {
+    if (statusCode >= 200 && statusCode <= 299 && cacheOpts.browserTTL) {
+        let val = 'public,max-age=' + cacheOpts.browserTTL
+        if (cacheOpts.immutable) {
+            val += ',immutable'
+        }
+        headers.set('Cache-Control', val)
+    } else {
+        headers.delete('Cache-Control')
+    }
+}
+
+/**
+ * Sets some security headers
+ * @param {Headers} headers
+ */
+function setSecurityHeaders(headers) {
+    // Opt out of FLoC
+    let policy = headers.get('Permissions-Policy')
+    policy = (policy ? policy + '; ' : '') + 'interest-cohort=()'
+    headers.set('Permissions-Policy', policy)
+
+    // Referrer policy
+    headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+    // Set CSP (and X-Frame-Options) for HTML pages only
+    const ct = headers.get('Content-Type')
+    if (ct && ct == 'text/html' || ct.startsWith('text/html;')) {
+        // Allow using in frames on the same origin only
+        headers.set('X-Frame-Options', 'SAMEORIGIN')
+    }
+}
+
+/**
+ * Check if the requested URL corresponds to an asset in Azure Storage
+ * @param {URL} url - URL of the original request
+ */
+function isAsset(url) {
     for (let i = 0; i < assets.length; i++) {
         const e = assets[i]
         if (!e || !e.match) {
@@ -194,7 +281,8 @@ function isAsset(urlStr) {
         return {
             url: assetUrl,
             edgeTTL: e.edgeTTL,
-            browserTTL: e.browserTTL
+            browserTTL: e.browserTTL,
+            immutable: !!e.immutable
         }
     }
 

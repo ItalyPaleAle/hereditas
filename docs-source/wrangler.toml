@@ -1,3 +1,4 @@
+compatibility_date = "2021-11-08"
 type = "webpack"
 name = "hereditas-dev"
 # Dev environment is deployed to a workers.dev domain
@@ -7,6 +8,7 @@ workers_dev = true
 # Use CF_ZONE_ID instead
 #zone_id = ""
 vars = {STORAGE_CONTAINER = "hereditas-dev", DOMAINS = "hereditas-dev.italypaleale.workers.dev"}
+# These variables need to be set as secrets: PLAUSIBLE_ANALYTICS (except for dev), STORAGE_ACCOUNT
 
 [site]
 bucket = "./public"
