@@ -30,7 +30,7 @@
     "postcss": "7.0.32",
     "postcss-import": "12.0.1",
     "postcss-loader": "3.0.0",
-    "qs": "6.9.4",
+    "qs": "6.9.7",
     "smhelper": "1.2.4",
     "style-loader": "1.2.1",
     "svelte": "3.24.1",
