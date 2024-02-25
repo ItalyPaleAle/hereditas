@@ -33,7 +33,7 @@
     "qs": "6.9.4",
     "smhelper": "1.2.4",
     "style-loader": "1.2.1",
-    "svelte": "3.24.1",
+    "svelte": "3.49.0",
     "svelte-loader": "2.13.6",
     "svelte-spa-router": "2.2.0",
     "tailwindcss": "1.7.1",
