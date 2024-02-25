@@ -12,7 +12,7 @@
     "@oclif/config": "1.17.0",
     "@oclif/plugin-help": "3.2.0",
     "argon2-browser": "1.14.0",
-    "auth0": "2.27.1",
+    "auth0": "3.0.1",
     "autoprefixer": "9.8.6",
     "base64-loader": "1.0.0",
     "buffer-equal-constant-time": "1.0.1",
